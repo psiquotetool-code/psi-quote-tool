@@ -665,9 +665,74 @@ function goToScreen2FromPreview() {
   document.getElementById('screen2').classList.add('active');
 }
 
-// PLACEHOLDER: PDF generation (Phase C)
+// PDF GENERATION - Phase C
 function generatePDF() {
-  showAlert('PDF generation will be added in Phase C');
+  // Check if we have quote results
+  if (!quoteResults) {
+    showAlert('No quote data available. Please generate a quote first.');
+    return;
+  }
+
+  // Collect all form data
+  const quoteData = {
+    companyName: document.getElementById('companyName').value,
+    quoteNumber: document.getElementById('quoteNumber').value,
+    quoteDate: document.getElementById('quoteDate').value,
+    customerCompany: document.getElementById('customerCompany').value,
+    customerContact: document.getElementById('customerContact').value,
+    customerEmail: document.getElementById('customerEmail').value,
+    customerPhone: document.getElementById('customerPhone').value,
+    repName: document.getElementById('repName').value,
+    repEmail: document.getElementById('repEmail').value,
+    repPhone: document.getElementById('repPhone').value,
+    results: quoteResults
+  };
+
+  // Show loading state
+  const pdfButtons = document.querySelectorAll('.btn-primary');
+  pdfButtons.forEach(btn => {
+    if (btn.textContent.includes('PDF')) {
+      btn.disabled = true;
+      btn.textContent = 'Generating PDF...';
+    }
+  });
+
+  // Call backend to create PDF
+  google.script.run
+    .withSuccessHandler(handlePDFSuccess)
+    .withFailureHandler(handlePDFError)
+    .createPDFQuote(quoteData);
+}
+
+// Handle successful PDF creation
+function handlePDFSuccess(result) {
+  // Reset button state
+  resetPDFButtons();
+
+  if (result.success) {
+    // Open the PDF in a new tab
+    window.open(result.url, '_blank');
+    showAlert('PDF created successfully! Your download should start automatically.');
+  } else {
+    showAlert('Error creating PDF: ' + result.error);
+  }
+}
+
+// Handle PDF creation error
+function handlePDFError(error) {
+  resetPDFButtons();
+  showAlert('Error creating PDF: ' + error.message);
+}
+
+// Reset PDF buttons to original state
+function resetPDFButtons() {
+  const pdfButtons = document.querySelectorAll('.btn-primary');
+  pdfButtons.forEach(btn => {
+    if (btn.textContent.includes('PDF') || btn.textContent.includes('Generating')) {
+      btn.disabled = false;
+      btn.textContent = 'Generate PDF →';
+    }
+  });
 }
 
 // HELPER: Build HTML for one term option block
