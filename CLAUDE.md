@@ -89,15 +89,40 @@ clasp open
 |-------|-------------|--------|
 | **A** | Core Functionality (Steps 1-7) | ✅ Complete |
 | **B** | Styling & Polish (Steps 8-11) | ✅ Complete (Steve approved) |
-| **C** | PDF Generation & Email | ⏳ Not Started |
+| **C** | PDF Generation & Email | 🔄 In Progress |
 | **D** | Admin Panel | ⏳ Not Started |
 
 ## Current Focus
 
 **Phase C: PDF Generation & Email Delivery**
-- Generate PDF from Screen 3 HTML content
-- Email to customer (editable template), rep (CC), and Steve (separate)
-- Post-send options: download PDF, generate another quote, save to log
+
+**Approach Selected**: HTML to Blob Direct Conversion (using only free native Google services)
+
+**Next Task**: Create PDF.js file with these functions:
+- `createPDFQuote(quoteData)` - Main entry point
+- `buildPDFHTML(quoteData)` - Assembles complete HTML document
+- `getPDFStyles(brand)` - Returns print-optimized CSS
+- `buildPDFHeader(quoteData)` - Logo, title, metadata
+- `buildPDFLeftColumn(quoteData)` - Customer info, highlights, sites table
+- `buildPDFRightColumn(quoteData)` - Rep info, term blocks, financial tables
+- `buildTermBlockPDF(...)` - Financial tables for each term
+- `getOrCreateQuoteFolder()` - Drive folder for saved PDFs
+
+**PDF Flow**:
+```
+Frontend: generatePDF()
+→ Backend: createPDFQuote(quoteData)
+→ buildPDFHTML() creates complete HTML string
+→ Utilities.newBlob(html, MimeType.HTML)
+→ blob.getAs(MimeType.PDF)
+→ Save to Drive folder
+→ Return download URL
+```
+
+**Files to modify**:
+1. PDF.js (NEW) - All PDF generation functions
+2. Index.html - Update generatePDF(), add Screen 4
+3. Styles.html - Add Section 11: Print/PDF Styles
 
 ## Key Decisions & Learnings
 

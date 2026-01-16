@@ -241,21 +241,75 @@ Step 11: Final Polish & Refinement ✓ COMPLETE
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-5. Phase C: PDF Generation & Email Delivery (NOT STARTED)
+5. Phase C: PDF Generation & Email Delivery (IN PROGRESS)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Step 12: PDF Generation (PLANNED)
+APPROACH: HTML to Blob Direct Conversion (APPROVED)
 
-□ Research Google Apps Script PDF libraries
-□ Generate PDF from Screen 3 HTML content
-□ Match on-screen styling exactly
-□ Handle multi-page documents (if >37 locations)
-□ Add page numbers for multi-page quotes
-□ File naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
-□ Implement PDF preview before sending
+Why this approach was selected:
+- No temp files to clean up
+- Preserves CSS styling well
+- Simpler than Google Docs intermediary method
+- Fast execution
+- Already works with base64 logos
+- Uses ONLY native Google services (no paid services, no external APIs)
 
-Note: Most quotes expected to fit on single page. Multi-page handling may be simpler than anticipated.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 12: PDF Generation (IN PROGRESS)
+
+Files to Modify:
+□ PDF.js (NEW FILE) - All PDF generation functions (~200-300 lines)
+□ Index.html - Update generatePDF(), add Screen 4, add handlers (~50 lines)
+□ Styles.html - Add Section 11: Print/PDF Styles (~50 lines)
+□ Code.js - Minimal changes (possibly just an include)
+
+PDF.js Function Structure:
+```
+PDF.js
+├── createPDFQuote(quoteData)     # Main entry point
+├── buildPDFHTML(quoteData)       # Assembles complete HTML document
+├── getPDFStyles(brand)           # Returns print-optimized CSS
+├── buildPDFHeader(quoteData)     # Logo, title, metadata
+├── buildPDFLeftColumn(quoteData) # Customer info, highlights, sites table
+├── buildPDFRightColumn(quoteData)# Rep info, term blocks, financial tables
+├── buildTermBlockPDF(...)        # Financial tables for each term
+└── getOrCreateQuoteFolder()      # Drive folder for saved PDFs
+```
+
+PDF Creation Flow:
+```
+Frontend: generatePDF()
+→ Backend: createPDFQuote(quoteData)
+→ buildPDFHTML() creates complete HTML string
+→ Utilities.newBlob(html, MimeType.HTML)
+→ blob.getAs(MimeType.PDF)
+→ Save to Drive folder "PSI Quote Tool - Generated PDFs"
+→ Return download URL
+```
+
+Implementation Tasks:
+□ Create PDF.js with all PDF generation functions
+□ Update Index.html - replace generatePDF() placeholder with real implementation
+□ Add Screen 4 to Index.html for post-PDF options
+□ Add print/PDF styles to Styles.html (Section 11)
+□ Test PDF generation with test function
+□ Sync to Apps Script and test end-to-end
+
+File Naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
+
+Page Break Handling: If locations > 30, split sites table across pages
+
+Brand Handling: Dynamic colors based on Tune vs Exact
+
+Testing Plan:
+1. Single location quote (Tier 1)
+2. Multi-location quote (5 locations)
+3. Large quote (20+ locations) - verify page breaks
+4. Tier 3 quote (60/72 month terms)
+5. Both brands (Tune Energy, Exact Water)
+6. Visual comparison: PDF vs Screen 3 preview
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -575,20 +629,25 @@ Note: Phase B Step 11 will include comprehensive browser testing.
 
 9. Next Session Priorities
 
-1. **Begin Phase C: PDF Generation** (HIGH PRIORITY)
-   - Research PDF generation options for Apps Script
-   - Generate PDF from Screen 3 HTML content
-   - Match on-screen styling exactly
+1. **Create PDF.js** (HIGH PRIORITY - NEXT TASK)
+   - Create new file with all PDF generation functions
+   - Main function: createPDFQuote(quoteData)
+   - Helper functions for building HTML sections
+   - Use HTML to Blob conversion approach
 
-2. **Email Delivery System**
-   - Implement customer email (editable template)
-   - Implement Steve notification email
-   - PDF attachment handling
+2. **Update Index.html for PDF**
+   - Replace generatePDF() placeholder (line 669-671) with real implementation
+   - Add success/error handlers
+   - Add Screen 4 for post-PDF options
 
-3. **Post-Send Workflow**
-   - Download PDF option
-   - Generate another quote option
-   - Save to QuoteLog
+3. **Add Print Styles**
+   - Section 11 in Styles.html
+   - Print-optimized CSS for PDF output
+
+4. **Test and Deploy**
+   - Test with various quote scenarios
+   - Sync to Apps Script with clasp push
+   - Verify PDF output matches Screen 3
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -637,9 +696,17 @@ Version 2.0 - January 16, 2026
 - Transitioned to Claude Code for development workflow
 - Disabled dummy test data for Steve's Milestone 2 review
 
+Version 2.1 - January 16, 2026
+- Entered plan mode for Phase C PDF generation
+- Researched PDF generation options (HTML to Blob, Google Docs, external services)
+- Selected HTML to Blob Direct Conversion approach (free, native Google services)
+- Created detailed implementation plan with function structure
+- Plan approved - ready to begin coding PDF.js
+- GitHub repo: https://github.com/maddsdad/psi-quote-tool
+
 ═══════════════════════════════════════════════════════════════════════════════
 
-END OF BUILD PLAN v2.0
+END OF BUILD PLAN v2.1
 Last Updated: January 16, 2026
-Current Phase: C (PDF Generation & Email Delivery) - Not Started
-Next Milestone: PDF Generation (Step 12)
+Current Phase: C (PDF Generation & Email Delivery) - IN PROGRESS
+Next Task: Create PDF.js file with PDF generation functions
