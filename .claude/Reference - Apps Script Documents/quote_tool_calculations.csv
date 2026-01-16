@@ -1,0 +1,45 @@
+﻿Item ID,Back End Item,UI Facing Item Name,Input Type,Calc,Data Type,Display Format,Sample (from Steve Sheet), Excel Calc Sample ,Required/ Optional,Validation Rules,Display Order,Section,Notes
+A,Monthly_Spend,Monthly Spend,User Input,,Currency,"$#,##0.00","$8,630.00"," $8,630.00 ",Required,Must be > 0,1,Inputs,Customer's current monthly electricity spend
+B,Tune_Savings,Tune Energy Savings,User Input,,Percentage,#0%,10%,10%,Required,Must be 0-100%,2,Inputs,User input amount with every quote.
+C,Monthly_Spend_Tune,Tune Energy Spend,Calc,A*(1-B),Currency,"$#,##0.00","$7,767.00"," $7,767.00 ",Required,Auto-calculated,3,Inputs,Monthly spend after savings applied
+D,Gross_Savings_Per_Mo,Gross Savings / Mo,Calc,A-C,Currency,"$#,##0.00",$863.00, $863.00 ,Required,Auto-calculated,4,Inputs,Gross monthly savings before lease payment
+E,Equipment_Cost,Equipment Cost,User Input,,Currency,"$#,##0.00","$17,000.00"," $17,000.00 ",Required,Must be > 0,5,Inputs,Total cost of equipment to be financed
+F,T36_Mo_Rental_Per_Mo,36 Month - Term Monthly Rental,Calc,E*RateFactor,Currency,"$#,##0.00",$556.49, $556.49 ,Required,Auto-calculated,6,36-Month,Rate factor lookup in rate table based on Equipment Cost
+G,T36_Net_Savings_Per_Mo,36 Month - Net Savings / Month,Calc,D-F,Currency,"$#,##0.00",$306.51, $306.51 ,Required,Auto-calculated,7,36-Month,Net monthly savings (gross savings minus lease)
+H,T36_Net_Savings_Per_Year,36 Month - Net Savings / Year,Calc,G*12,Currency,"$#,##0.00","$3,678.11"," $3,678.10 ",Optional,Auto-calculated,8,36-Month,Annual net savings during lease term
+I,T36_Net_Savings_3YR,36 Month - Net Savings / 3 Years,Calc,H*3,Currency,"$#,##0.00","$11,034.32"," $11,034.30 ",Required,Auto-calculated,9,36-Month,Total net savings over 36-month lease term
+J,T36_Net_Savings_Pct_3YR,36 Month - Net Savings % / 3 Years,Calc,I/(A*36),Percentage,#0.0%,3.6%,3.55%,Optional,Auto-calculated,10,36-Month,Net savings as % of total energy spend over 3 years
+K,T36_Net_Savings_Mo37,36 Month - Net Savings / Month - Month 37,Calc,D,Currency,"$#,##0.00",$863.00, $863.00 ,Required,Auto-calculated,11,36-Month,Monthly savings after lease ends (equals gross savings)
+L,T36_Net_Savings_Mo37_60,36 Month - Net Savings / Months 37-60,Calc,K*24,Currency,"$#,##0.00","$20,712.00"," $20,712.00 ",Required,Auto-calculated,12,36-Month,Cumulative savings for months 37-60 (post-lease)
+M,T36_Net_Savings_Pct_Mo37_60,36 Month - Net Savings % / Months 37-60,Calc,L/(A*24),Percentage,#0.0%,10.0%,10.0%,Optional,Auto-calculated,13,36-Month,Savings as % of energy spend for months 37-60
+N,T36_Net_Savings_5YR,36 Month - Net Savings / 5 Years,Calc,I+L,Currency,"$#,##0.00","$31,746"," $31,746.30 ",Required,Auto-calculated,14,36-Month,Total net savings over 5 years (60 months)
+O,T36_Net_Savings_Pct_5YR,36 Month - Net Savings % / 5 Years,Calc,N/(A*60),Percentage,#0.0%,6.1%,6.1%,Optional,Auto-calculated,15,36-Month,Net savings as % of total energy spend over 5 years
+P,T36_Net_Savings_10YR,36 Month - Net Savings / 10 Years,Calc,I+(K*84),Currency,"$#,##0.00","$83,526"," $83,526.30 ",Required,Auto-calculated,16,36-Month,Total net savings over 10 years (120 months)
+Q,T36_Net_Savings_Pct_10YR,36 Month - Net Savings % / 10 Years,Calc,P/(A*120),Percentage,#0.0%,8.1%,8.1%,Optional,Auto-calculated,17,36-Month,Net savings as % of total energy spend over 10 years
+R,T36_ROI_Mo1,36 Month - ROI at Month 1,Calc,G/F,Percentage,#0.0%,55.1%,55.1%,Required,Auto-calculated,18,36-Month,Return on investment after 1st lease payment
+S,T36_ROI_Mo60,36 Month - ROI at Month 60,Calc,N/(F*36),Percentage,#0.0%,158.4%,158.5%,Required,Auto-calculated,19,36-Month,ROI at 5 years vs total lease payments made
+T,T36_ROI_Mo120,36 Month - ROI at Month 120,Calc,P/(F*36),Percentage,#0.0%,416.8%,416.9%,Required,Auto-calculated,20,36-Month,ROI at 10 years vs total lease payments made
+U,T60_Mo_Rental_Per_Mo,60 Month - Term Monthly Rental,Calc,E*RateFactor,Currency,"$#,##0.00",$360.40, $360.39 ,Required,Auto-calculated,21,60-Month,Rate factor lookup in rate table based on Equipment Cost
+V,T60_Net_Savings_Per_Mo,60 Month - Net Savings / Month,Calc,D-U,Currency,"$#,##0.00",$502.60, $502.61 ,Required,Auto-calculated,22,60-Month,Net monthly savings (gross savings minus lease)
+W,T60_Net_Savings_Per_Year,60 Month - Net Savings / Year,Calc,V*12,Currency,"$#,##0.00","$6,031.20"," $6,031.34 ",Optional,Auto-calculated,23,60-Month,Annual net savings during lease term
+X,T60_Net_Savings_5YR,60 Month - Net Savings / 5 Years,Calc,W*5,Currency,"$#,##0.00","$30,156.00"," $30,156.71 ",Required,Auto-calculated,24,60-Month,Total net savings over 60-month lease term
+Y,T60_Net_Savings_Pct_5YR,60 Month - Net Savings % / 5 Years,Calc,X/(A*60),Percentage,#0.0%,5.8%,5.8%,Optional,Auto-calculated,25,60-Month,Net savings as % of total energy spend over 5 years
+Z,T60_Net_Savings_Mo61,60 Month - Net Savings / Month - Month 61,Calc,D,Currency,"$#,##0.00",$863.00, $863.00 ,Required,Auto-calculated,26,60-Month,Monthly savings after lease ends (equals gross savings)
+AA,T60_Net_Savings_Mo61_120,60 Month - Net Savings / Months 61-120,Calc,Z*60,Currency,"$#,##0.00","$51,780.00"," $51,780.00 ",Required,Auto-calculated,27,60-Month,Cumulative savings for months 61-120 (post-lease)
+AB,T60_Net_Savings_10YR,60 Month - Net Savings / 10 Years,Calc,X+AA,Currency,"$#,##0.00","$81,936"," $81,936.71 ",Required,Auto-calculated,28,60-Month,Total net savings over 10 years (120 months)
+AC,T60_Net_Savings_Pct_10YR,60 Month - Net Savings % / 10 Years,Calc,AB/(A*120),Percentage,#0.0%,7.9%,7.9%,Optional,Auto-calculated,29,60-Month,Net savings as % of total energy spend over 10 years
+AD,T60_ROI_Mo1,60 Month - ROI at Month 1,Calc,V/U,Percentage,#0.0%,139.5%,139.5%,Required,Auto-calculated,30,60-Month,Return on investment after 1st lease payment
+AE,T60_ROI_Mo60,60 Month - ROI at Month 60,Calc,X/(U*60),Percentage,#0.0%,139.4%,139.5%,Required,Auto-calculated,31,60-Month,ROI at 5 years vs total lease payments made
+AF,T60_ROI_Mo120,60 Month - ROI at Month 120,Calc,AB/(U*60),Percentage,#0.0%,378.9%,378.9%,Required,Auto-calculated,32,60-Month,ROI at 10 years vs total lease payments made
+AG,T72_Mo_Rental_Per_Mo,72 Month - Term Monthly Rental,Calc,E*RateFactor,Currency,"$#,##0.00",N/A, $306.10 ,Required,Auto-calculated,33,72-Month,Rate factor lookup in rate table based on Equipment Cost
+AH,T72_Net_Savings_Per_Mo,72 Month - Net Savings / Month,Calc,D-AG,Currency,"$#,##0.00",N/A, $556.90 ,Required,Auto-calculated,34,72-Month,Net monthly savings (gross savings minus lease)
+AI,T72_Net_Savings_Per_Year,72 Month - Net Savings / Year,Calc,AH*12,Currency,"$#,##0.00",N/A," $6,682.76 ",Optional,Auto-calculated,35,72-Month,Annual net savings during lease term
+AJ,T72_Net_Savings_6YR,72 Month - Net Savings / 6 Years,Calc,AI*6,Currency,"$#,##0.00",N/A," $40,096.53 ",Required,Auto-calculated,36,72-Month,Total net savings over 72-month lease term
+AK,T72_Net_Savings_Pct_6YR,72 Month - Net Savings % / 6 Years,Calc,AJ/(A*72),Percentage,#0.0%,N/A,6.5%,Optional,Auto-calculated,37,72-Month,Net savings as % of total energy spend over 6 years
+AL,T72_Net_Savings_Mo73,72 Month - Net Savings / Month - Month 73,Calc,D,Currency,"$#,##0.00",N/A, $863.00 ,Required,Auto-calculated,38,72-Month,Monthly savings after lease ends (equals gross savings)
+AM,T72_Net_Savings_Mo73_120,72 Month - Net Savings / Months 73-120,Calc,AL*48,Currency,"$#,##0.00",N/A," $41,424.00 ",Required,Auto-calculated,39,72-Month,Cumulative savings for months 73-120 (post-lease)
+AN,T72_Net_Savings_10YR,72 Month - Net Savings / 10 Years,Calc,AJ+AM,Currency,"$#,##0.00",N/A," $81,520.53 ",Required,Auto-calculated,40,72-Month,Total net savings over 10 years (120 months)
+AO,T72_Net_Savings_Pct_10YR,72 Month - Net Savings % / 10 Years,Calc,AN/(A*120),Percentage,#0.0%,N/A,7.9%,Optional,Auto-calculated,41,72-Month,Net savings as % of total energy spend over 10 years
+AP,T72_ROI_Mo1,72 Month - ROI at Month 1,Calc,AH/AG,Percentage,#0.0%,N/A,181.9%,Required,Auto-calculated,42,72-Month,Return on investment after 1st lease payment
+AQ,T72_ROI_Mo60,72 Month - ROI at Month 60,Calc,(AI*5)/(AG*60),Percentage,#0.0%,N/A,181.9%,Required,Auto-calculated,43,72-Month,ROI at 5 years vs lease payments made through month 60
+AR,T72_ROI_Mo120,72 Month - ROI at Month 120,Calc,AN/(AG*72),Percentage,#0.0%,N/A,369.9%,Required,Auto-calculated,44,72-Month,ROI at 10 years vs total lease payments made

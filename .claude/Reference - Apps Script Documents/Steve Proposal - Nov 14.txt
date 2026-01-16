@@ -1,0 +1,154 @@
+Proposal
+Lease Quoting Tool for Partners
+
+Steve,											November 14, 2025
+I have spent at least 25 hours researching the best possible approach for the lease quoting tool.   I have explored this as thoroughly as I think necessary and fed specs and desired outcomes into different AI models multiple times.  My initial estimate when we spoke on the phone about this was anywhere from $15,000 to over $30,000 subject to further investigation.  
+Going through this process has reminded me of the many times we talked with Kevin Moshayedi about development costs for EPIK.  It was so easy for costs to get out of control, for scope and deliverables aligned to goals to become vague.  I experienced something similar at Granite when I was directing the work of one of Kevin’s developers when we were working on the Epik Install Wizard.  Custom software can be extremely difficult to keep within budget, deliver on time and with desired functions.  And I know that managing developers is a challenge (just ask Kevan) because they tend to have a mind of their own and interpret things how they interpret them which causes reworks, delay and added cost.  
+The True Cost of Custom Development.  Estimates for this project.
+* Upfront development: $15,000-30,000.  Possibly more.
+* Hosting and infrastructure: $50-200/month ongoing
+* SSL certificates and domain management: $100-300/year
+* Regular security updates and patches: $1,000-2,000/year
+* Bug fixes and maintenance: $1,500-3,000/year
+* Making changes when your needs evolve: $125-150/hour
+The Quality and Risk Problems:
+* Developer quality is a gamble - you often do not know what you are getting until thousands of dollars spent.
+* Many developers underbid to win the job, then cut corners or deliver poor code
+* If the original developer disappears, finding someone to maintain their code is expensive and difficult
+* Custom code often has hidden bugs that only surface after launch
+* No guarantee the developer understands lease financing or business requirements
+* Timeline estimates are frequently wrong 
+The Timeline and Complexity Reality:
+* Traditional web development requires coordinating multiple systems: frontend, backend, database, hosting, email service
+* Each integration point is an opportunity for things to break and this is where developers are really needed
+* Testing across browsers, devices, and scenarios can add weeks to the timeline
+* Deployment and launch involve technical complexity most business owners do not want to deal with
+* After launch, you are responsible for keeping everything running and updated (i.e., paying for it)
+
+Most concerning is you become dependent on the developer. When you need changes in 6 months, you are either stuck paying their rates (often higher for maintenance than development) or trying to find a new developer willing to work on someone else's code (which they typically charge a premium for because they must learn the system first).
+After looking at various options I found what is probably the best way to approach this.  It accomplishes everything you need while avoiding every single one of these developer-related problems. No hosting headaches, no developer dependency, no complexity - just a tool that works.  
+Recommendation: Google Apps Script Platform
+I am proposing we build this using Google Apps Script platform. This is not a compromise or a shortcut - it is a better approach for a tool like this. Here is why:
+Infrastructure & Reliability
+* Runs on Google servers (free, secure, 99.9% uptime)
+* No hosting costs, ever
+* No security updates needed - Google handles automatically
+* Works on any device with a browser
+* Automatic backups and disaster recovery
+* Enterprise-grade infrastructure without enterprise costs
+Hybrid Approach
+I will build the core functionality myself—the forms, business logic, calculations, and data flow. That is where most of the work and value is.  Leveraging AI tools I can develop the underlying code.  For specialized components like PDF generation and email integration, I will bring in specialists for specific tasks rather than hiring an expensive full-time developer for all development.  There are many of these types of developers available for contracting projects online.  I will search for and vet out the right developer depending on the need at the time.  Likely need will be a Google Apps Script certified developer with PDF generation experience.  This gives us custom functionality at a fraction of traditional development costs.
+This hybrid approach means you get the best of both worlds: Custom business logic tailored to what we need built on Google’s very reliable platform that Google maintains and secures for free.
+
+Deliverables
+Includes:
+* Fully functional quoting tool for partner reps
+* Shows 36- and 60-month quote comparison for < $100k and > $100k < $500k equipment amounts
+* This proposal assumes that most quotes would be in these two price ranges.  
+* Adding quoting for 60 and 72-month terms over $500k would add to the project cost.
+* Clean customer-facing PDFs (this is one of the most challenging parts of this project)
+* All the calculations and financial projections you specified
+* Fully editable rate factor table.  Can update rate factors at any time without support
+* Multi-location support (1-20 locations per quote)
+* Quote email delivery
+* Zero hosting or infrastructure costs (forever)
+* Extremely low maintenance requirements
+* Tool you own forever (low to no subscription costs)
+* No single developer dependency since it is built on the Google AppScript platform
+* Changes and updates are not nearly as expensive as maintaining custom development work
+Doesn’t Include (vs. $30K+ custom app):
+* Super polished user interface
+* Custom branding and design (aside from logo on PDF)
+* Native mobile apps (iOS/Android)
+* Advanced features like user accounts, quote history database, CRM integration
+This is a business tool built for function, not beauty. The customer-facing PDF will look professional and polished. The rep interface will be clean and straightforward—form-based rather than cutting-edge design. It provides 90% of the value at 30% of the cost while eliminating most headaches.
+
+Project Details
+Cost: 
+* $10,500 total 
+* Includes cost for 3rd party developers used.
+* If we need dynamic flexibility of also quoting equipment costs over $500k on 60 and 72-month terms the total cost would be $12,500.
+Timeline: 
+10 to 12 weeks from approval to launch.  If you agree now, I think we can have it deployed no later than the 2nd week of February, possibly sooner.
+Milestones and Payment Schedule:
+Table 1
+MilestoneAccomplished%AmountWeekDeadlineDepositProject Begins10%$1,050Week 0Nov 17Milestone 1Working calculator completed25%$2,625Week 3Dec 8Milestone 2Data entry system/visual added25%$2,625Week 8Jan 12Milestone 3PDF Generation Working25%$2,625Week 10Jan 26Milestone 4Scenario Testing – Final Delivery15%$1,575Week 12Feb 9
+
+
+
+Milestone Deliverables:
+* Milestone 1 – Working Google Sheet Calculator
+* Link to Google sheet
+* All calculations working
+* Enter test data and see calculations function
+* Editable rate factor table
+* Portfolio totals calculating
+* Milestone 2 – Data Entry System.  Web Form & Data Flow.
+* Web app link can be opened in browser
+* Clean, professional form
+* Enter # of locations, address, utility, energy & equipment costs, panels
+* Generate quote button
+* Milestone 3 – PDF Generation & Email Delivery
+* End-to-End Quote Generation
+* PDF output (customer facing)
+* Email delivery of PDF
+* Milestone 4 -Production-Ready Tool + Support
+* Fully Tested and polished
+* Relevant documentation completed and provided
+* Training completed
+* Live and ready for reps to use
+* 30-day post-launch support for any bugs or issues
+Post-Launch Support:
+* After the 30-day warranty period ongoing support at $100/hour. This covers:
+* Minor modifications and adjustments
+* Bug fixes for issues that arise from normal use
+* Assistance with questions about the tool
+* Small enhancements within the existing structure
+* Major feature additions or significant changes to business logic would be quoted separately as mini projects (see below).
+Scope & Limitations:
+This tool is designed specifically for quote generation. It will NOT include:
+* Quote history database or CRM functionality
+* User accounts with login credentials or user activity tracking
+* Customer-facing portal or self-service features
+* Integration with other business systems
+* Custom branding beyond basic professional design
+* Mobile apps (works in mobile browsers, but not native apps)
+* Analytics or reporting on quote data
+* Quote comparison tools or export to formats other than PDF
+* Customer portal for self-service quoting
+* Customer digital signature capture, quote acceptance or rejection tracking
+* Automated follow-up email reminders, calendaring or scheduling features
+* Custom domain name, API integration or offline functionality
+
+Any of the above features may be quoted and added in future phases if needed but would require separate project quotes based on complexity.  
+The Google platform recommended can accommodate the following additional features if desired along with estimated costs to implement (would require further spec review, investigation and actual quote).  See Table 2.
+
+Table 2
+FeatureEstimated CostEst. TimelineNotesQuote History Database$2,000 – 3,5002-3 WeeksUp to about 1,500 quotesCompany Logo & Branding$300 – 8003-5 DaysLogo + Custom colorsEmail Automation$1,500 – 2,5002-3 WeeksFollow-ups, RemindersBasic User Tracking$1,500 – 2,5002-3 WeeksTrack who created quotes, etc.Analytics Dashboard$2,000 – 4,0003-4 WeeksCharts, trends, statsExcel/CSV Export$500 – 1,2003-5 DaysDownload formatted spreadsheetMultiple PDF Templates$1,000 – 2,0002-3 WeeksDifferent formatsBasic CRM integration$2,000 - 3,0003-4 WeeksPush to Zoho deals, etc.Custom email templates$500 – 1,0003-5 DaysDifferent templates for different situationsQuote approval workflow$1,500 – 2,5001-2 WeeksEmail-based approval trackingAddress Autocomplete$500 – 7502-3 DaysGoogle Places for Autocomplete
+The following features would require a different platform altogether and custom development.  Here is where the base cost of $15,000 to $30,000 would come into play plus the following costs and timelines for the features listed (would require further spec review, investigation and actual quote).  See Table 3.
+
+Table 3
+FeatureEstimated CostEst. TimelineNotesNative Mobile Apps$18,000-25,0003-4 monthsiOS + Android appsPayment processing$5,000 – 8,0003-4 weeksAccept credit cardsComplex CRM integration$8,000 – 12,0004-6 weeksTwo-way sync, etc.E-signature integration$3,000 – 5,0002-3 weeksDocuSign, etc.Real-Time Collaboration$6,000 – 10,0004-6 weeksMulti-user editing, etc.
+
+
+
+
+Next Steps
+1. Review this proposal - Make sure it aligns with your needs
+2. We discuss any questions - I will clarify anything that is unclear.  Revise this document if needed.
+3. You approve the project - Simple agreement outlining scope and milestones
+4. Deposit - $1,050 to begin work
+5. I start immediately - Week 0 begins with Google Sheet setup and calculation logic
+I will provide weekly progress updates via email, and you will be able to see the tool taking shape throughout the development process.
+
+Agreed and Approved:
+
+
+_________________________________________		_____________________________________
+Steve Olsen							Matt Boyer
+
+________________________________________		_____________________________________
+Date								Date
+Page 2 of 2
+
+

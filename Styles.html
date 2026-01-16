@@ -1,0 +1,888 @@
+
+<style>
+/* ============================================
+   PSI QUOTE TOOL - MASTER STYLESHEET
+   Reorganized for Easy Navigation
+   ============================================ */
+
+
+/* ============================================
+   1. CSS VARIABLES (Brand Colors & Spacing)
+   ============================================ */
+:root {
+  /* Tune Energy Brand Colors */
+  --tune-blue: #0066CC;
+  --tune-light-blue: #E6F2FF;
+  
+  /* Exact Water Brand Colors */
+  --exact-blue: #0099CC;
+  --exact-light-blue: #E0F7FA;
+  
+  /* Neutral Colors */
+  --white: #FFFFFF;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+
+/* ============================================
+   2. GLOBAL RESET & BASE STYLES
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Calibri, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gray-900);
+  background-color: var(--gray-50);
+}
+
+
+/* ============================================
+   3. SHARED COMPONENTS (Used Across Screens)
+   ============================================ */
+
+/* --- Form Elements --- */
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  color: var(--gray-700);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"] {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--tune-blue);
+  box-shadow: 0 0 0 3px var(--tune-light-blue);
+}
+
+input::placeholder {
+  color: var(--gray-400);
+  font-style: italic;
+}
+
+/* --- Buttons --- */
+.btn {
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--tune-blue);
+  color: var(--white);
+}
+
+.btn-primary:hover {
+  background-color: #0052A3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-add-location {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-add-location:hover {
+  background-color: #218838;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.button-group {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.button-group.right {
+  justify-content: flex-end;
+}
+
+/* --- Cards --- */
+.card {
+  background-color: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.card.bg-light {
+  background-color: #E8EBF0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.card-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-sm);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--tune-blue);
+}
+
+/* --- Screen Management --- */
+.screen {
+  display: none;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Utility Classes --- */
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-lg {
+  margin-top: var(--space-lg);
+}
+
+.mb-md {
+  margin-bottom: var(--space-md);
+}
+
+
+/* ============================================
+   4. SCREEN 1: QUOTE SETUP
+   ============================================ */
+
+/* --- Container --- */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+/* --- App Header --- */
+.app-header {
+  background-color: var(--tune-blue);
+  color: var(--white);
+  padding: var(--space-lg);
+  margin: calc(var(--space-lg) * -1) calc(var(--space-lg) * -1) var(--space-lg);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  text-align: center;
+}
+
+.app-header p {
+  font-size: 14px;
+  opacity: 0.9;
+  text-align: center;
+}
+
+/* --- Quote Metadata --- */
+.quote-meta {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--gray-50);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+  font-size: 16px;
+  color: var(--gray-700);
+  font-weight: 600;
+}
+
+.quote-meta strong {
+  color: var(--gray-900);
+}
+
+/* --- Form Groups --- */
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+.form-group-horizontal {
+  display: grid;
+  grid-template-columns: 65px 1fr;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 10px;
+}
+
+.form-group-horizontal label {
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.form-group-wide-label {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 10px;
+}
+
+.form-group-wide-label label {
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* --- Two Card Row --- */
+.two-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+
+/* ============================================
+   5. SCREEN 2: LOCATION ENTRY
+   ============================================ */
+
+/* --- Wide Container --- */
+.container-wide {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+/* --- Location Table --- */
+.locations-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto 20px auto;
+  max-width: 1050px;
+}
+
+.locations-table thead {
+  background: var(--tune-blue);
+  color: white;
+}
+
+.locations-table th {
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+}
+
+.locations-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.locations-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.locations-table input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.locations-table input:focus {
+  outline: none;
+  border-color: var(--tune-blue);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* --- Remove Button --- */
+.remove-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.remove-btn:hover {
+  background: #c82333;
+}
+
+
+/* ============================================
+   6. SCREEN 3: QUOTE PREVIEW
+   ============================================ */
+
+/* --- Main Container --- */
+.quote-preview-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 45px;
+  background: #d7d8de
+}
+
+.quote-preview-container h2 {
+  font-size: 18px;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.preview-instructions {
+  text-align: center;
+  color: var(--gray-700);
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+#quotePreviewContent {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+
+/* --- Header Section (Title + Logo + Metadata) --- */
+.quote-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-lg);
+  background: white;
+  border-radius: var(--radius-md);
+}
+
+.quote-title-block {
+  flex: 1;
+}
+
+.quote-main-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0066CC;
+  line-height: .7;
+  margin: 0;
+}
+
+.quote-main-title span {
+  display: block;
+}
+
+.quote-logo-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-left: var(--space-lg);
+}
+
+.quote-logo-block img {
+  max-width: 200px;
+  max-height: 80px;
+  object-fit: cover;
+  margin-bottom: 10px;
+  margin-left: auto;
+}
+
+/* --- Quote Metadata Box --- */
+.quote-metadata-box {
+  border: 1px solid #0066CC;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meta-row {
+  display: flex;
+  font-size: 11px;
+  border-bottom: 1px solid #ccc;
+}
+
+.meta-row:last-child {
+  border-bottom: none;
+}
+
+.meta-label {
+  font-weight: 600;
+  color: #333;
+  background: #E6F2FF;
+  padding: 2px 8px;
+  width: 80px;
+  border-right: 1px solid #ccc;
+}
+
+.meta-value {
+  font-weight: 700;
+  color: #0066CC;
+  text-align: right;
+  padding: 2px 8px;
+  flex: 1;
+  background: white;
+}
+
+/* --- Warning Banner --- */
+.warning-banner {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  color: #856404;
+  font-size: 14px;
+}
+
+/* --- Two-Column Layout --- */
+.quote-two-column {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 12px;
+}
+ 
+.quote-left-column,
+.quote-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+
+/* ============================================
+   7. SCREEN 3: INFO BOXES (General Styles) 
+   ===========================================*/
+
+  /* --- Box Container --- */
+    .info-box {
+      border: .5px solid #000000;
+      border-radius: 0;
+      overflow: hidden;
+      margin-bottom: 2px;
+    }
+
+
+/* --- Box Headers (All) --- */
+.box-header {
+  background: #0000ff;
+  color: white;
+  padding: 0px 0px;
+  font-weight: 700;
+  font-size: 19px;
+  text-align: center;
+}
+
+/* --- Box Content Area --- */
+.box-content {
+  padding: 0px;
+  background: white;
+}
+
+/* --- Info Rows (Label + Value pairs) --- */
+.info-row {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  padding: 0;
+  border-top: .5px solid #000000;
+  border-left: .5px solid #000000;
+  border-right: .5px solid #000000;
+  min-height: 18px;
+  align-items: stretch;
+}
+
+.info-row .label {
+  font-weight: 700;
+  color: #000;
+  font-size: 10px;
+  text-align: right;
+  background: #bfeaf9;
+  padding: 3px 6px;
+  border-right: .5px solid #000000;
+  border-bottom: .5px solid #000000;
+}
+
+.info-row .value {
+  color: #000;
+  font-size: 10px;
+  font-weight: 400;
+  text-align: right;
+  background: #dbf3fc;
+  padding: 3px 6px;
+  border-bottom: .5px solid #000000;
+}
+
+
+/* ============================================
+   8. SCREEN 3: SPECIFIC BOX CUSTOMIZATION
+   ============================================ */
+
+/* --- LEFT COLUMN: Box 1 - Rental Quote Presented To --- */
+.quote-left-column .info-box:nth-child(1) .box-header {
+  background: #0000ff;
+  font-size: 14px;
+  padding: 1px 3px
+}
+
+/* --- LEFT COLUMN: Box 2 - Quote Highlights --- */
+.quote-left-column .info-box:nth-child(2) .box-header {
+  background: #007d7d;
+  padding: 1px 3px
+}
+
+.quote-left-column .info-box:nth-child(2) .info-row .label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0000ff;
+  text-align: left;
+  background: #d9edff;
+}
+
+.quote-left-column .info-box:nth-child(2) .info-row .value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0000ff;
+  text-align: center;
+  background: #d9edff;
+}
+
+.quote-left-column .info-box:nth-child(2) .info-row {
+  borders: 1px solid #000000;
+  background: #d9edff;
+}
+
+/* --- LEFT COLUMN: Box 3 - Sites in this Quote --- */
+.quote-left-column .info-box:nth-child(3) .box-header {
+  background: #007d7d;
+}
+
+/* --- RIGHT COLUMN: Box 1 - Presented by Tune Energy --- */
+.quote-right-column .info-box:nth-child(1) .box-header {
+  background: #0000ff;
+  font-size: 14px;
+  padding: 1px 3px
+}
+
+/* --- RIGHT COLUMN: Box 2 - Rental Term Options & Monthly ROI --- */
+.quote-right-column .info-box:nth-child(2) .box-header {
+  background: #007d7d;
+  padding: 1px 3px
+}
+
+
+/* ============================================
+   9. SCREEN 3: SITES TABLE
+   ============================================ */
+.sites-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0;
+  border: .5px solid #000000;
+}
+
+.sites-table thead {
+  background: #7fd0fc;
+  color: black;
+  text-align: center;
+}
+
+.sites-table th {
+  padding: 0px 0px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  border: .5px solid #000000;
+  text-align: center;
+}
+
+.sites-table td {
+  padding: 3px 8px;
+  font-size: 11px;
+  min-height: 21px;
+  border: .5px solid #000000;
+  font-size: 12px;
+  color: #0000ff;
+}
+
+.sites-table tbody tr td {
+  border-bottom: .5px solid #000000;
+  background: #d9edff
+}
+
+/* Empty placeholder rows look the same */
+.sites-table .empty-row td {
+  background: #d9edff;
+}
+
+/* ============================================
+   10. SCREEN 3: FINANCIAL TABLES
+   ============================================ */
+
+/* --- Term Blocks --- */
+.term-block {
+  margin-bottom: 12px;
+  padding-bottom: 0px;
+  border-bottom: none;
+  margin-top: 6px;
+}
+
+.term-block:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* --- Term Headers (36-Month, 60-Month, 72-Month) --- */
+.term-block h4 {
+  background: #3978b8;
+  color: #ffff00;
+  padding: 3px 10px;
+  margin: 0 0 6px 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 0;
+  text-align: center;
+}
+
+.term-block table + table {
+  border-top: none;
+}
+
+/* --- Financial Tables --- */
+.financial-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0px;
+  font-size: 12px;
+  color: #000;
+  border: .5px solid #000000;
+  table-layout: fixed;
+}
+
+.financial-table thead {
+  background: #7fd0fc;
+  color: #000;
+}
+
+.financial-table th {
+  padding: 3px 6px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  border: .5px solid #000000;
+}
+
+.financial-table tbody tr {
+  background: #d9edff;
+}
+
+.financial-table td {
+  padding: 3px 6px;
+  border: .5px solid #000000;
+  min-height: 21px;
+}
+
+/* Header row columns */
+.financial-table thead th:nth-child(2) {
+  width: 20%;
+  text-align: center !important;
+}
+
+.financial-table thead th:nth-child(3) {
+  width: 30%;
+  text-align: center !important;
+}
+
+/* Body row columns */
+.financial-table tbody td:nth-child(2) {
+  text-align: center !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.financial-table tbody td:nth-child(3) {
+  text-align: center !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* --- ROI Metrics Table --- */
+.roi-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.roi-table td.roi-label {
+  background-color: #7fd0fc;
+  font-weight: bold;
+  text-align: center;
+  padding: 1px 8px !important;
+  width: 60%;
+}
+
+.roi-table td.roi-value {
+  font-weight: bold;
+  font-size: 15px;
+  color: #0000ff;
+  text-align: center;
+  padding: 1px 8px !important;
+  width: 40%;
+}
+
+/* --- Footnotes --- */
+.footnotes {
+  margin-top: 0;
+  padding-top: 0;
+  background: #f9f9f9;
+ // border-left: 3px solid #0066CC;
+  font-size: 10px;
+  color: var(--gray-700);
+  line-height: 1.3;
+}
+
+.footnotes p {
+  font-size: 10px;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* --- Custom Alert Modal --- */
+.custom-alert-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-alert-overlay.active {
+  display: flex;
+}
+
+.custom-alert-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.custom-alert-box p {
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.custom-alert-box button {
+  min-width: 100px;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* --- Agreement Modal --- */
+.agreement-box {
+  max-width: 500px;
+}
+
+.agreement-message {
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.btn-agree {
+  background-color: #dc3545;
+  color: white;
+  font-weight: bold;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+.btn-agree:hover {
+  background-color: #c82333;
+}
+
+</style>

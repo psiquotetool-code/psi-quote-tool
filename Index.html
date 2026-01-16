@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>PSI Quote Tool</title>
+  <?!= include('Styles'); ?>
+</head>
+<body>
+
+<!-- Custom Alert Modal -->
+<div id="customAlert" class="custom-alert-overlay">
+  <div class="custom-alert-box">
+    <p id="customAlertMessage"></p>
+    <button onclick="closeCustomAlert()" class="btn btn-primary">OK</button>
+  </div>
+</div>
+
+<!-- Custom Confirm Modal -->
+<div id="customConfirm" class="custom-alert-overlay">
+  <div class="custom-alert-box">
+    <p id="customConfirmMessage"></p>
+    <div class="confirm-buttons">
+      <button onclick="confirmNo()" class="btn btn-secondary">Cancel</button>
+      <button onclick="confirmYes()" class="btn btn-danger">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- Agreement Modal -->
+<div id="agreementModal" class="custom-alert-overlay active">
+  <div class="custom-alert-box agreement-box">
+    <p class="agreement-message">
+      <strong>IMPORTANT!</strong><br><br>
+      While using this quote tool you MUST use the navigation buttons built into the quote tool to navigate from screen to screen.<br><br>
+      If you use your browser's back, refresh or forward buttons to navigate <strong>YOU WILL LOSE YOUR DATA</strong> and have to start your quote over.
+    </p>
+    <button onclick="acceptAgreement()" class="btn btn-agree">I agree to only use the quote tool buttons to navigate between screens while using this quote tool.</button>
+  </div>
+</div>
+<!-- ========== SCREEN 1: QUOTE SETUP ========== -->
+<div id="screen1" class="screen active">
+  <div class="container">
+    <div class="app-header">
+      <h1 id="brandTitle"><?= brand === 'EXACT' ? 'Exact Water' : 'Tune Energy' ?> Quote Tool</h1>
+      <p>Equipment Rental Quote Generator</p>
+    </div>
+    
+    <div class="quote-meta">
+      <div><strong>Quote Date:</strong> <?= quoteDate ?></div>
+      <div><strong>Quote Number:</strong> <span id="quoteNumberDisplay"><?= quoteNumber ?></span></div>
+    </div>
+    
+    <div class="card bg-light">
+      <div class="card-header">Quote Created For</div>
+      <div class="form-group-wide-label">
+        <label>Company Name</label>
+        <input type="text" id="customerCompany" placeholder="Enter Company Name Here" value="">
+      </div>
+    </div>
+    
+    <input type="hidden" id="companyName" value="<?= brand === 'EXACT' ? 'Exact Water' : 'Tune Energy' ?>">
+    <input type="hidden" id="quoteDate" value="<?= quoteDate ?>">
+    <input type="hidden" id="quoteNumber" value="<?= quoteNumber ?>">
+    
+    <div class="two-card-row">
+      <div class="card bg-light">
+        <div class="card-header">Customer Contact</div>
+        <div class="form-group-horizontal">
+          <label>Name</label>
+          <input type="text" id="customerContact" value="">
+        </div>
+        
+        <div class="form-group-horizontal">
+          <label>Phone</label>
+          <input type="text" id="customerPhone" onblur="formatPhone(this)" value="">
+        </div>
+        
+        <div class="form-group-horizontal">
+          <label>Email</label>
+          <input type="email" id="customerEmail" value="">
+        </div>
+      </div>
+      
+      <div class="card bg-light">
+        <div class="card-header">Rep Contact</div>
+        <div class="form-group-horizontal">
+          <label>Name</label>
+          <input type="text" id="repName" value="">
+        </div>
+        
+        <div class="form-group-horizontal">
+          <label>Phone</label>
+          <input type="text" id="repPhone" onblur="formatPhone(this)" value="">
+        </div>
+        
+        <div class="form-group-horizontal">
+          <label>Email</label>
+          <input type="email" id="repEmail" value="">
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="button-group" style="justify-content: center;">
+      <button type="button" class="btn btn-primary" onclick="goToScreen2()">NEXT: Add and Edit Locations for Quote</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SCREEN 2: LOCATION ENTRY ========== -->
+<div id="screen2" class="screen">
+  <div class="container-wide">
+    <!-- Header matching Screen 1 -->
+    <div class="app-header">
+      <h1 id="brandTitle"><?= brand === 'EXACT' ? 'Exact Water' : 'Tune Energy' ?> Quote Tool</h1>
+      <p>Equipment Rental Quote Generator</p>
+    </div>
+    
+    <!-- Quote Metadata matching Screen 1 -->
+    <div class="quote-meta">
+      <div><strong>Customer:</strong> <span id="displayCustomer"></span></div>
+      <div><strong>Quote Date:</strong> <span id="displayQuoteDate"></span></div>
+      <div><strong>Quote #:</strong> <span id="displayQuoteNum"></span></div>
+    </div>
+    
+    <!-- Location Entry Card -->
+    <div class="card bg-light">
+      <div class="card-header">Location Details</div>
+      
+      <table class="locations-table" id="locationTable">
+        <thead>
+          <tr>
+            <th style="width: 3%;">#</th>
+            <th style="width: 25%;">Address/Site Name</th>
+            <th style="width: 15%;">Utility Provider</th>
+            <th style="width: 12%;">Monthly Spend</th>
+            <th style="width: 12%;">Equipment Cost</th>
+            <th style="width: 10%;">Savings %</th>
+            <th style="width: 10%;" id="panelsMetersHeader"># Panels</th>
+            <th style="width: 8%;"></th>
+          </tr>
+        </thead>
+        <tbody id="locationBody">
+          <!-- Rows added dynamically -->
+        </tbody>
+      </table>
+      
+      <div style="margin-top: 16px;">
+        <button type="button" class="btn btn-add-location" onclick="addLocationRow()" style="width: 100%;">Add a Location</button>
+      </div>
+    </div>
+    
+    <!-- Navigation Buttons -->
+    <div class="button-group" style="justify-content: space-between;">
+      <button type="button" class="btn btn-secondary" onclick="goToScreen1()">← Back to Quote Setup</button>
+      <button type="button" class="btn btn-danger" onclick="startOver()">Start Over</button>
+      <button type="button" class="btn btn-primary" onclick="generateQuote()">NEXT: Generate Quote →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen 3: Quote Preview -->
+<div id="screen3" class="screen">
+  <div class="quote-preview-container">
+    
+<!-- Quote Header with Title and Logo -->
+<div class="quote-header-section">
+  <div class="quote-title-block">
+    <h1 class="quote-main-title">
+      <span id="quoteBrandName">Tune Energy</span><br>
+      Equipment Rental Quote
+    </h1>
+  </div>
+  <div class="quote-logo-block">
+    <img id="quoteLogo" src="" alt="Company Logo" style="max-width: 200px; max-height: 80px;">
+      <div class="quote-metadata-box">
+      <div class="meta-row"><span class="meta-label">Date:</span><span class="meta-value" id="quoteMetaDate"></span></div>
+      <div class="meta-row"><span class="meta-label">Quote #:</span><span class="meta-value" id="quoteMetaNumber"></span></div>
+      <div class="meta-row"><span class="meta-label">Valid Until:</span><span class="meta-value" id="quoteMetaValid"></span></div>
+    </div>
+  </div>
+</div>
+    
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <button type="button" class="btn btn-secondary" onclick="goToScreen2FromPreview()">← Back to Edit Locations</button>
+  <div style="text-align: center; flex: 1;">
+    <h2 class="section-title centered" style="margin: 0; color: #c4080e">Quote Preview</h2>
+    <p class="help-text centered" style="margin: 5px 0 0 0; color: #c4080e">Review your quote below. When ready, click "Generate PDF" to create the final document.</p>
+  </div>
+<button type="button" class="btn btn-primary" onclick="generatePDF()">Generate PDF →</button>
+</div>
+
+    <!-- Quote content will go here -->
+    <div id="quotePreviewContent"></div>
+    
+<!-- Navigation Buttons -->
+<div class="button-group" style="justify-content: space-between;">
+  <button onclick="goToScreen2FromPreview()" class="btn btn-secondary">← Back to Edit Locations</button>
+  <button onclick="generatePDF()" class="btn btn-primary">Generate PDF →</button>
+</div>
+  </div>
+</div>
+
+<script>
+// PHONE AUTO-FORMATTING
+function formatPhone(input) {
+  let value = input.value.replace(/\D/g, '');
+  if (value.length > 10) value = value.slice(0, 10);
+  if (value.length >= 6) {
+    value = value.slice(0,3) + '-' + value.slice(3,6) + '-' + value.slice(6);
+  } else if (value.length >= 3) {
+    value = value.slice(0,3) + '-' + value.slice(3);
+  }
+  input.value = value;
+}
+
+// CURRENCY FORMATTING
+function formatCurrency(e) {
+  let value = e.target.value.replace(/[^0-9.]/g, '');
+  if (value) {
+    const num = parseFloat(value);
+    if (!isNaN(num)) {
+      e.target.value = '$' + num.toLocaleString('en-US', {maximumFractionDigits: 0});
+    }
+  }
+}
+
+function removeCurrencyFormat(e) {
+  let value = e.target.value.replace(/[^0-9.]/g, '');
+  e.target.value = value;
+}
+
+// PERCENT FORMATTING
+function formatPercent(e) {
+  let value = e.target.value.replace(/[^0-9.]/g, '');
+  if (value) {
+    e.target.value = value + '%';
+  }
+}
+
+function removePercentFormat(e) {
+  e.target.value = e.target.value.replace('%', '');
+}
+
+// NUMBER FORMATTING (with commas) - formats as user types
+function formatNumberRealtime(e) {
+  // Remove all non-digits
+  let value = e.target.value.replace(/[^0-9]/g, '');
+  
+  // Format with commas
+  if (value) {
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+      e.target.value = num.toLocaleString('en-US');
+    }
+  }
+}
+
+function removeNumberFormat(e) {
+  e.target.value = e.target.value.replace(/,/g, '');
+}
+
+// NAVIGATION: Screen 1 to Screen 2
+function goToScreen2() {
+  // Validate required fields
+  const fields = [
+    {id: 'repName', name: 'Rep Name'},
+    {id: 'repPhone', name: 'Rep Phone'},
+    {id: 'repEmail', name: 'Rep Email'},
+    {id: 'customerCompany', name: 'Customer Company Name'},
+    {id: 'customerContact', name: 'Customer Contact Name'},
+    {id: 'customerPhone', name: 'Customer Phone'},
+    {id: 'customerEmail', name: 'Customer Email'},
+  ];
+  
+  for (let f of fields) {
+    if (!document.getElementById(f.id).value.trim()) {
+      showAlert('Please enter ' + f.name);
+      return;
+    }
+  }
+  
+  // Validate emails
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(document.getElementById('repEmail').value)) {
+    showAlert('Please enter a valid Rep Email');
+    return;
+  }
+  if (!emailRegex.test(document.getElementById('customerEmail').value)) {
+    showAlert('Please enter a valid Customer Email');
+    return;
+  }
+  
+  // Validate phones (10 digits)
+  const repPhone = document.getElementById('repPhone').value.replace(/\D/g, '');
+  if (repPhone.length !== 10) {
+    showAlert('Please enter a valid 10-digit Rep Phone');
+    return;
+  }
+  const custPhone = document.getElementById('customerPhone').value.replace(/\D/g, '');
+  if (custPhone.length !== 10) {
+    showAlert('Please enter a valid 10-digit Customer Phone');
+    return;
+  }
+  
+  // Update Screen 2 display
+  document.getElementById('displayCustomer').textContent = document.getElementById('customerCompany').value;
+  document.getElementById('displayQuoteDate').textContent = document.getElementById('quoteDate').value;
+  document.getElementById('displayQuoteNum').textContent = document.getElementById('quoteNumber').value;
+
+    // Set dynamic Panels/Meters header
+  const companyName = document.getElementById('companyName').value;
+  const panelsLabel = companyName === 'Tune Energy' ? '# Panels' : '# Meters';
+  document.getElementById('panelsMetersHeader').textContent = panelsLabel;
+  
+  // Add one location row if none exist
+  if (document.getElementById('locationBody').rows.length === 0) {
+  addLocationRow(true);  // Pass true to use dummy data for first row
+  }
+  
+  // Switch screens
+  document.getElementById('screen1').classList.remove('active');
+  document.getElementById('screen2').classList.add('active');
+}
+
+// NAVIGATION: Screen 2 to Screen 1
+function goToScreen1() {
+  document.getElementById('screen2').classList.remove('active');
+  document.getElementById('screen1').classList.add('active');
+}
+
+// BUILD LOCATION ROWS
+function buildLocationRows(count) {
+  const tbody = document.getElementById('locationBody');
+  const existingRows = tbody.rows.length;
+  
+  // Add rows if needed
+  for (let i = existingRows; i < count; i++) {
+    addLocationRow();
+  }
+}
+
+
+// ADD SINGLE LOCATION ROW
+function addLocationRow(useDummyData = false) {
+  const tbody = document.getElementById('locationBody');
+  const rowNum = tbody.rows.length + 1;
+
+
+  // Set values - use dummy data for first row if requested
+  // Commented out for Steve's milestone 2 testing.  Uncomment for milestone 3 work
+  // const address = (useDummyData && rowNum === 1) ? '123 Main Street, Irvine CA' : '';
+  // const utility = (useDummyData && rowNum === 1) ? 'SCE' : '';
+  // const spend = (useDummyData && rowNum === 1) ? '8630' : '';
+  // const equip = (useDummyData && rowNum === 1) ? '17000' : '';
+  // const savings = (useDummyData && rowNum === 1) ? '10' : '';
+  // const panels = (useDummyData && rowNum === 1) ? '13' : '';
+  
+// EMPTY VALUES FOR STEVE'S TESTING of milestone 2
+const address = '';
+const utility = '';
+const spend = '';
+const equip = '';
+const savings = '';
+const panels = '';
+
+
+  const row = tbody.insertRow();
+  row.innerHTML = `
+    <td style="text-align: center;">${rowNum}</td>
+    <td><input type="text" maxlength="200" placeholder="123 Main St, City" style="width: 350px;" value="${address}"></td>
+    <td><input type="text" maxlength="100" placeholder="SCE" style="width: 150px;" value="${utility}"></td>
+    <td><input type="text" class="currency-input" placeholder="8,630" style="width: 100px;" value="${spend}" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></td>
+    <td><input type="text" class="currency-input" placeholder="17,000" style="width: 110px;" value="${equip}" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></td>
+    <td><input type="text" class="percent-input" placeholder="10" style="width: 70px;" value="${savings}" oninput="this.value = this.value.replace(/[^0-9.]/g, '')"></td>
+    <td><input type="text" class="number-input" placeholder="13" style="width: 80px;" value="${panels}" oninput="formatNumberRealtime(event)"></td>
+    <td><button class="remove-btn" onclick="removeRow(this)">X</button></td>
+  `;
+  // Add formatting listeners to currency and percent fields
+  const currencyInputs = row.querySelectorAll('.currency-input');
+  currencyInputs.forEach(input => {
+    input.addEventListener('blur', formatCurrency);
+    input.addEventListener('focus', removeCurrencyFormat);
+  });
+  
+  const percentInputs = row.querySelectorAll('.percent-input');
+  percentInputs.forEach(input => {
+    input.addEventListener('blur', formatPercent);
+    input.addEventListener('focus', removePercentFormat);
+  });
+  
+  // THIS CODE WAS MISPLACED - NOW IT'S INSIDE THE FUNCTION
+  const numberInputs = row.querySelectorAll('.number-input');
+  numberInputs.forEach(input => {
+    input.addEventListener('focus', removeNumberFormat);
+  });
+}
+
+// REMOVE LOCATION ROW
+function removeRow(btn) {
+  const tbody = document.getElementById('locationBody');
+  if (tbody.rows.length <= 1) {
+    showAlert('Must have at least one location');
+    return;
+  }
+  const row = btn.closest('tr');
+  row.remove();
+  renumberRows();
+}
+
+// RENUMBER ROWS AFTER DELETION
+function renumberRows() {
+  const tbody = document.getElementById('locationBody');
+  for (let i = 0; i < tbody.rows.length; i++) {
+    tbody.rows[i].cells[0].textContent = i + 1;
+  }
+}
+
+// START OVER - CLEARS LOCATIONS ONLY
+function startOver() {
+  const message = `<strong>WARNING!!:</strong><br>
+Clicking OK will clear all location data but keep your rep and customer information from the first page.<br><br>
+<strong>This action is NOT reversable!</strong><br>
+<strong>You will lose ALL location data permanently!</strong><br><br>
+Are you sure you want to continue?`;
+  
+  showConfirm(message, function() {
+    document.getElementById('locationBody').innerHTML = '';
+    goToScreen1();
+  });
+}
+
+// GENERATE QUOTE - VALIDATES THEN CALLS BACKEND
+function generateQuote() {
+  const tbody = document.getElementById('locationBody');
+  
+  if (tbody.rows.length === 0) {
+    showAlert('Please add at least one location');
+    return;
+  }
+  
+  // Collect location data
+  const locations = [];
+  
+  for (let i = 0; i < tbody.rows.length; i++) {
+    const row = tbody.rows[i];
+    const inputs = row.querySelectorAll('input');
+    const rowNum = i + 1;
+    
+    // Validate each field
+    if (!inputs[0].value.trim()) {
+      showAlert('Row ' + rowNum + ': Please enter Address/Site Name');
+      return;
+    }
+    if (!inputs[1].value.trim()) {
+      showAlert('Row ' + rowNum + ': Please enter Utility Provider');
+      return;
+    }
+    
+    const spendValue = inputs[2].value.replace(/[$,]/g, ''); // Remove $ and commas
+    const spend = parseFloat(spendValue);
+    if (!spend || spend < 1 || spend > 250000) {
+      showAlert('Row ' + rowNum + ': Monthly Spend must be between $1 and $250,000');
+      return;
+    }
+    
+    const equipValue = inputs[3].value.replace(/[$,]/g, ''); // Remove $ and commas
+    const equip = parseFloat(equipValue);
+    if (!equip || equip < 1 || equip > 1000000) {
+      showAlert('Row ' + rowNum + ': Equipment Cost must be between $1 and $1,000,000');
+      return;
+    }
+    
+    const savingsValue = inputs[4].value.replace(/%/g, ''); // Remove % symbol
+    const savings = parseFloat(savingsValue);
+    if (isNaN(savings) || savings < 0 || savings > 50) {
+      showAlert('Row ' + rowNum + ': Savings % must be between 0 and 50');
+      return;
+    }
+    
+    const panelsValue = inputs[5].value.replace(/,/g, ''); // Remove commas
+    const panels = parseInt(panelsValue);
+    if (!panels || panels < 1 || panels > 2000) {
+      showAlert('Row ' + rowNum + ': Panels/Meters must be between 1 and 2,000');
+      return;
+    }
+    
+    // Add valid location to array
+    locations.push({
+      address: inputs[0].value.trim(),
+      utility: inputs[1].value.trim(),
+      monthlySpend: spend,
+      equipmentCost: equip,
+      savingsPercent: savings,
+      panelsMeters: panels
+    });
+  }
+  
+  // Call backend calculation
+  google.script.run
+    .withSuccessHandler(showQuoteResults)
+    .withFailureHandler(showError)
+    .calculateQuote(locations);
+}
+
+// Store results globally for other functions
+let quoteResults = null;
+
+function showQuoteResults(results) {
+  quoteResults = results;
+  
+  // Get ALL form data ONCE at the top
+  const customerCompany = document.getElementById('customerCompany').value;
+  const customerContact = document.getElementById('customerContact').value;
+  const customerEmail = document.getElementById('customerEmail').value;
+  const customerPhone = document.getElementById('customerPhone').value;
+  const repName = document.getElementById('repName').value;
+  const repEmail = document.getElementById('repEmail').value;
+  const repPhone = document.getElementById('repPhone').value;
+  const companyName = document.getElementById('companyName').value;
+  const quoteNumber = document.getElementById('quoteNumber').value;
+  const quoteDate = document.getElementById('quoteDate').value;
+  
+  // Set brand name and logo dynamically
+  document.getElementById('quoteBrandName').textContent = companyName === 'Tune Energy' ? 'Tune Energy' : 'Exact Water';
+  
+// Base64 encoded logos
+const tuneLogoBase64 = 'data:image/jpeg;base64,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';
+
+
+const exactLogoBase64 = 'data:image/png;base64,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';
+
+const logoSrc = companyName === 'Exact Water' ? exactLogoBase64 : tuneLogoBase64;
+document.getElementById('quoteLogo').src = logoSrc;
+
+// Add dark header background for Exact Water
+const quoteHeader = document.querySelector('.quote-header-section');
+if (companyName === 'Exact Water' && quoteHeader) {
+  quoteHeader.style.backgroundColor = '#0077c7';
+  quoteHeader.style.padding = '15px';
+  quoteHeader.style.borderRadius = '8px';
+  document.querySelector('.quote-main-title').style.color = '#ffffff';
+}
+
+
+
+  // Set quote metadata
+  document.getElementById('quoteMetaDate').textContent = quoteDate;
+  document.getElementById('quoteMetaNumber').textContent = quoteNumber;
+  
+  // Calculate Valid Until date (30 days from quote date)
+  const quoteDateObj = new Date(quoteDate);
+  quoteDateObj.setDate(quoteDateObj.getDate() + 30);
+  const validUntil = quoteDateObj.toLocaleDateString('en-US');
+  document.getElementById('quoteMetaValid').textContent = validUntil;
+  
+  // Determine panels/meters label
+  const panelsLabel = companyName === 'Tune Energy' ? '# of Panels' : '# of Meters';
+  
+  // ... rest of function continues
+  
+  // Check for negative cash flow warning
+  let warningHTML = '';
+  const firstTerm = results.term36 || results.term60;
+  if (firstTerm.netMonthlySavings < 0) {
+    warningHTML = '<div class="warning-banner">⚠️ <strong>Warning:</strong> Monthly rental payment exceeds savings. Customer will have negative cash flow during the rental term.</div>';
+  }
+  
+  // Build the preview HTML with two-column layout
+  let html = warningHTML;
+  
+  // Start two-column layout
+  html += '<div class="quote-two-column">';
+  
+  // LEFT COLUMN
+  html += '<div class="quote-left-column">';
+  
+  // Rental Quote Presented To
+  html += '<div class="info-box">';
+  html += '<div class="box-header">Rental Quote Presented To</div>';
+  html += '<div class="box-content">';
+  html += '<div class="info-row"><span class="label">Company</span><span class="value">' + customerCompany + '</span></div>';
+  html += '<div class="info-row"><span class="label">Contact Name</span><span class="value">' + customerContact + '</span></div>';
+  html += '<div class="info-row"><span class="label">Contact Email</span><span class="value">' + customerEmail + '</span></div>';
+  html += '<div class="info-row"><span class="label">Contact Phone</span><span class="value">' + customerPhone + '</span></div>';
+  html += '</div></div>';
+  
+  // Quote Highlights
+  html += '<div class="info-box">';
+  html += '<div class="box-header">Quote Highlights</div>';
+  html += '<div class="box-content">';
+  html += '<div class="info-row"><span class="label">' + panelsLabel + '</span><span class="value">' + results.totalPanelsMeters.toLocaleString() + '</span></div>';
+  html += '<div class="info-row"><span class="label">Equipment Financed</span><span class="value">$' + Math.round(results.totalEquipment).toLocaleString() + '</span></div>';
+  html += '<div class="info-row"><span class="label">Gross Savings Per Month</span><span class="value">$' + Math.round(results.grossMonthlySavings).toLocaleString() + '</span></div>';
+  html += '<div class="info-row"><span class="label">Gross Savings Percent Per Month</span><span class="value">' + Math.round(results.avgSavingsPercent) + '%</span></div>';
+  html += '</div></div>';
+  
+// Sites in this Quote
+html += '<div class="info-box">';
+html += '<div class="box-header">Sites in this Quote</div>';
+html += '<div class="box-content">';
+html += '<table class="sites-table"><thead><tr><th>Location</th><th>Utility</th></tr></thead><tbody>';
+
+// Add actual locations
+for (let loc of results.locations) {
+  html += '<tr><td>' + loc.address + '</td><td>' + loc.utility + '</td></tr>';
+}
+
+// Add empty placeholder rows to reach 37 total rows
+const totalRows = 33;
+const emptyRowsNeeded = totalRows - results.locations.length;
+for (let i = 0; i < emptyRowsNeeded; i++) {
+  html += '<tr class="empty-row"><td>&nbsp;</td><td>&nbsp;</td></tr>';
+}
+
+html += '</tbody></table>';
+html += '</div></div>';
+  
+  html += '</div>'; // End left column
+  
+  // RIGHT COLUMN
+  html += '<div class="quote-right-column">';
+  
+  // Presented By
+  html += '<div class="info-box">';
+  html += '<div class="box-header">Presented by ' + companyName + '</div>';
+  html += '<div class="box-content">';
+  html += '<div class="info-row"><span class="label">Sales Rep</span><span class="value">' + repName + '</span></div>';
+  html += '<div class="info-row"><span class="label">Sales Rep Email</span><span class="value">' + repEmail + '</span></div>';
+  html += '<div class="info-row"><span class="label">Sales Rep Phone</span><span class="value">' + repPhone + '</span></div>';
+  html += '</div></div>';
+  
+  // Rental Term Options
+  html += '<div class="info-box">';
+  html += '<div class="box-header">Rental Term Options & Monthly ROI</div>';
+  html += '<div class="box-content">';
+  
+  if (results.tier === 1 || results.tier === 2) {
+    html += buildTermBlock('36-Month', results.term36, results.totalMonthlySpend, results.grossMonthlySavings, results.avgSavingsPercent, 36);
+    html += buildTermBlock('60-Month', results.term60, results.totalMonthlySpend, results.grossMonthlySavings, results.avgSavingsPercent, 60);
+  } else {
+    html += buildTermBlock('60-Month', results.term60, results.totalMonthlySpend, results.grossMonthlySavings, results.avgSavingsPercent, 60);
+    html += buildTermBlock('72-Month', results.term72, results.totalMonthlySpend, results.grossMonthlySavings, results.avgSavingsPercent, 72);
+  }
+  
+  html += '</div></div>';
+  
+  html += '</div>'; // End right column
+  html += '</div>'; // End two-column layout
+  
+  document.getElementById('quotePreviewContent').innerHTML = html;
+  
+  // Switch to Screen 3
+  document.getElementById('screen2').classList.remove('active');
+  document.getElementById('screen3').classList.add('active');
+}
+
+function showError(error) {
+  showAlert('Error: ' + error.message);
+}
+
+// NAVIGATION: Screen 3 back to Screen 2
+function goToScreen2FromPreview() {
+  document.getElementById('screen3').classList.remove('active');
+  document.getElementById('screen2').classList.add('active');
+}
+
+// PLACEHOLDER: PDF generation (Phase C)
+function generatePDF() {
+  showAlert('PDF generation will be added in Phase C');
+}
+
+// HELPER: Build HTML for one term option block
+function buildTermBlock(termLabel, termData, monthlySpend, grossSavings, savingsPercent, months) {
+  let html = '<div class="term-block">';
+  html += '<h4>' + termLabel + ' Term Rental Option</h4>';
+  
+  // Cash Flow During Term Table
+  html += '<table class="financial-table">';
+  html += '<thead><tr><th colspan="2">Cash Flow During ' + termLabel + ' Term</th><th>$</th><th>Monthly Savings %</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td colspan="2">Current Monthly Spend</td><td>$' + Math.round(monthlySpend).toLocaleString() + '</td><td></td></tr>';
+  html += '<tr><td colspan="2">Gross Monthly Savings</td><td>$' + Math.round(grossSavings).toLocaleString() + '</td><td>' + Math.round(savingsPercent) + '%</td></tr>';
+  html += '<tr><td colspan="2">' + termLabel + ' Rental Payment</td><td>$' + Math.round(termData.monthlyPayment).toLocaleString() + '</td><td></td></tr>';
+  
+  const netPercent = (termData.netMonthlySavings / monthlySpend) * 100;
+  html += '<tr><td colspan="2">Net Monthly Savings</td><td>$' + Math.round(termData.netMonthlySavings).toLocaleString() + '</td><td>' + Math.round(netPercent) + '%</td></tr>';
+  html += '</tbody></table>';
+  
+  // Cash Flow After Term Table
+  html += '<table class="financial-table">';
+  html += '<thead><tr><th colspan="2">Cash Flow After ' + termLabel + ' Term</th><th>$</th><th>Monthly Savings %</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td colspan="2">Current Monthly Spend</td><td>$' + Math.round(monthlySpend).toLocaleString() + '</td><td></td></tr>';
+  html += '<tr><td colspan="2">Gross Monthly Savings</td><td>$' + Math.round(grossSavings).toLocaleString() + '</td><td>' + Math.round(savingsPercent) + '%</td></tr>';
+  html += '<tr><td colspan="2">Rental Payment</td><td>$0</td><td></td></tr>';
+  html += '<tr><td colspan="2">Net Monthly Savings</td><td>$' + Math.round(grossSavings).toLocaleString() + '</td><td>' + Math.round(savingsPercent) + '%</td></tr>';
+  html += '</tbody></table>';
+  
+  // Annual Savings Analysis Table
+  html += '<table class="financial-table">';
+  html += '<thead><tr><th colspan="2">Annual Savings Analysis</th><th>$</th><th>Annual Savings %</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td colspan="2">1-Year Total Net Savings</td><td>$' + Math.round(termData.netYearlySavings).toLocaleString() + '</td><td>' + Math.round(netPercent) + '%</td></tr>';
+  
+  if (months === 36) {
+    html += '<tr><td colspan="2">3-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings3Year).toLocaleString() + '</td><td>' + Math.round(netPercent) + '%</td></tr>';
+  } else if (months === 60) {
+    html += '<tr><td colspan="2">5-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings5Year).toLocaleString() + '</td><td>' + Math.round(netPercent) + '%</td></tr>';
+  } else if (months === 72) {
+    html += '<tr><td colspan="2">6-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings6Year).toLocaleString() + '</td><td>' + Math.round(netPercent) + '%</td></tr>';
+  }
+  
+  const tenYearPercent = (termData.netSavings10Year / (monthlySpend * 120)) * 100;
+  html += '<tr><td colspan="2">10-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings10Year).toLocaleString() + '</td><td>' + Math.round(tenYearPercent) + '%</td></tr>';
+  html += '</tbody></table>';
+  
+// ROI Metrics Table
+html += '<table class="financial-table roi-table">';
+html += '<tbody>';
+html += '<tr><td class="roi-label">Monthly Return on Rental Payment *</td><td class="roi-value">' + Math.round(termData.roiMonth1 * 100) + '%</td></tr>';
+
+if (months === 36) {
+  html += '<tr><td class="roi-label">3-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi3Year * 100) + '%</td></tr>';
+} else {
+  html += '<tr><td class="roi-label">5-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi5Year * 100) + '%</td></tr>';
+}
+
+html += '<tr><td class="roi-label">10-Year Return on Rental Payment ***</td><td class="roi-value">' + Math.round(termData.roi10Year * 100) + '%</td></tr>';
+html += '</tbody></table>';
+  
+// Footnotes
+html += '<div class="footnotes">';
+html += '<p><strong>* Monthly Return on Rental Payment</strong> = Monthly Net Savings / Monthly Rental Payment.</p>';
+
+if (months === 36) {
+  html += '<p><strong>** 3-Year Return on Rental Payment</strong> = 3-Year Total Net Savings / 3 Years of Rental Payments.</p>';
+} else {
+  html += '<p><strong>** 5-Year Return on Rental Payment</strong> = 5-Year Total Net Savings / 5 Years of Rental Payments.</p>';
+}
+
+html += '<p><strong>*** 10-Year Return on Rental Payment</strong> = 10-Year Total Net Savings / ' + (months === 36 ? '3' : months === 60 ? '5' : '6') + ' Years of Rental Payments.</p>';
+html += '</div>';
+  
+  html += '</div>';
+  return html;
+}
+
+// Custom Alert Functions
+function showAlert(message) {
+  document.getElementById('customAlertMessage').textContent = message;
+  document.getElementById('customAlert').classList.add('active');
+}
+
+function closeCustomAlert() {
+  document.getElementById('customAlert').classList.remove('active');
+}
+
+// Custom Confirm Functions
+let confirmCallback = null;
+
+function showConfirm(message, onConfirm) {
+  document.getElementById('customConfirmMessage').innerHTML = message;
+  confirmCallback = onConfirm;
+  document.getElementById('customConfirm').classList.add('active');
+}
+
+function confirmYes() {
+  document.getElementById('customConfirm').classList.remove('active');
+  if (confirmCallback) confirmCallback();
+}
+
+function confirmNo() {
+  document.getElementById('customConfirm').classList.remove('active');
+}
+
+
+// Agreement Modal Function
+function acceptAgreement() {
+  document.getElementById('agreementModal').classList.remove('active');
+}
+
+
+// Warn user before leaving page (back, forward, refresh, close tab)
+window.addEventListener('beforeunload', function(e) {
+  const hasLocationData = document.getElementById('locationBody').rows.length > 0;
+  const customerCompany = document.getElementById('customerCompany').value.trim();
+  
+  if (hasLocationData || customerCompany) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
+
+
+</script>
+
+</body>
+</html>
+
+

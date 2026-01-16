@@ -1,0 +1,15 @@
+# Clasp credentials (contains script ID)
+.clasp.json
+
+# Node modules (if added later)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+.idea/
+.vscode/

@@ -1,0 +1,224 @@
+Lease Quote Tool - Business Requirements
+
+Contents
+1. OVERVIEW & OBJECTIVES	3
+1.1 What This Tool Does	3
+1.2 Success Criteria	3
+1.3 Out of Scope (Not in This Version)	3
+2. User Experience Overview	4
+Admin	5
+3. Quote Types	6
+3.1 Quote Types	6
+3.2 - Portfolio / Quote Level fields	6
+3.3 Per Site Field Details	7
+3.4 Locations	7
+4. RATE FACTOR STRUCTURE	7
+4.1 Rate Factor Tiers	7
+4.2 Rate Factor Questions	8
+4.3 Tier Determination Rules	8
+5.0 – Quote Presentation	9
+6 PDF Formatting Standards	10
+7. EMAIL DELIVERY REQUIREMENTS	10
+7.1 Email Recipients	10
+7.2 Email Content to Customer	11
+7.3 Attachment	11
+8. BUSINESS RULES & VALIDATIONS	11
+8.1 Data Validation Rules	11
+9. ASSUMPTIONS & DEPENDENCIES	11
+9.1 External Dependencies	11
+10. EDGE CASES & ERROR HANDLING	12
+10.1 Edge Cases to Handle	12
+10.2 Error Messages	12
+
+1. OVERVIEW & OBJECTIVES
+1.1 What This Tool Does
+The Lease Quote Tool allows partner reps to:
+* Enter details for unlimited locations
+* Automatically calculate lease payments for 36 and 60-month terms or 60 and 72-month terms depending on cost of equipment.
+* Steve agreed to add 60/72 month quote flexibility on 11/17/2025 email for additional fee as per Proposal.
+* Calculate projected utility savings and ROI for each term.  See template for details
+* Generate a professional PDF quote for the customer
+* Email the PDF to the customer , rep and Steve
+* Save a record of quotes generated.
+1.2 Success Criteria
+* Reps can create accurate quotes in under 10 minutes
+* All calculations match Steve's current manual process
+* PDFs are professional and customer-ready
+* Tool requires minimal training to use
+* Admin can see historical quotes and view the pdfs that were generated.  But cannot edit an old quote.  
+1.3 Out of Scope (Not in This Version)
+* Quote history database
+* User accounts/login system
+* CRM integration
+* Customer self-service portal
+* Email automation
+* User tracking
+* Dashboard
+* Export to Excel, etc. other than pdf
+* Additional pdf templates & additional user features
+* Custom Email Templates
+* Quote approval workflow
+* Address autocomplete
+* eSignature
+	
+
+
+
+
+
+2. User Experience Overview
+1. User clicks link to open quote tool
+a. We will have two separate URLs (one for Exact Water and one for Tune), but they will use the same code base to calculate.  Branding will be different for each one.
+b. Quotes will be generated from same tool.
+2. User is presented with a page that has a form on it.
+3. User enters the following information at the top of the form (all fields are required)
+a. Rep Name
+b. Rep Phone
+c. Rep Email
+d. Customer Company
+e. Customer Contact Name
+f. Customer Phone
+g. Customer Email
+4. The tool will automatically capture the following information:
+a. Quote Date (set to today)
+b. Quote Number (auto generated)
+5. User chooses how many locations they want to quote by entering in a number.  Will allow unlimited locations, but they will be required to add information for all of the locations they add.  
+6. Based on the number of locations chosen, user enters the following information for each of the locations (all fields are required):
+a. Address or Site Name (text field)
+b. Utility Provider (User finds this information on their own)  Text field.
+c. Monthly Water or Energy Spend from Provider
+d. Cost of Equipment Quoted by Provider
+e. Estimated Savings Quoted by Provider
+f. Number of Electrical Panels for Tune Energy quotes or number of water meters for Exact Water quotes
+7. User may add or remove locations before generating the quote.  Give the user flexibility.
+8. User may start quote over.  Will be warned that they will lose all information if they proceed.  We are not allowing them to save and come back later so the must have a clear warning that they are about to lose their work.
+9. User selects “Generate Quote” button
+a. Calculation takes place behind the scenes
+b. The equipment amount being financed will automatically determine whether a 36/60 month comparison is taking place or if it should show a 60/72 month comparison.
+c. This will then be added to the quote output dynamically.
+10. A quote is displayed on the screen utilizing all information provided by the user.
+11. The quote displayed on the screen (not pdf yet) shows the following information
+a. The top part of the quote will show summary information from step 4 above
+b. Summary “card” that shows overall data summarized for all locations
+i. (Historical Context:  Determined that there will be no per-location cards.  These would compete with the quoting / presentation strategy Steve uses.  If reps want to do multi-location quotes then we will only be providing the totals for all locations and not showing a per-location breakout.  This is primarily because multiple locations could cause another tier for rate factor selection to be required which would conflict with pricing per site.  So, customer can either have multiple single-site quotes in which the site would have its own billing or there can be a single multi-site quote, but corporate billing would result.  Billing has nothing to do with this project, but gives context to why Steve wanted to do it this way.)
+
+12. User will be able to:
+a. Go back to prior screen if they need to add another location
+b. Go back to prior screen if they need to remove a location
+c. Go back to prior screen if they need to edit any information on a quote 
+13. After user is satisfied with quote results (i..e, no additional changes to location information), user can select “Generate PDF Preview” 
+Steve and Matt discussed perhaps having the option of exporting to other formats like Excel or PDF, but it was finally determined that we would not do this and Steve will train his reps to 1) save the quote on the screen and proof-read carefully before finishing; and 2) know that a new quote is a quick task.
+14. After user previews generated pdf, they can click button “Send Quote to Customer”.  This option will allow the user:
+a. To see the boilerplate email to be sent to the customer
+b. Edit the email boilerplate to make more personal if needed (i.e., such as if the customer is getting another quote from the rep)
+c. Automatically attach the quote to the outgoing customer email as an attachment
+d. Automatically cc the user/rep generating the quote to their own email address (they will also get the attachment)
+e. Automatically send the quote to Steve Olsen along with customer information.  Steve asked that this be a separate email to him (i.e., not a cc or bcc on the email to the customer)
+15. After quote is emailed to customer, rep and Steve:
+a. Rep may download the pdf
+b. Generate another quote
+c. Leave the quote tool (finished quoting for now)
+
+Admin
+* Steve will have the ability to see the rate factor table and update rate factors in the future.  All rate factor changes will prospectively impact all future quotes.  There will not be ability to have more than one active rate table.
+
+
+
+
+3. Quote Types
+3.1 Quote Types
+Question / ItemNotes / ConfirmationFor all quotes, rep will enter a customer name that applies to the entire quote.  Free-form text field.Tune Energy Quote
+For EACH SITE we are capturing (sales rep enters):
+1) Address / Site Name (free-form text field)
+2) Utility Provider (sales rep finds w/ Google and enters)
+3) Monthly Electrical Spend (provided by Tune quote)
+4) # of Electrical Panels at site (provided by Tune quote)
+5) Equipment cost (provided by Tune quote)
+6) Estimated Savings percent (provided by Tune quote)Question: How exactly is the # of electrical panels used in the quote or is it information only?The number of panels (in the case of Tune) or water meters (in the case of Exact Water) is not part of our quote.  It is provided by Tune or Exact Water and we only pass on to the quote as an FYI.Exact Water Quote
+For EACH SITE we are capturing (sales rep enters):
+1) Address / Site Name (free-form text field)
+2) Utility Provider (sales rep finds w/ Google and enters)
+3) Monthly Water Spend (provided by Exact quote)
+4) # of Water Meters at site (provided by Exact quote)
+5) Equipment cost (provided by Exact quote)
+6) Estimated Savings percent (provided by Exact quote)Choosing a quote type: This will be done with separate links instead of starting into the quote tool directly and subsequently choosing Tune or Exact.Tune reps will only have access to the Tune quote tool and Exact Water reps will only have access to the Exact water quote tool via different URLs.  But quote tool is the same and code will brand accordingly.
+3.2 - Portfolio / Quote Level fields
+User will capture all of the following information
+Field NameData TypeExampleRequired?NotesRep NameTextJohn SmithYESRep PhoneText999-999-9999YESRep EmailEmailjsmith@abcwind.comYESCustomer Company NameTextABC Solar CompanyYESCustomer Contact NameText Joe SmithYESCustomer PhoneText999-999-9999YESCustomer EmailEmailcontact@abcsolar.com YESQuote DateDateAuto-generated (today's date)AUTOQuote NumberText/NumberAuto-generated “TUNE – [01000]” or “EXACT – [01000]YES - Auto
+
+
+
+
+3.3 Per Site Field Details
+Field NameData TypeValidation RulesExampleRequired?NotesAddress / Site NameTextAny text, max 200 chars123 Main St, Irvine CA 92618YESUtility ProviderTextAny text, max 100 charsSouthern California EdisonYESMonthly Energy / Water SpendCurrencyPositive number, $0-$250,000$850.00YESSteve said change to $250kEquipment CostCurrencyPositive number, $0-$1,000,000$75,000YESSteve said to increase to $1,000,000Number of Panels (needed for water?)IntegerPositive integer, 1-2,00045YESSteve said to increase to 2,000Estimated Savings PercentPercentagePositive percentage, 0% to 50% range10.5%YESSteve said 50% max is sufficient for both Tune and Exact
+3.4 Locations
+Question / ItemNotes / ConfirmationQuote tool can accommodate unlimited locations per quoteWe’ll make the location entry not a picklist, but just a integer field that errors when user tries to add anything else.Each location will require input from the user per the table above.  ALL fields in table above are required to submit a quote every time.  CorrectQuote tool will not function if any fields at all are missing.CorrectAre minimum and maximum numbers above for each value correct?CorrectAny other fields required by rep?Correct
+4. RATE FACTOR STRUCTURE
+4.1 Rate Factor Tiers
+The lease rate factor depends on total equipment cost and loan term (added extra decimals to ensure accuracy).
+TierEquipment Cost Tier36-Month Rate Factor60-Month Rate Factor72-Month Rate Factor1$0 - $99,999.99.0327348.0211993N/A2$100,000 - $499,999.99.0327439.0213861N/A3$500,000+N/A.0208989.0180061
+**Rate factor table will be built as 4 x 5 matrix as shown above.  If rate table size ever needs to expand to additional rows or columns this would be an add-on project quoted to adjust the code, admin presentation, possible quote presentation, etc.
+4.2 Rate Factor Questions
+Question / ItemNotes / ConfirmationConfirm rate factor tiers and rate factors are correct aboveConfirmedAdmin will have ability to login and change rate factors at any time.ConfirmedA single rate factor table will be used for all quotes at any given time.ConfirmedAny changes to rate factor table will apply to quotes from that time forward.Confirmed
+For instances where equipment is exactly $100,000 the rate factors in Tier 2 will apply.ConfirmedFor instances where equipment is exactly $500,000 the rate factors in Tier 3 will apply.Confirmed
+4.3 Tier Determination Rules
+** Confirm how rates are applied to a quote when there are multiple sites being quoted:
+Question / ItemNotes / ConfirmationSteve and I discussed extensively.  This will work as follows:  If customer wants a multi-site quote the user will add multiple locations and the aggregated equipment cost and savings will determine the rate factor, not each individual site.  This will prevent the possibility of having a single quote that compares rental payments for individual sites and an aggregated lease payment that could have a different rate factor.  OROption 2: The total is calculated for the entire portfolio of sites on the quote and rate factor is applied to the total, and there is one total for all sites.
+
+Option 2 Example:
+Location 1: $60,000 
+Location 2: $55,000 
+Total Equipment: $115,000 * .03274 (T2 Factor) 
+Total Lease Payment = $3,765.10
+
+Difference of $1.15
+This option 2 is how it will always be calculated whether the quote is for one site or many sitesHow are # of panels included—if at all—in lease payment calculation?Steve confirmed that the number of panels has nothing to do with our calculation in this quote tool.  It may have an implication on the quote that Tune or Exact quote to us, but we only enter the number of panels or meters as an fyi for the rental quoteConfirm lease payment calc: Equip Cost * Lease Factor = Lease PaymentCorrect
+
+5.0 – Quote Presentation
+Subject to minor changes, but this is 95% done as of 12/2/2025
+
+
+6 PDF Formatting Standards
+ElementRequirementPage SizeUS Letter (8.5" × 11")OrientationPortraitFontProfessional (Arial, Calibri, or similar)Currency Format$X,XXX.00 (thousands separator, 0 decimals)Percentage FormatXX.0% (0 decimal place)Logo PlacementTop left, center, top right?PDF will be same format as quote displayed on screen.   Will try from what we have and see if quality is good enough on pdf.  Otherwise we may need to have high quality logo files from Tune and Exact.
+7. EMAIL DELIVERY REQUIREMENTS
+7.1 Email Recipients
+* Primary Recipient: Customer email address (entered in form)
+* Secondary Recipient:  CC Rep who completed the quote 
+* Third Recipient: Steve's email address.  Separate email or copy on customer email?    Steve wants a separate email to himself.  No BCC or CC on the customer email.
+* Email body will be editable by rep before sending the email to customer.
+
+
+7.2 Email Content to Customer
+Subject Line:
+       Your Tune Energy Rental Quote - [Customer Name] - [Quote Number]
+Email Body:
+Dear [Customer Name],
+
+Thank you for your interest in Tune energy solutions. 
+
+Please find attached your customized rental quote [Quote Number] for [Number] location(s).
+
+I will follow up with you to discuss the details and answer any questions you may have.
+
+Best regards,
+[Rep Name]
+[Company Name - This will be from Tune or Exact as company name]
+[Rep Contact Information]
+
+2. Who should the email appear to be from? (Rep's email or generic company email?)
+7.3 Attachment
+* PDF quote (generated per Section 5)
+* File naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
+8. BUSINESS RULES & VALIDATIONS
+8.1 Data Validation Rules
+FieldValidation RuleError MessageNumber of LocationsUnlimitedPlease enter a round number of locations.  Cannot have decimals or anything other than integers.Equipment CostMust be positiveEquipment cost must be greater than $0Monthly Energy CostMust be positivePlease enter a valid monthly energy costEmail AddressValid email formatPlease enter a valid email addressNumber of PanelsMust be integer, > 0Please enter a valid number of panels (if Tune) or valid number of meters (if Exact)
+9. ASSUMPTIONS & DEPENDENCIES
+9.1 External Dependencies
+DependencyStatusNotesCompany logo filePENDINGNeed high-res image file for Tune & ExactEmail template textPENDINGExact wording for email bodyLegal disclaimersPENDINGT&Cs for PDF footer
+10. EDGE CASES & ERROR HANDLING
+10.1 Edge Cases to Handle
+ScenarioExpected BehaviorLocation with $0 equipment costShow Error Message.  Won’t allow to move forwardLocation with $0 energy costShow Error Message.  Won’t allow to move forwardMonthly savings > monthly paymentNormal - show positive ROIMonthly savings < monthly paymentShow negative net benefit, warn user?Customer email is invalidShow error, prevent submission.  Must have valid email.Rep enters 0 locationsShow error message.  Won’t allow to move forwardRep enters 21 locationsCan’t happen.  Will be picklistVery large portfolio (20 locations w/ large $)Should work, but test performanceRep leaves required field blankShow error, prevent submissionAny others?10.2 Error Messages
+All error messages should be:
+* Clear and specific
+* Actionable (tell user what to fix)
+
