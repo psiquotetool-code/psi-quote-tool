@@ -1,7 +1,7 @@
 PSI Quote Tool - Milestone 2 Build Plan
 Web-Based Data Entry System
 
-Version: 2.0 | Created: December 23, 2025 | Updated: January 16, 2026 | Spec Reference: Quote-Tool-Specification-v3.4
+Version: 2.2 | Created: December 23, 2025 | Updated: January 16, 2026 | Spec Reference: Quote-Tool-Specification-v3.4
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -245,71 +245,94 @@ Step 11: Final Polish & Refinement ✓ COMPLETE
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-APPROACH: HTML to Blob Direct Conversion (APPROVED)
+APPROACH HISTORY:
 
-Why this approach was selected:
-- No temp files to clean up
-- Preserves CSS styling well
-- Simpler than Google Docs intermediary method
-- Fast execution
-- Already works with base64 logos
-- Uses ONLY native Google services (no paid services, no external APIs)
+❌ ABANDONED: HTML to Blob Direct Conversion
+Why it was abandoned:
+- Background colors DO NOT render in Google's HTML-to-PDF converter
+- Tried CSS classes with background-color - FAILED
+- Tried CSS with !important - FAILED
+- Tried inline styles on every element - FAILED
+- Google's converter fundamentally does not support background colors reliably
+- PDF Output V1-V4 all had missing backgrounds (see .claude/PDF Refinement/)
+
+✅ SELECTED: Google Sheets Template-Based PDF Generation
+Why this approach:
+- Pre-formatted Google Sheets preserve ALL styling when exported to PDF
+- Background colors, borders, fonts all render correctly
+- User already created the layout in Google Sheets (proof it works)
+- Native Google service, no external APIs needed
+- Clean workflow: copy template → populate cells → export PDF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Step 12: PDF Generation (IN PROGRESS)
 
-Files to Modify:
-□ PDF.js (NEW FILE) - All PDF generation functions (~200-300 lines)
-□ Index.html - Update generatePDF(), add Screen 4, add handlers (~50 lines)
-□ Styles.html - Add Section 11: Print/PDF Styles (~50 lines)
-□ Code.js - Minimal changes (possibly just an include)
+Google Sheets Resources:
+- PDF Template Sheet ID: 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw
+- Tab to use: "Dec 2 Version"
+- Template has 37 rows in sites table
 
-PDF.js Function Structure:
+Files to Modify:
+□ PDF.js - Complete rewrite to use Google Sheets approach
+□ Index.html - May need minor updates to generatePDF() if data format changes
+
+PDF.js Function Structure (NEW):
 ```
 PDF.js
 ├── createPDFQuote(quoteData)     # Main entry point
-├── buildPDFHTML(quoteData)       # Assembles complete HTML document
-├── getPDFStyles(brand)           # Returns print-optimized CSS
-├── buildPDFHeader(quoteData)     # Logo, title, metadata
-├── buildPDFLeftColumn(quoteData) # Customer info, highlights, sites table
-├── buildPDFRightColumn(quoteData)# Rep info, term blocks, financial tables
-├── buildTermBlockPDF(...)        # Financial tables for each term
+├── copyTemplateTab()             # Copy "Dec 2 Version" to temp sheet
+├── populateCells(sheet, data)    # Map quote data to specific cells
+├── exportSheetAsPDF(sheet)       # SpreadsheetApp.getAs(MimeType.PDF)
+├── savePDFToDrive(blob, name)    # Save to Drive folder
+├── deleteTempSheet(sheet)        # Clean up temporary sheet
 └── getOrCreateQuoteFolder()      # Drive folder for saved PDFs
 ```
 
-PDF Creation Flow:
+PDF Creation Flow (NEW):
 ```
 Frontend: generatePDF()
 → Backend: createPDFQuote(quoteData)
-→ buildPDFHTML() creates complete HTML string
-→ Utilities.newBlob(html, MimeType.HTML)
-→ blob.getAs(MimeType.PDF)
+→ Open PDF Template spreadsheet
+→ Copy "Dec 2 Version" tab to temporary sheet
+→ Populate cells with quote data (customer info, financial values, locations)
+→ SpreadsheetApp.getAs(MimeType.PDF)
 → Save to Drive folder "PSI Quote Tool - Generated PDFs"
+→ Delete temporary sheet
 → Return download URL
 ```
 
+Cell Mapping Needed:
+- Header section: Date, Quote #, Valid Until
+- Left column: Customer info, Quote Highlights, Sites table (37 rows)
+- Right column: Rep info, Financial tables (36-month and 60-month terms), ROI rows
+
+Reference Files (in .claude/PDF Refinement/):
+- Google Sheets Screenshot Top.jpg - Shows cell/column structure
+- Google Sheets Screenshot Bottom.jpg - Shows cell/column structure
+- Google Sheets Exported to PDF.pdf - Target output (colors work!)
+- Screen 3.jpg - Web app layout for comparison
+- PDF Output V1-V4.pdf - Failed HTML approach iterations (for reference)
+
 Implementation Tasks:
-□ Create PDF.js with all PDF generation functions
-□ Update Index.html - replace generatePDF() placeholder with real implementation
-□ Add Screen 4 to Index.html for post-PDF options
-□ Add print/PDF styles to Styles.html (Section 11)
+□ Map all cell references from template screenshots
+□ Rewrite PDF.js with Google Sheets approach
+□ Update Index.html if needed for new data format
 □ Test PDF generation with test function
 □ Sync to Apps Script and test end-to-end
+□ Visual comparison: PDF vs template vs Screen 3
 
 File Naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
 
-Page Break Handling: If locations > 30, split sites table across pages
-
-Brand Handling: Dynamic colors based on Tune vs Exact
+Brand Handling: Dynamic colors based on Tune vs Exact (may need separate template tabs)
 
 Testing Plan:
 1. Single location quote (Tier 1)
 2. Multi-location quote (5 locations)
-3. Large quote (20+ locations) - verify page breaks
+3. Large quote (20+ locations) - verify all 37 rows populate correctly
 4. Tier 3 quote (60/72 month terms)
 5. Both brands (Tune Energy, Exact Water)
-6. Visual comparison: PDF vs Screen 3 preview
+6. Visual comparison: PDF output vs Google Sheets template
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -530,6 +553,33 @@ Lesson: For development, always implement quick test data. Remove or disable bef
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+CRITICAL: Google HTML-to-PDF Does NOT Render Background Colors
+
+Discovery: Google Apps Script's HTML-to-PDF conversion (Utilities.newBlob + getAs) fundamentally does NOT support background colors.
+
+What Was Tried:
+1. CSS classes with background-color - FAILED
+2. CSS with !important - FAILED
+3. Inline styles on every element - FAILED
+4. Table cell backgrounds - FAILED
+
+Impact: Four PDF iterations (V1-V4) all produced PDFs with white backgrounds where colors should appear.
+
+Root Cause: Google's HTML-to-PDF converter has limited CSS support. Background colors are simply ignored regardless of how they're specified.
+
+Solution: Use Google Sheets template-based PDF generation instead:
+- Create a pre-formatted Google Sheets template with all colors/styling
+- Copy template to temp sheet
+- Populate cells with data
+- Export sheet as PDF (preserves all formatting)
+- Delete temp sheet
+
+Why Sheets Works: Google Sheets to PDF conversion is a different code path that properly preserves cell formatting including background colors.
+
+Lesson: For PDF generation requiring background colors in Apps Script, always use Google Sheets templates. Do not attempt HTML-to-PDF conversion for styled documents.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 Fixed-Row Tables for Balanced Appearance
 
 Design Decision: Sites table always displays 40 rows regardless of location count.
@@ -629,25 +679,24 @@ Note: Phase B Step 11 will include comprehensive browser testing.
 
 9. Next Session Priorities
 
-1. **Create PDF.js** (HIGH PRIORITY - NEXT TASK)
-   - Create new file with all PDF generation functions
-   - Main function: createPDFQuote(quoteData)
-   - Helper functions for building HTML sections
-   - Use HTML to Blob conversion approach
+1. **Map Cell References** (HIGH PRIORITY - NEXT TASK)
+   - Review Google Sheets Screenshot Top.jpg and Bottom.jpg
+   - Document exact cell addresses for all quote data fields
+   - Create mapping object in PDF.js
 
-2. **Update Index.html for PDF**
-   - Replace generatePDF() placeholder (line 669-671) with real implementation
-   - Add success/error handlers
-   - Add Screen 4 for post-PDF options
+2. **Rewrite PDF.js for Google Sheets Approach**
+   - Complete rewrite using SpreadsheetApp
+   - Copy template tab, populate cells, export PDF
+   - Delete temp sheet after PDF creation
 
-3. **Add Print Styles**
-   - Section 11 in Styles.html
-   - Print-optimized CSS for PDF output
-
-4. **Test and Deploy**
+3. **Test Google Sheets PDF Generation**
    - Test with various quote scenarios
    - Sync to Apps Script with clasp push
-   - Verify PDF output matches Screen 3
+   - Verify PDF output matches Google Sheets template
+
+4. **Update Index.html if Needed**
+   - Adjust generatePDF() if data format changes
+   - Add success/error handlers
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -704,9 +753,25 @@ Version 2.1 - January 16, 2026
 - Plan approved - ready to begin coding PDF.js
 - GitHub repo: https://github.com/maddsdad/psi-quote-tool
 
+Version 2.2 - January 16, 2026
+- Created PDF.js with HTML-to-Blob approach
+- Tested PDF Output V1-V4 - ALL FAILED to render background colors
+- Tried CSS classes, !important, and inline styles - none worked
+- Discovered: Google's HTML-to-PDF converter fundamentally doesn't support background colors
+- PIVOTED to Google Sheets template-based PDF generation
+- User provided pre-formatted template: Sheet ID 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw
+- Tab to use: "Dec 2 Version" (37 rows in sites table)
+- Added reference files to .claude/PDF Refinement/:
+  * Google Sheets Screenshot Top.jpg
+  * Google Sheets Screenshot Bottom.jpg
+  * Google Sheets Exported to PDF.pdf (proof colors work!)
+- Re-enabled dummy data on Screens 1 and 2 for faster testing
+- Updated CLAUDE.md and Build Plan documentation
+- Committed and pushed all changes to GitHub
+
 ═══════════════════════════════════════════════════════════════════════════════
 
-END OF BUILD PLAN v2.1
+END OF BUILD PLAN v2.2
 Last Updated: January 16, 2026
 Current Phase: C (PDF Generation & Email Delivery) - IN PROGRESS
-Next Task: Create PDF.js file with PDF generation functions
+Next Task: Map cell references and rewrite PDF.js for Google Sheets approach
