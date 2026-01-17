@@ -266,73 +266,115 @@ Why this approach:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Step 12: PDF Generation (IN PROGRESS)
+Step 12: PDF Generation (IN PROGRESS - 90% COMPLETE)
 
 Google Sheets Resources:
 - PDF Template Sheet ID: 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw
 - Tab to use: "Dec 2 Version"
 - Template has 37 rows in sites table
 
-Files to Modify:
-□ PDF.js - Complete rewrite to use Google Sheets approach
-□ Index.html - May need minor updates to generatePDF() if data format changes
+COMPLETED (January 16, 2026):
+✓ PDF.js completely rewritten with Google Sheets template approach
+✓ Cell mapping completed from 5 zoomed-in screenshots
+✓ testPDFGeneration() works - PDF generates with test data
+✓ OAuth scopes updated (added script.external_request permission)
+✓ Index.html generatePDF() already wired correctly to pass quoteData
 
-PDF.js Function Structure (NEW):
+BLOCKING ISSUE - MUST RESOLVE:
+⚠️ Missing roi6Year calculation in Calculations.js for 72-month term
+
+Current state in calculate72Month():
+- Returns roi5Year (INCORRECT - should be roi6Year)
+- PDF.js expects termData.roi6Year for 72-month terms
+- Without this fix, Tier 3 quotes will show undefined% for term ROI
+
+QUESTION TO CONFIRM BEFORE FIXING:
+The formula for roi6Year should be:
+  roi6Year = netSavings6Year / (monthlyPayment * 72)
+
+This follows the pattern:
+- 36-month: roi3Year = netSavings3Year / (monthlyPayment * 36)
+- 60-month: roi5Year = netSavings5Year / (monthlyPayment * 60)
+- 72-month: roi6Year = netSavings6Year / (monthlyPayment * 72) <-- NEEDS CONFIRMATION
+
+Files Modified:
+✓ PDF.js - Complete rewrite (525 lines)
+✓ appsscript.json - Added script.external_request OAuth scope
+□ Calculations.js - Needs roi6Year added (NEXT SESSION)
+
+PDF.js Function Structure (IMPLEMENTED):
 ```
 PDF.js
-├── createPDFQuote(quoteData)     # Main entry point
-├── copyTemplateTab()             # Copy "Dec 2 Version" to temp sheet
-├── populateCells(sheet, data)    # Map quote data to specific cells
-├── exportSheetAsPDF(sheet)       # SpreadsheetApp.getAs(MimeType.PDF)
-├── savePDFToDrive(blob, name)    # Save to Drive folder
-├── deleteTempSheet(sheet)        # Clean up temporary sheet
-└── getOrCreateQuoteFolder()      # Drive folder for saved PDFs
+├── createPDFQuote(quoteData)        # Main entry point
+├── populateCells(sheet, quoteData)  # Map quote data to cells
+├── populateSitesTable(sheet, locs)  # Fill 37-row sites table
+├── populateTermBlock(sheet, ...)    # Fill financial data for a term
+├── populateFootnotes(sheet, ...)    # Dynamic footnotes based on term
+├── exportSheetAsPDF(ss, sheet)      # Export via UrlFetchApp
+├── generateFileName(quoteData)      # Create PDF filename
+├── getOrCreateQuoteFolder()         # Drive folder management
+├── formatNumber(num)                # Number formatting helper
+├── formatDate(date)                 # Date formatting helper
+├── authorizeDrive()                 # Authorization test function
+├── testPDFGeneration()              # Test with sample data
+└── testCellMapping()                # Verify cell references
 ```
 
-PDF Creation Flow (NEW):
+Cell Mapping (COMPLETED):
 ```
-Frontend: generatePDF()
-→ Backend: createPDFQuote(quoteData)
-→ Open PDF Template spreadsheet
-→ Copy "Dec 2 Version" tab to temporary sheet
-→ Populate cells with quote data (customer info, financial values, locations)
-→ SpreadsheetApp.getAs(MimeType.PDF)
-→ Save to Drive folder "PSI Quote Tool - Generated PDFs"
-→ Delete temporary sheet
-→ Return download URL
-```
+Header/Metadata:
+- I4: Date, I5: Quote #, I6: Valid Until
 
-Cell Mapping Needed:
-- Header section: Date, Quote #, Valid Until
-- Left column: Customer info, Quote Highlights, Sites table (37 rows)
-- Right column: Rep info, Financial tables (36-month and 60-month terms), ROI rows
+Customer Info:
+- D9: Company, D10: Contact, D11: Email, D12: Phone
+
+Rep Info (merged H:I cells):
+- H9: Name, H10: Email, H11: Phone
+
+Quote Highlights:
+- D15: # Panels/Meters, D16: Equipment Financed
+- D17: Gross Savings/Month, D18: Gross Savings %
+
+Sites Table (37 rows):
+- C22:C58: Location addresses
+- D22:D58: Utility names
+
+36-Month Term Block:
+- G18-G21: Cash flow during ($ values, merged G:H)
+- I19, I21: Percentage values
+- G23-G26: Cash flow after
+- I24, I26: Percentage values
+- G28-G30: Annual savings analysis
+- I28-I30: Percentage values
+- H31-H33: ROI metrics (merged H:I)
+- F34-F36: Footnotes (merged F:I)
+
+60-Month Term Block:
+- G40-G43: Cash flow during
+- I41, I43: Percentage values
+- G45-G48: Cash flow after
+- I46, I48: Percentage values
+- G50-G52: Annual savings analysis
+- I50-I52: Percentage values
+- H53-H55: ROI metrics
+- F56-F58: Footnotes
+```
 
 Reference Files (in .claude/PDF Refinement/):
-- Google Sheets Screenshot Top.jpg - Shows cell/column structure
-- Google Sheets Screenshot Bottom.jpg - Shows cell/column structure
+- Zoom in Screenshot #1.jpg through #5.jpg - Detailed cell mapping reference
 - Google Sheets Exported to PDF.pdf - Target output (colors work!)
 - Screen 3.jpg - Web app layout for comparison
-- PDF Output V1-V4.pdf - Failed HTML approach iterations (for reference)
 
-Implementation Tasks:
-□ Map all cell references from template screenshots
-□ Rewrite PDF.js with Google Sheets approach
-□ Update Index.html if needed for new data format
-□ Test PDF generation with test function
-□ Sync to Apps Script and test end-to-end
+Remaining Tasks:
+□ Fix Calculations.js - Add roi6Year for 72-month term
+□ Test with actual quote data (not just test function)
+□ Test Tier 3 quote (60/72 month terms) to verify roi6Year works
 □ Visual comparison: PDF vs template vs Screen 3
+□ Test both brands (Tune Energy, Exact Water)
 
 File Naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
 
-Brand Handling: Dynamic colors based on Tune vs Exact (may need separate template tabs)
-
-Testing Plan:
-1. Single location quote (Tier 1)
-2. Multi-location quote (5 locations)
-3. Large quote (20+ locations) - verify all 37 rows populate correctly
-4. Tier 3 quote (60/72 month terms)
-5. Both brands (Tune Energy, Exact Water)
-6. Visual comparison: PDF output vs Google Sheets template
+Brand Handling: Currently using Tune template - may need Exact Water template tab later
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -753,7 +795,7 @@ Version 2.1 - January 16, 2026
 - Plan approved - ready to begin coding PDF.js
 - GitHub repo: https://github.com/maddsdad/psi-quote-tool
 
-Version 2.2 - January 16, 2026
+Version 2.2 - January 16, 2026 (Morning)
 - Created PDF.js with HTML-to-Blob approach
 - Tested PDF Output V1-V4 - ALL FAILED to render background colors
 - Tried CSS classes, !important, and inline styles - none worked
@@ -769,9 +811,32 @@ Version 2.2 - January 16, 2026
 - Updated CLAUDE.md and Build Plan documentation
 - Committed and pushed all changes to GitHub
 
+Version 2.3 - January 16, 2026 (Evening)
+- Completely rewrote PDF.js with Google Sheets template approach
+- Created 5 zoomed-in screenshots for accurate cell mapping (Zoom in Screenshot #1-5.jpg)
+- Mapped ALL cell references from template:
+  * Header/metadata: I4-I6
+  * Customer info: D9-D12
+  * Rep info: H9-H11 (merged cells)
+  * Quote highlights: D15-D18
+  * Sites table: C22-D58 (37 rows)
+  * 36-month term: G18-G30, I19-I30, H31-H33, F34-F36
+  * 60-month term: G40-G52, I41-I52, H53-H55, F56-F58
+- Added populateFootnotes() for dynamic footnote text based on term length
+- Added script.external_request OAuth scope to appsscript.json
+- testPDFGeneration() runs successfully - PDF generates!
+- DISCOVERED: Missing roi6Year calculation in Calculations.js for 72-month term
+- Session ended with outstanding question about roi6Year formula
+
+OUTSTANDING ISSUE FOR NEXT SESSION:
+The 72-month term in Calculations.js needs roi6Year added.
+Formula to confirm: roi6Year = netSavings6Year / (monthlyPayment * 72)
+This follows the same pattern as roi3Year and roi5Year calculations.
+Once confirmed, update calculate72Month() to return roi6Year instead of roi5Year.
+
 ═══════════════════════════════════════════════════════════════════════════════
 
-END OF BUILD PLAN v2.2
+END OF BUILD PLAN v2.3
 Last Updated: January 16, 2026
-Current Phase: C (PDF Generation & Email Delivery) - IN PROGRESS
-Next Task: Map cell references and rewrite PDF.js for Google Sheets approach
+Current Phase: C (PDF Generation & Email Delivery) - IN PROGRESS (90% Complete)
+Next Task: Confirm roi6Year formula and update Calculations.js

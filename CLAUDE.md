@@ -108,37 +108,68 @@ clasp open
 
 **Approach Selected**: Google Sheets Template-Based PDF Generation
 
-**Why this approach?** The HTML-to-Blob-to-PDF method was tried extensively (V1-V4) but Google's converter does not reliably render background colors, regardless of CSS classes or inline styles. The Google Sheets approach uses a pre-formatted template where all styling is preserved when exporting to PDF.
+**Status as of January 16, 2026 (end of session):**
+- ✅ PDF.js completely rewritten with Google Sheets template approach
+- ✅ Cell mapping completed from 5 zoomed-in screenshots (Zoom in Screenshot #1-5.jpg)
+- ✅ testPDFGeneration() works - PDF generates successfully with test data
+- ✅ OAuth scopes updated (added script.external_request permission)
+- ⚠️ **BLOCKING ISSUE**: Missing roi6Year calculation in Calculations.js (see below)
 
-**Next Task**: Rewrite PDF.js to use Google Sheets approach:
-1. Open the PDF Template spreadsheet (`1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw`)
-2. Copy the `Dec 2 Version` tab to a temporary sheet
-3. Populate cells with quote data (customer info, financial values, locations)
-4. Export the sheet as PDF
-5. Save PDF to Drive folder
-6. Delete the temporary sheet
-7. Return the download URL
+**OUTSTANDING ISSUE - MUST RESOLVE NEXT SESSION:**
 
-**New PDF Flow**:
+The 72-month term (Tier 3) is missing a `roi6Year` calculation in Calculations.js.
+
+Current state in `calculate72Month()`:
+```javascript
+// Currently returns roi5Year (INCORRECT for 72-month term)
+return {
+  ...
+  roi5Year: roi5Year,  // <-- This should be roi6Year
+  ...
+};
+```
+
+PDF.js expects `roi6Year` for 72-month terms:
+```javascript
+} else if (months === 72) {
+  termROI = termData.roi6Year;  // <-- Looking for roi6Year
+}
+```
+
+**QUESTION TO RESOLVE:** The formula for roi6Year should be:
+```
+roi6Year = netSavings6Year / (monthlyPayment * 72)
+```
+This follows the same pattern as:
+- 36-month: roi3Year = netSavings3Year / (monthlyPayment * 36)
+- 60-month: roi5Year = netSavings5Year / (monthlyPayment * 60)
+
+Confirm this formula is correct, then update Calculations.js to:
+1. Replace the roi5Year calculation with roi6Year
+2. Update the return object to return roi6Year instead of roi5Year
+
+**PDF Generation Flow (IMPLEMENTED):**
 ```
 Frontend: generatePDF()
 → Backend: createPDFQuote(quoteData)
-→ Copy template tab from PDF Template spreadsheet
-→ Populate cells with quote data
-→ SpreadsheetApp.getAs(MimeType.PDF)
-→ Save to Drive folder
+→ Open PDF Template spreadsheet (ID: 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw)
+→ Copy "Dec 2 Version" tab to temporary sheet
+→ Populate cells with quote data (see CELL_MAP in PDF.js)
+→ Export via UrlFetchApp with PDF parameters
+→ Save to Drive folder "PSI Quote PDFs"
 → Delete temp sheet
 → Return download URL
 ```
 
-**Cell Mapping Needed**: Map quote data fields to specific cells in the template:
-- Header: Date, Quote #, Valid Until
-- Left column: Customer info, Quote Highlights, Sites table (37 rows)
-- Right column: Rep info, Financial tables (36-month and 60-month terms), ROI rows
-
-**Files to modify**:
-1. PDF.js - Complete rewrite to use Google Sheets approach
-2. Index.html - May need minor updates to generatePDF() if data format changes
+**Cell Mapping (COMPLETED):** All cells mapped in PDF.js CELL_MAP object:
+- Header: I4 (date), I5 (quote#), I6 (valid until)
+- Customer info: D9-D12
+- Rep info: H9-H11 (merged H:I cells)
+- Quote Highlights: D15-D18
+- Sites table: C22-D58 (37 rows)
+- 36-month term: G18-G30, I19-I30, H31-H33 (ROI values)
+- 60-month term: G40-G52, I41-I52, H53-H55 (ROI values)
+- Dynamic footnotes: F34-F36, F56-F58
 
 ## Key Decisions & Learnings
 
