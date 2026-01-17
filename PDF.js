@@ -88,7 +88,7 @@ function getPDFStyles(brand) {
   return `
     @page {
       size: letter;
-      margin: 0.4in;
+      margin: 0.3in;
     }
 
     * {
@@ -106,49 +106,69 @@ function getPDFStyles(brand) {
 
     /* Header Section */
     .header-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-      padding: 12px;
+      display: table;
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 8px;
       background: ${headerBg};
-      border-radius: 4px;
     }
 
     .title-block {
-      flex: 1;
+      display: table-cell;
+      vertical-align: top;
+      width: 60%;
     }
 
     .main-title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       color: ${titleColor};
-      line-height: 1.1;
+      line-height: 1.0;
       margin: 0;
     }
 
     .logo-block {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+      display: table-cell;
+      vertical-align: top;
+      text-align: right;
+      width: 40%;
     }
 
-    .logo-block img {
-      max-width: 160px;
-      max-height: 60px;
-      margin-bottom: 8px;
+    .logo-text {
+      font-size: 28px;
+      font-weight: bold;
+      text-align: right;
+      margin-bottom: 4px;
+    }
+
+    .logo-text.tune {
+      color: #0066CC;
+      font-family: Arial, sans-serif;
+    }
+
+    .logo-text.exact {
+      color: #0077c7;
+      font-family: Arial, sans-serif;
+    }
+
+    .logo-tagline {
+      display: block;
+      font-size: 10px;
+      font-weight: normal;
+      color: #666;
+      font-style: italic;
     }
 
     /* Metadata Box */
     .metadata-box {
-      border: 1px solid ${primaryColor};
-      border-radius: 3px;
-      overflow: hidden;
+      border: 2px solid ${primaryColor};
+      display: inline-block;
     }
 
     .meta-row {
-      display: flex;
-      font-size: 9px;
+      display: table;
+      width: 100%;
+      font-size: 10px;
       border-bottom: 1px solid #ccc;
     }
 
@@ -157,41 +177,47 @@ function getPDFStyles(brand) {
     }
 
     .meta-label {
+      display: table-cell;
       font-weight: 600;
       background: #E6F2FF;
-      padding: 2px 6px;
+      padding: 2px 8px;
       width: 70px;
       border-right: 1px solid #ccc;
     }
 
     .meta-value {
+      display: table-cell;
       font-weight: 700;
       color: ${primaryColor};
       text-align: right;
-      padding: 2px 6px;
-      flex: 1;
+      padding: 2px 8px;
       background: white;
+      width: 90px;
     }
 
     /* Two Column Layout */
     .two-column {
-      display: flex;
-      gap: 10px;
+      display: table;
+      width: 100%;
     }
 
     .left-column {
-      width: 48%;
+      display: table-cell;
+      width: 46%;
+      vertical-align: top;
+      padding-right: 8px;
     }
 
     .right-column {
-      width: 52%;
+      display: table-cell;
+      width: 54%;
+      vertical-align: top;
     }
 
     /* Info Boxes */
     .info-box {
-      border: 0.5px solid #000;
+      border: 1px solid #000;
       margin-bottom: 6px;
-      overflow: hidden;
     }
 
     .box-header {
@@ -199,7 +225,7 @@ function getPDFStyles(brand) {
       color: white;
       padding: 2px 6px;
       font-weight: 700;
-      font-size: 12px;
+      font-size: 13px;
       text-align: center;
     }
 
@@ -212,8 +238,9 @@ function getPDFStyles(brand) {
     }
 
     .info-row {
-      display: flex;
-      border-bottom: 0.5px solid #000;
+      display: table;
+      width: 100%;
+      border-bottom: 1px solid #000;
     }
 
     .info-row:last-child {
@@ -221,33 +248,35 @@ function getPDFStyles(brand) {
     }
 
     .info-row .label {
+      display: table-cell;
       width: 55%;
       font-weight: 700;
-      font-size: 9px;
+      font-size: 10px;
       text-align: right;
       background: #bfeaf9;
-      padding: 2px 4px;
-      border-right: 0.5px solid #000;
+      padding: 3px 6px;
+      border-right: 1px solid #000;
     }
 
     .info-row .value {
+      display: table-cell;
       width: 45%;
-      font-size: 9px;
-      text-align: right;
+      font-size: 10px;
+      text-align: left;
       background: #dbf3fc;
-      padding: 2px 4px;
+      padding: 3px 6px;
     }
 
     /* Highlights styling */
     .highlights .info-row .label {
-      font-size: 10px;
+      font-size: 11px;
       color: #0000ff;
       text-align: left;
       background: #d9edff;
     }
 
     .highlights .info-row .value {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       color: #0000ff;
       text-align: center;
@@ -258,36 +287,44 @@ function getPDFStyles(brand) {
     .sites-table {
       width: 100%;
       border-collapse: collapse;
-      border: 0.5px solid #000;
+      border: 1px solid #000;
     }
 
     .sites-table th {
       background: #7fd0fc;
       padding: 2px 4px;
-      font-size: 9px;
-      font-weight: 600;
-      border: 0.5px solid #000;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid #000;
       text-align: center;
     }
 
     .sites-table td {
-      padding: 2px 4px;
+      padding: 1px 4px;
       font-size: 9px;
-      border: 0.5px solid #000;
+      border: 1px solid #000;
       background: #d9edff;
       color: #0000ff;
+      height: 13px;
+      min-height: 13px;
+      line-height: 13px;
+    }
+
+    .sites-table tr {
+      height: 13px;
     }
 
     /* Term Blocks */
     .term-block {
       margin-bottom: 8px;
+      border: 1px solid #000;
     }
 
     .term-header {
-      background: #3978b8;
+      background: #0000ff;
       color: #ffff00;
-      padding: 2px 6px;
-      font-size: 11px;
+      padding: 4px 6px;
+      font-size: 13px;
       font-weight: 700;
       text-align: center;
     }
@@ -296,55 +333,83 @@ function getPDFStyles(brand) {
     .financial-table {
       width: 100%;
       border-collapse: collapse;
-      border: 0.5px solid #000;
+      border: 1px solid #000;
       margin-bottom: 0;
     }
 
     .financial-table th {
-      background: #7fd0fc;
-      padding: 2px 4px;
-      font-size: 9px;
-      font-weight: 600;
-      border: 0.5px solid #000;
+      background: #00b0f0;
+      padding: 3px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid #000;
       text-align: left;
+      color: #000;
+    }
+
+    .financial-table th:nth-child(3) {
+      text-align: center;
+      width: 18%;
+    }
+
+    .financial-table th:nth-child(4) {
+      text-align: center;
+      width: 22%;
     }
 
     .financial-table td {
       padding: 2px 4px;
-      font-size: 9px;
-      border: 0.5px solid #000;
+      font-size: 10px;
+      border: 1px solid #000;
       background: #d9edff;
     }
 
-    .financial-table td:nth-child(2),
     .financial-table td:nth-child(3) {
       text-align: center;
       font-weight: 600;
     }
 
-    /* ROI Table */
-    .roi-table td.roi-label {
-      background: #7fd0fc;
-      font-weight: bold;
+    .financial-table td:nth-child(4) {
       text-align: center;
-      width: 60%;
+      font-weight: 600;
     }
 
-    .roi-table td.roi-value {
-      font-weight: bold;
-      font-size: 12px;
-      color: #0000ff;
-      text-align: center;
-      width: 40%;
+    /* ROI Table - use !important to override financial-table styles */
+    table.roi-table {
+      margin-top: 0;
+      border: 1px solid #000;
+    }
+
+    table.roi-table td.roi-label {
+      background: #00ffff !important;
+      font-weight: bold !important;
+      font-size: 11px !important;
+      text-align: left !important;
+      padding: 4px 6px !important;
+      width: 70%;
+      border: 1px solid #000;
+    }
+
+    table.roi-table td.roi-value {
+      background: #00ffff !important;
+      font-weight: bold !important;
+      font-size: 16px !important;
+      color: #0000ff !important;
+      text-align: center !important;
+      padding: 4px 6px !important;
+      width: 30%;
+      border: 1px solid #000;
     }
 
     /* Footnotes */
     .footnotes {
-      font-size: 8px;
-      color: #666;
+      font-size: 7px;
+      color: #333;
       font-style: italic;
-      line-height: 1.2;
+      line-height: 1.1;
       margin-top: 2px;
+      padding: 2px;
+      background: #f9f9f9;
     }
 
     .footnotes p {
@@ -386,7 +451,12 @@ function buildPDFHeader(quoteData) {
 
   // Logo and metadata block
   html += '<div class="logo-block">';
-  html += '<img src="' + logo + '" alt="Logo">';
+  // Use styled text instead of base64 image (Google PDF converter doesn't render base64 reliably)
+  if (brand === 'Tune Energy') {
+    html += '<div class="logo-text tune">tune<span class="logo-tagline">Simple Energy Savings.</span></div>';
+  } else {
+    html += '<div class="logo-text exact">exact water</div>';
+  }
   html += '<div class="metadata-box">';
   html += '<div class="meta-row"><span class="meta-label">Date:</span><span class="meta-value">' + quoteData.quoteDate + '</span></div>';
   html += '<div class="meta-row"><span class="meta-label">Quote #:</span><span class="meta-value">' + quoteData.quoteNumber + '</span></div>';
@@ -408,48 +478,61 @@ function buildPDFLeftColumn(quoteData) {
   const results = quoteData.results;
   const panelsLabel = quoteData.companyName === 'Tune Energy' ? '# of Panels' : '# of Meters';
 
+  // Inline styles for info boxes
+  const boxStyle = 'border: 1px solid #000; margin-bottom: 6px;';
+  const blueHeaderStyle = 'background-color: #0000ff; color: white; padding: 2px 6px; font-weight: bold; font-size: 12px; text-align: center;';
+  const tealHeaderStyle = 'background-color: #008080; color: white; padding: 2px 6px; font-weight: bold; font-size: 12px; text-align: center;';
+  const labelStyle = 'background-color: #b8d4e8; padding: 2px 6px; font-weight: bold; font-size: 10px; text-align: right; border: 1px solid #000; width: 55%;';
+  const valueStyle = 'background-color: #d9edf7; padding: 2px 6px; font-size: 10px; border: 1px solid #000; width: 45%;';
+  const highlightLabelStyle = 'background-color: #d9edff; padding: 2px 6px; font-weight: bold; font-size: 10px; color: #0000ff; border: 1px solid #000; width: 55%;';
+  const highlightValueStyle = 'background-color: #d9edff; padding: 2px 6px; font-weight: bold; font-size: 10px; color: #0000ff; text-align: center; border: 1px solid #000; width: 45%;';
+
   let html = '<div class="left-column">';
 
   // Rental Quote Presented To
-  html += '<div class="info-box">';
-  html += '<div class="box-header">Rental Quote Presented To</div>';
-  html += '<div class="box-content">';
-  html += '<div class="info-row"><span class="label">Company</span><span class="value">' + quoteData.customerCompany + '</span></div>';
-  html += '<div class="info-row"><span class="label">Contact Name</span><span class="value">' + quoteData.customerContact + '</span></div>';
-  html += '<div class="info-row"><span class="label">Contact Email</span><span class="value">' + quoteData.customerEmail + '</span></div>';
-  html += '<div class="info-row"><span class="label">Contact Phone</span><span class="value">' + quoteData.customerPhone + '</span></div>';
-  html += '</div></div>';
+  html += '<div style="' + boxStyle + '">';
+  html += '<div style="' + blueHeaderStyle + '">Rental Quote Presented To</div>';
+  html += '<table style="width: 100%; border-collapse: collapse;">';
+  html += '<tr><td style="' + labelStyle + '">Company</td><td style="' + valueStyle + '">' + quoteData.customerCompany + '</td></tr>';
+  html += '<tr><td style="' + labelStyle + '">Contact Name</td><td style="' + valueStyle + '">' + quoteData.customerContact + '</td></tr>';
+  html += '<tr><td style="' + labelStyle + '">Contact Email</td><td style="' + valueStyle + '">' + quoteData.customerEmail + '</td></tr>';
+  html += '<tr><td style="' + labelStyle + '">Contact Phone</td><td style="' + valueStyle + '">' + quoteData.customerPhone + '</td></tr>';
+  html += '</table></div>';
 
   // Quote Highlights
-  html += '<div class="info-box highlights">';
-  html += '<div class="box-header teal">Quote Highlights</div>';
-  html += '<div class="box-content">';
-  html += '<div class="info-row"><span class="label">' + panelsLabel + '</span><span class="value">' + results.totalPanelsMeters.toLocaleString() + '</span></div>';
-  html += '<div class="info-row"><span class="label">Equipment Financed</span><span class="value">$' + Math.round(results.totalEquipment).toLocaleString() + '</span></div>';
-  html += '<div class="info-row"><span class="label">Gross Savings Per Month</span><span class="value">$' + Math.round(results.grossMonthlySavings).toLocaleString() + '</span></div>';
-  html += '<div class="info-row"><span class="label">Gross Savings Percent Per Month</span><span class="value">' + Math.round(results.avgSavingsPercent) + '%</span></div>';
-  html += '</div></div>';
+  html += '<div style="' + boxStyle + '">';
+  html += '<div style="' + tealHeaderStyle + '">Quote Highlights</div>';
+  html += '<table style="width: 100%; border-collapse: collapse;">';
+  html += '<tr><td style="' + highlightLabelStyle + '">' + panelsLabel + '</td><td style="' + highlightValueStyle + '">' + results.totalPanelsMeters.toLocaleString() + '</td></tr>';
+  html += '<tr><td style="' + highlightLabelStyle + '">Equipment Financed</td><td style="' + highlightValueStyle + '">$' + Math.round(results.totalEquipment).toLocaleString() + '</td></tr>';
+  html += '<tr><td style="' + highlightLabelStyle + '">Gross Savings Per Month</td><td style="' + highlightValueStyle + '">$' + Math.round(results.grossMonthlySavings).toLocaleString() + '</td></tr>';
+  html += '<tr><td style="' + highlightLabelStyle + '">Gross Savings Percent Per Month</td><td style="' + highlightValueStyle + '">' + Math.round(results.avgSavingsPercent) + '%</td></tr>';
+  html += '</table></div>';
 
   // Sites Table
-  html += '<div class="info-box">';
-  html += '<div class="box-header teal">Sites in this Quote</div>';
-  html += '<div class="box-content">';
-  html += '<table class="sites-table"><thead><tr><th>Location</th><th>Utility</th></tr></thead><tbody>';
+  const sitesHeaderStyle = 'background-color: #00b0f0; padding: 2px 4px; font-weight: bold; font-size: 10px; border: 1px solid #000; text-align: center;';
+  const sitesCellStyle = 'background-color: #d9edff; padding: 1px 4px; font-size: 9px; border: 1px solid #000; color: #0000ff; height: 13px;';
+
+  html += '<div style="' + boxStyle + '">';
+  html += '<div style="' + tealHeaderStyle + '">Sites in this Quote</div>';
+  html += '<table style="width: 100%; border-collapse: collapse;">';
+  html += '<thead><tr><th style="' + sitesHeaderStyle + '">Location</th><th style="' + sitesHeaderStyle + '">Utility</th></tr></thead>';
+  html += '<tbody>';
 
   // Add actual locations
   for (let i = 0; i < results.locations.length; i++) {
-    html += '<tr><td>' + results.locations[i].address + '</td><td>' + results.locations[i].utility + '</td></tr>';
+    html += '<tr><td style="' + sitesCellStyle + '">' + results.locations[i].address + '</td><td style="' + sitesCellStyle + '">' + results.locations[i].utility + '</td></tr>';
   }
 
   // Add empty rows to reach 33 total
   const totalRows = 33;
   const emptyRowsNeeded = totalRows - results.locations.length;
   for (let i = 0; i < emptyRowsNeeded; i++) {
-    html += '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
+    html += '<tr><td style="' + sitesCellStyle + '">&nbsp;</td><td style="' + sitesCellStyle + '">&nbsp;</td></tr>';
   }
 
   html += '</tbody></table>';
-  html += '</div></div>';
+  html += '</div>';
 
   html += '</div>';
 
@@ -464,21 +547,28 @@ function buildPDFLeftColumn(quoteData) {
 function buildPDFRightColumn(quoteData) {
   const results = quoteData.results;
 
+  // Inline styles
+  const boxStyle = 'border: 1px solid #000; margin-bottom: 6px;';
+  const blueHeaderStyle = 'background-color: #0000ff; color: white; padding: 2px 6px; font-weight: bold; font-size: 12px; text-align: center;';
+  const tealHeaderStyle = 'background-color: #008080; color: white; padding: 2px 6px; font-weight: bold; font-size: 12px; text-align: center;';
+  const labelStyle = 'background-color: #b8d4e8; padding: 2px 6px; font-weight: bold; font-size: 10px; text-align: right; border: 1px solid #000; width: 40%;';
+  const valueStyle = 'background-color: #d9edf7; padding: 2px 6px; font-size: 10px; border: 1px solid #000; width: 60%;';
+
   let html = '<div class="right-column">';
 
   // Presented By
-  html += '<div class="info-box">';
-  html += '<div class="box-header">Presented by ' + quoteData.companyName + '</div>';
-  html += '<div class="box-content">';
-  html += '<div class="info-row"><span class="label">Sales Rep</span><span class="value">' + quoteData.repName + '</span></div>';
-  html += '<div class="info-row"><span class="label">Sales Rep Email</span><span class="value">' + quoteData.repEmail + '</span></div>';
-  html += '<div class="info-row"><span class="label">Sales Rep Phone</span><span class="value">' + quoteData.repPhone + '</span></div>';
-  html += '</div></div>';
+  html += '<div style="' + boxStyle + '">';
+  html += '<div style="' + blueHeaderStyle + '">Presented by ' + quoteData.companyName + '</div>';
+  html += '<table style="width: 100%; border-collapse: collapse;">';
+  html += '<tr><td style="' + labelStyle + '">Sales Rep</td><td style="' + valueStyle + '">' + quoteData.repName + '</td></tr>';
+  html += '<tr><td style="' + labelStyle + '">Sales Rep Email</td><td style="' + valueStyle + '">' + quoteData.repEmail + '</td></tr>';
+  html += '<tr><td style="' + labelStyle + '">Sales Rep Phone</td><td style="' + valueStyle + '">' + quoteData.repPhone + '</td></tr>';
+  html += '</table></div>';
 
   // Rental Term Options
-  html += '<div class="info-box">';
-  html += '<div class="box-header teal">Rental Term Options & Monthly ROI</div>';
-  html += '<div class="box-content" style="padding: 4px;">';
+  html += '<div style="' + boxStyle + '">';
+  html += '<div style="' + tealHeaderStyle + '">Rental Term Options & Monthly ROI</div>';
+  html += '<div style="padding: 4px;">';
 
   if (results.tier === 1 || results.tier === 2) {
     html += buildTermBlockPDF('36-Month', results.term36, results.totalMonthlySpend, results.grossMonthlySavings, results.avgSavingsPercent, 36);
@@ -508,59 +598,73 @@ function buildPDFRightColumn(quoteData) {
 function buildTermBlockPDF(termLabel, termData, monthlySpend, grossSavings, savingsPercent, months) {
   const netPercent = Math.round((termData.netMonthlySavings / monthlySpend) * 100);
 
-  let html = '<div class="term-block">';
-  html += '<div class="term-header">' + termLabel + ' Term Rental Option</div>';
+  // Inline styles for term block
+  const termBlockStyle = 'margin-bottom: 8px; border: 1px solid #000;';
+  const termHeaderStyle = 'background-color: #0000ff; color: #ffff00; padding: 3px 6px; font-weight: bold; font-size: 12px; text-align: center;';
+
+  let html = '<div style="' + termBlockStyle + '">';
+  html += '<div style="' + termHeaderStyle + '">' + termLabel + ' Term Rental Option</div>';
+
+  // Inline styles for financial tables
+  const tableStyle = 'width: 100%; border-collapse: collapse; border: 1px solid #000;';
+  const thStyle = 'background-color: #00b0f0; padding: 2px 4px; font-weight: bold; font-size: 9px; border: 1px solid #000; text-align: left;';
+  const thCenterStyle = 'background-color: #00b0f0; padding: 2px 4px; font-weight: bold; font-size: 9px; border: 1px solid #000; text-align: center;';
+  const tdStyle = 'background-color: #d9edff; padding: 2px 4px; font-size: 9px; border: 1px solid #000;';
+  const tdCenterStyle = 'background-color: #d9edff; padding: 2px 4px; font-size: 9px; border: 1px solid #000; text-align: center; font-weight: 600;';
 
   // Cash Flow During Term Table
-  html += '<table class="financial-table">';
-  html += '<thead><tr><th colspan="2">Cash Flow During ' + termLabel + ' Term</th><th>$</th><th>Monthly Savings %</th></tr></thead>';
+  html += '<table style="' + tableStyle + '">';
+  html += '<thead><tr><th colspan="2" style="' + thStyle + '">Cash Flow During ' + termLabel + ' Term</th><th style="' + thCenterStyle + '">$</th><th style="' + thCenterStyle + '">Monthly Savings %</th></tr></thead>';
   html += '<tbody>';
-  html += '<tr><td colspan="2">Current Monthly Spend</td><td>$' + Math.round(monthlySpend).toLocaleString() + '</td><td></td></tr>';
-  html += '<tr><td colspan="2">Gross Monthly Savings</td><td>$' + Math.round(grossSavings).toLocaleString() + '</td><td>' + Math.round(savingsPercent) + '%</td></tr>';
-  html += '<tr><td colspan="2">' + termLabel + ' Rental Payment</td><td>$' + Math.round(termData.monthlyPayment).toLocaleString() + '</td><td></td></tr>';
-  html += '<tr><td colspan="2">Net Monthly Savings</td><td>$' + Math.round(termData.netMonthlySavings).toLocaleString() + '</td><td>' + netPercent + '%</td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Current Monthly Spend</td><td style="' + tdCenterStyle + '">$' + Math.round(monthlySpend).toLocaleString() + '</td><td style="' + tdCenterStyle + '"></td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Gross Monthly Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(grossSavings).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + Math.round(savingsPercent) + '%</td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">' + termLabel + ' Rental Payment</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.monthlyPayment).toLocaleString() + '</td><td style="' + tdCenterStyle + '"></td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Net Monthly Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.netMonthlySavings).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + netPercent + '%</td></tr>';
   html += '</tbody></table>';
 
   // Cash Flow After Term Table
-  html += '<table class="financial-table">';
-  html += '<thead><tr><th colspan="2">Cash Flow After ' + termLabel + ' Term</th><th>$</th><th>Monthly Savings %</th></tr></thead>';
+  html += '<table style="' + tableStyle + '">';
+  html += '<thead><tr><th colspan="2" style="' + thStyle + '">Cash Flow After ' + termLabel + ' Term</th><th style="' + thCenterStyle + '">$</th><th style="' + thCenterStyle + '">Monthly Savings %</th></tr></thead>';
   html += '<tbody>';
-  html += '<tr><td colspan="2">Current Monthly Spend</td><td>$' + Math.round(monthlySpend).toLocaleString() + '</td><td></td></tr>';
-  html += '<tr><td colspan="2">Gross Monthly Savings</td><td>$' + Math.round(grossSavings).toLocaleString() + '</td><td>' + Math.round(savingsPercent) + '%</td></tr>';
-  html += '<tr><td colspan="2">Rental Payment</td><td>$0</td><td></td></tr>';
-  html += '<tr><td colspan="2">Net Monthly Savings</td><td>$' + Math.round(grossSavings).toLocaleString() + '</td><td>' + Math.round(savingsPercent) + '%</td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Current Monthly Spend</td><td style="' + tdCenterStyle + '">$' + Math.round(monthlySpend).toLocaleString() + '</td><td style="' + tdCenterStyle + '"></td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Gross Monthly Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(grossSavings).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + Math.round(savingsPercent) + '%</td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Rental Payment</td><td style="' + tdCenterStyle + '">$0</td><td style="' + tdCenterStyle + '"></td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">Net Monthly Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(grossSavings).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + Math.round(savingsPercent) + '%</td></tr>';
   html += '</tbody></table>';
 
   // Annual Savings Analysis Table
-  html += '<table class="financial-table">';
-  html += '<thead><tr><th colspan="2">Annual Savings Analysis</th><th>$</th><th>Annual Savings %</th></tr></thead>';
+  const tenYearPercent = Math.round((termData.netSavings10Year / (monthlySpend * 120)) * 100);
+  html += '<table style="' + tableStyle + '">';
+  html += '<thead><tr><th colspan="2" style="' + thStyle + '">Annual Savings Analysis</th><th style="' + thCenterStyle + '">$</th><th style="' + thCenterStyle + '">Annual Savings %</th></tr></thead>';
   html += '<tbody>';
-  html += '<tr><td colspan="2">1-Year Total Net Savings</td><td>$' + Math.round(termData.netYearlySavings).toLocaleString() + '</td><td>' + netPercent + '%</td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">1-Year Total Net Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.netYearlySavings).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + netPercent + '%</td></tr>';
 
   if (months === 36) {
-    html += '<tr><td colspan="2">3-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings3Year).toLocaleString() + '</td><td>' + netPercent + '%</td></tr>';
+    html += '<tr><td colspan="2" style="' + tdStyle + '">3-Year Total Net Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.netSavings3Year).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + netPercent + '%</td></tr>';
   } else if (months === 60) {
-    html += '<tr><td colspan="2">5-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings5Year).toLocaleString() + '</td><td>' + netPercent + '%</td></tr>';
+    html += '<tr><td colspan="2" style="' + tdStyle + '">5-Year Total Net Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.netSavings5Year).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + netPercent + '%</td></tr>';
   } else if (months === 72) {
-    html += '<tr><td colspan="2">6-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings6Year).toLocaleString() + '</td><td>' + netPercent + '%</td></tr>';
+    html += '<tr><td colspan="2" style="' + tdStyle + '">6-Year Total Net Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.netSavings6Year).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + netPercent + '%</td></tr>';
   }
 
-  const tenYearPercent = Math.round((termData.netSavings10Year / (monthlySpend * 120)) * 100);
-  html += '<tr><td colspan="2">10-Year Total Net Savings</td><td>$' + Math.round(termData.netSavings10Year).toLocaleString() + '</td><td>' + tenYearPercent + '%</td></tr>';
+  html += '<tr><td colspan="2" style="' + tdStyle + '">10-Year Total Net Savings</td><td style="' + tdCenterStyle + '">$' + Math.round(termData.netSavings10Year).toLocaleString() + '</td><td style="' + tdCenterStyle + '">' + tenYearPercent + '%</td></tr>';
   html += '</tbody></table>';
 
-  // ROI Metrics Table
-  html += '<table class="financial-table roi-table">';
+  // ROI Metrics Table - using inline styles for reliable rendering
+  const roiLabelStyle = 'background-color: #00ffff; font-weight: bold; font-size: 10px; padding: 2px 4px; border: 1px solid #000; width: 75%;';
+  const roiValueStyle = 'background-color: #00ffff; font-weight: bold; font-size: 14px; color: #0000ff; text-align: center; padding: 2px 4px; border: 1px solid #000; width: 25%;';
+
+  html += '<table style="width: 100%; border-collapse: collapse; border: 1px solid #000;">';
   html += '<tbody>';
-  html += '<tr><td class="roi-label">Monthly Return on Rental Payment *</td><td class="roi-value">' + Math.round(termData.roiMonth1 * 100) + '%</td></tr>';
+  html += '<tr><td style="' + roiLabelStyle + '">Monthly Return on Rental Payment *</td><td style="' + roiValueStyle + '">' + Math.round(termData.roiMonth1 * 100) + '%</td></tr>';
 
   if (months === 36) {
-    html += '<tr><td class="roi-label">3-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi3Year * 100) + '%</td></tr>';
+    html += '<tr><td style="' + roiLabelStyle + '">3-Year Return on Rental Payment **</td><td style="' + roiValueStyle + '">' + Math.round(termData.roi3Year * 100) + '%</td></tr>';
   } else {
-    html += '<tr><td class="roi-label">5-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi5Year * 100) + '%</td></tr>';
+    html += '<tr><td style="' + roiLabelStyle + '">5-Year Return on Rental Payment **</td><td style="' + roiValueStyle + '">' + Math.round(termData.roi5Year * 100) + '%</td></tr>';
   }
 
-  html += '<tr><td class="roi-label">10-Year Return on Rental Payment ***</td><td class="roi-value">' + Math.round(termData.roi10Year * 100) + '%</td></tr>';
+  html += '<tr><td style="' + roiLabelStyle + '">10-Year Return on Rental Payment ***</td><td style="' + roiValueStyle + '">' + Math.round(termData.roi10Year * 100) + '%</td></tr>';
   html += '</tbody></table>';
 
   // Footnotes

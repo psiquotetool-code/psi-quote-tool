@@ -31,23 +31,33 @@ Quote Tool Via Claude Code/
 ├── Calculations.js      # All lease calculation formulas (Items A-AR)
 ├── Index.html           # Complete UI (3 screens in single-page app)
 ├── Styles.html          # CSS stylesheet (900+ lines, 10 sections)
+├── PDF.js               # PDF generation (being rewritten to use Google Sheets)
 ├── appsscript.json      # Apps Script project config
 ├── .clasp.json          # clasp config (not in Git - contains script ID)
 ├── CLAUDE.md            # This file
 └── .claude/
-    └── Reference - Apps Script Documents/
-        ├── Build plan v 9.md                    # Detailed build plan & status
-        ├── Quote Tool Requirements - Dec 2 2025.txt
-        ├── quote_tool_calculations.csv
-        ├── PSI_Quote_Tool_Calculator_Complete.csv
-        └── Steve Proposal - Nov 14.txt
+    ├── Reference - Apps Script Documents/
+    │   ├── Build plan v 9.md                    # Detailed build plan & status
+    │   ├── Quote Tool Requirements - Dec 2 2025.txt
+    │   ├── quote_tool_calculations.csv
+    │   ├── PSI_Quote_Tool_Calculator_Complete.csv
+    │   └── Steve Proposal - Nov 14.txt
+    └── PDF Refinement/
+        ├── Screen 3.jpg                         # Target layout from web app
+        ├── PDF Output V1-V4.pdf                 # Test iterations (HTML approach - failed)
+        ├── Google Sheets Screenshot Top.jpg     # Template layout reference
+        ├── Google Sheets Screenshot Bottom.jpg  # Template layout reference
+        └── Google Sheets Exported to PDF.pdf    # Working PDF from Sheets (target)
 ```
 
 ## Google Resources
 
 - **Apps Script Project ID**: `1-47VWwAe7cf4ZXVXlmMJhqHPWEdLG3el6e-JrBZ0wrWT1qhi9v2WG0Dc`
-- **Google Sheet**: `1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw`
+- **Data Google Sheet**: `1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw`
   - Tabs: Settings (rate factors), QuoteNumbers (tracking), QuoteLog (history)
+- **PDF Template Google Sheet**: `1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw`
+  - Tab to use: `Dec 2 Version`
+  - This is a pre-formatted spreadsheet template for PDF generation
 - **GitHub Repo**: https://github.com/maddsdad/psi-quote-tool
 
 ## Common Commands
@@ -96,33 +106,39 @@ clasp open
 
 **Phase C: PDF Generation & Email Delivery**
 
-**Approach Selected**: HTML to Blob Direct Conversion (using only free native Google services)
+**Approach Selected**: Google Sheets Template-Based PDF Generation
 
-**Next Task**: Create PDF.js file with these functions:
-- `createPDFQuote(quoteData)` - Main entry point
-- `buildPDFHTML(quoteData)` - Assembles complete HTML document
-- `getPDFStyles(brand)` - Returns print-optimized CSS
-- `buildPDFHeader(quoteData)` - Logo, title, metadata
-- `buildPDFLeftColumn(quoteData)` - Customer info, highlights, sites table
-- `buildPDFRightColumn(quoteData)` - Rep info, term blocks, financial tables
-- `buildTermBlockPDF(...)` - Financial tables for each term
-- `getOrCreateQuoteFolder()` - Drive folder for saved PDFs
+**Why this approach?** The HTML-to-Blob-to-PDF method was tried extensively (V1-V4) but Google's converter does not reliably render background colors, regardless of CSS classes or inline styles. The Google Sheets approach uses a pre-formatted template where all styling is preserved when exporting to PDF.
 
-**PDF Flow**:
+**Next Task**: Rewrite PDF.js to use Google Sheets approach:
+1. Open the PDF Template spreadsheet (`1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw`)
+2. Copy the `Dec 2 Version` tab to a temporary sheet
+3. Populate cells with quote data (customer info, financial values, locations)
+4. Export the sheet as PDF
+5. Save PDF to Drive folder
+6. Delete the temporary sheet
+7. Return the download URL
+
+**New PDF Flow**:
 ```
 Frontend: generatePDF()
 → Backend: createPDFQuote(quoteData)
-→ buildPDFHTML() creates complete HTML string
-→ Utilities.newBlob(html, MimeType.HTML)
-→ blob.getAs(MimeType.PDF)
+→ Copy template tab from PDF Template spreadsheet
+→ Populate cells with quote data
+→ SpreadsheetApp.getAs(MimeType.PDF)
 → Save to Drive folder
+→ Delete temp sheet
 → Return download URL
 ```
 
+**Cell Mapping Needed**: Map quote data fields to specific cells in the template:
+- Header: Date, Quote #, Valid Until
+- Left column: Customer info, Quote Highlights, Sites table (37 rows)
+- Right column: Rep info, Financial tables (36-month and 60-month terms), ROI rows
+
 **Files to modify**:
-1. PDF.js (NEW) - All PDF generation functions
-2. Index.html - Update generatePDF(), add Screen 4
-3. Styles.html - Add Section 11: Print/PDF Styles
+1. PDF.js - Complete rewrite to use Google Sheets approach
+2. Index.html - May need minor updates to generatePDF() if data format changes
 
 ## Key Decisions & Learnings
 

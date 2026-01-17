@@ -54,48 +54,48 @@
       <div class="card-header">Quote Created For</div>
       <div class="form-group-wide-label">
         <label>Company Name</label>
-        <input type="text" id="customerCompany" placeholder="Enter Company Name Here" value="">
+        <input type="text" id="customerCompany" placeholder="Enter Company Name Here" value="Test Company Inc.">
       </div>
     </div>
-    
+
     <input type="hidden" id="companyName" value="<?= brand === 'EXACT' ? 'Exact Water' : 'Tune Energy' ?>">
     <input type="hidden" id="quoteDate" value="<?= quoteDate ?>">
     <input type="hidden" id="quoteNumber" value="<?= quoteNumber ?>">
-    
+
     <div class="two-card-row">
       <div class="card bg-light">
         <div class="card-header">Customer Contact</div>
         <div class="form-group-horizontal">
           <label>Name</label>
-          <input type="text" id="customerContact" value="">
+          <input type="text" id="customerContact" value="John Smith">
         </div>
-        
+
         <div class="form-group-horizontal">
           <label>Phone</label>
-          <input type="text" id="customerPhone" onblur="formatPhone(this)" value="">
+          <input type="text" id="customerPhone" onblur="formatPhone(this)" value="(555) 123-4567">
         </div>
-        
+
         <div class="form-group-horizontal">
           <label>Email</label>
-          <input type="email" id="customerEmail" value="">
+          <input type="email" id="customerEmail" value="john@testcompany.com">
         </div>
       </div>
-      
+
       <div class="card bg-light">
         <div class="card-header">Rep Contact</div>
         <div class="form-group-horizontal">
           <label>Name</label>
-          <input type="text" id="repName" value="">
+          <input type="text" id="repName" value="Jane Doe">
         </div>
-        
+
         <div class="form-group-horizontal">
           <label>Phone</label>
-          <input type="text" id="repPhone" onblur="formatPhone(this)" value="">
+          <input type="text" id="repPhone" onblur="formatPhone(this)" value="(555) 987-6543">
         </div>
-        
+
         <div class="form-group-horizontal">
           <label>Email</label>
-          <input type="email" id="repEmail" value="">
+          <input type="email" id="repEmail" value="jane@tuneenergy.com">
         </div>
       </div>
     </div>
@@ -348,21 +348,12 @@ function addLocationRow(useDummyData = false) {
 
 
   // Set values - use dummy data for first row if requested
-  // Commented out for Steve's milestone 2 testing.  Uncomment for milestone 3 work
-  // const address = (useDummyData && rowNum === 1) ? '123 Main Street, Irvine CA' : '';
-  // const utility = (useDummyData && rowNum === 1) ? 'SCE' : '';
-  // const spend = (useDummyData && rowNum === 1) ? '8630' : '';
-  // const equip = (useDummyData && rowNum === 1) ? '17000' : '';
-  // const savings = (useDummyData && rowNum === 1) ? '10' : '';
-  // const panels = (useDummyData && rowNum === 1) ? '13' : '';
-  
-// EMPTY VALUES FOR STEVE'S TESTING of milestone 2
-const address = '';
-const utility = '';
-const spend = '';
-const equip = '';
-const savings = '';
-const panels = '';
+  const address = (useDummyData && rowNum === 1) ? '123 Main Street, Irvine CA' : '';
+  const utility = (useDummyData && rowNum === 1) ? 'SCE' : '';
+  const spend = (useDummyData && rowNum === 1) ? '8630' : '';
+  const equip = (useDummyData && rowNum === 1) ? '17000' : '';
+  const savings = (useDummyData && rowNum === 1) ? '10' : '';
+  const panels = (useDummyData && rowNum === 1) ? '13' : '';
 
 
   const row = tbody.insertRow();
