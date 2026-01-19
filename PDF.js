@@ -48,6 +48,15 @@ const CELL_MAP = {
   // 36-Month Term Block (Term 1) - or 60-month for Tier 3
   // ============================================
 
+  // Dynamic Labels (must be updated for Tier 3 quotes)
+  // These cells contain text labels that change based on term length
+  term1_header: 'F16',              // "XX-Month Term Rental Option"
+  term1_cashFlowDuringHeader: 'F17', // "Cash Flow During XX-Mo Term"
+  term1_paymentLabel: 'F20',        // "XX-Month Rental Payment"
+  term1_cashFlowAfterHeader: 'F22', // "Cash Flow After XX-Mo Term"
+  term1_termYearLabel: 'F29',       // "X-Year Total Net Savings"
+  term1_termROILabel: 'F32',        // "X-Year Return on Rental Payment **"
+
   // Cash Flow During Term (rows 17-21)
   // $ values are merged G:H, write to G. % values are in I (not merged).
   term1_currentSpend: 'G18',
@@ -89,8 +98,14 @@ const CELL_MAP = {
   // 60-Month Term Block (Term 2) - or 72-month for Tier 3
   // ============================================
 
-  // The 60-month block starts at row 38
-  term2_headerRow: 38,
+  // Dynamic Labels (must be updated for Tier 3 quotes)
+  // These cells contain text labels that change based on term length
+  term2_header: 'F38',              // "XX-Month Term Rental Option"
+  term2_cashFlowDuringHeader: 'F39', // "Cash Flow During XX-Mo Term"
+  term2_paymentLabel: 'F42',        // "XX-Month Rental Payment"
+  term2_cashFlowAfterHeader: 'F44', // "Cash Flow After XX-Mo Term"
+  term2_termYearLabel: 'F51',       // "X-Year Total Net Savings"
+  term2_termROILabel: 'F54',        // "X-Year Return on Rental Payment **"
 
   // Cash Flow During Term (rows 39-43)
   term2_currentSpend: 'G40',
@@ -154,6 +169,9 @@ function createPDFQuote(quoteData) {
 
     // Step 3: Populate cells with quote data
     populateCells(tempSheet, quoteData);
+
+    // Step 3.5: Flush all pending changes to ensure data is written before export
+    SpreadsheetApp.flush();
 
     // Step 4: Export sheet as PDF
     const pdfBlob = exportSheetAsPDF(templateSS, tempSheet);
@@ -275,6 +293,25 @@ function populateTermBlock(sheet, termNum, termData, results, months) {
   const grossPct = Math.round(results.avgSavingsPercent);
   const netPct = Math.round((termData.netMonthlySavings / monthlySpend) * 100);
 
+  // Determine term years for labels (3, 5, or 6)
+  let termYears;
+  if (months === 36) {
+    termYears = 3;
+  } else if (months === 60) {
+    termYears = 5;
+  } else if (months === 72) {
+    termYears = 6;
+  }
+
+  // Set Dynamic Labels (these change based on term length)
+  // For Tier 3, Term 1 shows 60-month and Term 2 shows 72-month
+  sheet.getRange(CELL_MAP[prefix + 'header']).setValue(months + '-Month Term Rental Option');
+  sheet.getRange(CELL_MAP[prefix + 'cashFlowDuringHeader']).setValue('Cash Flow During ' + months + '-Mo Term');
+  sheet.getRange(CELL_MAP[prefix + 'paymentLabel']).setValue(months + '-Month Rental Payment');
+  sheet.getRange(CELL_MAP[prefix + 'cashFlowAfterHeader']).setValue('Cash Flow After ' + months + '-Mo Term');
+  sheet.getRange(CELL_MAP[prefix + 'termYearLabel']).setValue(termYears + '-Year Total Net Savings');
+  sheet.getRange(CELL_MAP[prefix + 'termROILabel']).setValue(termYears + '-Year Return on Rental Payment **');
+
   // Cash Flow During Term
   sheet.getRange(CELL_MAP[prefix + 'currentSpend']).setValue('$' + formatNumber(monthlySpend));
   sheet.getRange(CELL_MAP[prefix + 'grossSavings']).setValue('$' + formatNumber(grossSavings));
@@ -296,17 +333,14 @@ function populateTermBlock(sheet, termNum, termData, results, months) {
   sheet.getRange(CELL_MAP[prefix + '1yearPct']).setValue(netPct + '%');
 
   // Term-specific savings (3-year, 5-year, or 6-year)
+  // Note: termYears is already defined at the top of this function
   let termYearSavings;
-  let termYears;
   if (months === 36) {
     termYearSavings = termData.netSavings3Year;
-    termYears = 3;
   } else if (months === 60) {
     termYearSavings = termData.netSavings5Year;
-    termYears = 5;
   } else if (months === 72) {
     termYearSavings = termData.netSavings6Year;
-    termYears = 6;
   }
   sheet.getRange(CELL_MAP[prefix + 'termYearSavings']).setValue('$' + formatNumber(termYearSavings));
   sheet.getRange(CELL_MAP[prefix + 'termYearPct']).setValue(netPct + '%');

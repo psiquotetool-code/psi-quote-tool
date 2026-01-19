@@ -37,6 +37,16 @@
     <button onclick="acceptAgreement()" class="btn btn-agree">I agree to only use the quote tool buttons to navigate between screens while using this quote tool.</button>
   </div>
 </div>
+
+<!-- Loading Overlay (PDF Generation) -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Generating PDF...</p>
+    <p class="loading-subtext">Please wait, this may take a few seconds.</p>
+  </div>
+</div>
+
 <!-- ========== SCREEN 1: QUOTE SETUP ========== -->
 <div id="screen1" class="screen active">
   <div class="container">
@@ -679,7 +689,10 @@ function generatePDF() {
     results: quoteResults
   };
 
-  // Show loading state
+  // Show loading overlay
+  showLoading();
+
+  // Also disable buttons
   const pdfButtons = document.querySelectorAll('.btn-primary');
   pdfButtons.forEach(btn => {
     if (btn.textContent.includes('PDF')) {
@@ -697,6 +710,9 @@ function generatePDF() {
 
 // Handle successful PDF creation
 function handlePDFSuccess(result) {
+  // Hide loading overlay
+  hideLoading();
+
   // Reset button state
   resetPDFButtons();
 
@@ -711,6 +727,9 @@ function handlePDFSuccess(result) {
 
 // Handle PDF creation error
 function handlePDFError(error) {
+  // Hide loading overlay
+  hideLoading();
+
   resetPDFButtons();
   showAlert('Error creating PDF: ' + error.message);
 }
@@ -724,6 +743,16 @@ function resetPDFButtons() {
       btn.textContent = 'Generate PDF →';
     }
   });
+}
+
+// Show loading overlay
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+
+// Hide loading overlay
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('active');
 }
 
 // HELPER: Build HTML for one term option block
@@ -778,8 +807,10 @@ html += '<tr><td class="roi-label">Monthly Return on Rental Payment *</td><td cl
 
 if (months === 36) {
   html += '<tr><td class="roi-label">3-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi3Year * 100) + '%</td></tr>';
-} else {
+} else if (months === 60) {
   html += '<tr><td class="roi-label">5-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi5Year * 100) + '%</td></tr>';
+} else if (months === 72) {
+  html += '<tr><td class="roi-label">6-Year Return on Rental Payment **</td><td class="roi-value">' + Math.round(termData.roi6Year * 100) + '%</td></tr>';
 }
 
 html += '<tr><td class="roi-label">10-Year Return on Rental Payment ***</td><td class="roi-value">' + Math.round(termData.roi10Year * 100) + '%</td></tr>';
@@ -791,8 +822,10 @@ html += '<p><strong>* Monthly Return on Rental Payment</strong> = Monthly Net Sa
 
 if (months === 36) {
   html += '<p><strong>** 3-Year Return on Rental Payment</strong> = 3-Year Total Net Savings / 3 Years of Rental Payments.</p>';
-} else {
+} else if (months === 60) {
   html += '<p><strong>** 5-Year Return on Rental Payment</strong> = 5-Year Total Net Savings / 5 Years of Rental Payments.</p>';
+} else if (months === 72) {
+  html += '<p><strong>** 6-Year Return on Rental Payment</strong> = 6-Year Total Net Savings / 6 Years of Rental Payments.</p>';
 }
 
 html += '<p><strong>*** 10-Year Return on Rental Payment</strong> = 10-Year Total Net Savings / ' + (months === 36 ? '3' : months === 60 ? '5' : '6') + ' Years of Rental Payments.</p>';

@@ -218,14 +218,16 @@ function calculate72Month(equipmentCost, grossMonthlySavings, rateFactor) {
   // AP: ROI Month 1 (monthly return)
   const roiMonth1 = netMonthlySavings / monthlyPayment;
   
-  // AQ: ROI 5-Year (vs payments through month 60)
-  const payments5Year = monthlyPayment * 60;
-  const roi5Year = (netYearlySavings * 5) / payments5Year;
-  
-  // AR: ROI 10-Year (vs total lease payments)
+  // AQ: ROI 6-Year (vs total lease payments)
+  // NOTE: Changed from roi5Year to roi6Year on 1/19/2026
+  // Original spec had "ROI 5-Year" but 72-month term requires 6-year ROI
+  // Formula: netSavings6Year / (monthlyPayment * 72)
   const totalLeasePayments = monthlyPayment * 72;
+  const roi6Year = netSavings6Year / totalLeasePayments;
+
+  // AR: ROI 10-Year (vs total lease payments)
   const roi10Year = netSavings10Year / totalLeasePayments;
-  
+
   return {
     monthlyPayment: monthlyPayment,
     netMonthlySavings: netMonthlySavings,
@@ -233,7 +235,7 @@ function calculate72Month(equipmentCost, grossMonthlySavings, rateFactor) {
     netSavings6Year: netSavings6Year,
     netSavings10Year: netSavings10Year,
     roiMonth1: roiMonth1,
-    roi5Year: roi5Year,
+    roi6Year: roi6Year,      // Changed from roi5Year - see AQ comment above
     roi10Year: roi10Year
   };
 }

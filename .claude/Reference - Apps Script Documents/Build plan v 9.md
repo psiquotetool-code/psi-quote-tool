@@ -280,27 +280,24 @@ COMPLETED (January 16, 2026):
 ✓ OAuth scopes updated (added script.external_request permission)
 ✓ Index.html generatePDF() already wired correctly to pass quoteData
 
-BLOCKING ISSUE - MUST RESOLVE:
-⚠️ Missing roi6Year calculation in Calculations.js for 72-month term
+BLOCKING ISSUE - RESOLVED (January 19, 2026):
+✅ Added roi6Year calculation to Calculations.js for 72-month term
 
-Current state in calculate72Month():
-- Returns roi5Year (INCORRECT - should be roi6Year)
-- PDF.js expects termData.roi6Year for 72-month terms
-- Without this fix, Tier 3 quotes will show undefined% for term ROI
+What was changed in calculate72Month() function:
+- Removed incorrect roi5Year calculation (spec item AQ was mislabeled)
+- Added correct roi6Year calculation: netSavings6Year / (monthlyPayment * 72)
+- Updated return object to return roi6Year instead of roi5Year
+- Added detailed comments for traceability (lines 221-226)
 
-QUESTION TO CONFIRM BEFORE FIXING:
-The formula for roi6Year should be:
-  roi6Year = netSavings6Year / (monthlyPayment * 72)
-
-This follows the pattern:
+The ROI pattern for all terms:
 - 36-month: roi3Year = netSavings3Year / (monthlyPayment * 36)
 - 60-month: roi5Year = netSavings5Year / (monthlyPayment * 60)
-- 72-month: roi6Year = netSavings6Year / (monthlyPayment * 72) <-- NEEDS CONFIRMATION
+- 72-month: roi6Year = netSavings6Year / (monthlyPayment * 72)
 
 Files Modified:
 ✓ PDF.js - Complete rewrite (525 lines)
 ✓ appsscript.json - Added script.external_request OAuth scope
-□ Calculations.js - Needs roi6Year added (NEXT SESSION)
+✓ Calculations.js - Added roi6Year calculation (1/19/2026)
 
 PDF.js Function Structure (IMPLEMENTED):
 ```
@@ -366,11 +363,15 @@ Reference Files (in .claude/PDF Refinement/):
 - Screen 3.jpg - Web app layout for comparison
 
 Remaining Tasks:
-□ Fix Calculations.js - Add roi6Year for 72-month term
-□ Test with actual quote data (not just test function)
-□ Test Tier 3 quote (60/72 month terms) to verify roi6Year works
-□ Visual comparison: PDF vs template vs Screen 3
-□ Test both brands (Tune Energy, Exact Water)
+✓ Fix Calculations.js - Add roi6Year for 72-month term (DONE 1/19/2026)
+✓ Test with actual quote data (not just test function) (DONE 1/19/2026)
+✓ Test Tier 3 quote (60/72 month terms) to verify roi6Year works (DONE 1/19/2026)
+✓ Fix dynamic labels in Index.html for 72-month terms (DONE 1/19/2026)
+✓ Fix dynamic labels in PDF.js for Tier 3 PDFs (DONE 1/19/2026)
+✓ Add SpreadsheetApp.flush() before PDF export (DONE 1/19/2026)
+✓ Add loading spinner overlay for PDF generation (DONE 1/19/2026)
+✓ Test Tier 1, 2, and 3 - All working (DONE 1/19/2026)
+□ Test both brands (Tune Energy, Exact Water) - FUTURE
 
 File Naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
 
@@ -828,15 +829,42 @@ Version 2.3 - January 16, 2026 (Evening)
 - DISCOVERED: Missing roi6Year calculation in Calculations.js for 72-month term
 - Session ended with outstanding question about roi6Year formula
 
-OUTSTANDING ISSUE FOR NEXT SESSION:
-The 72-month term in Calculations.js needs roi6Year added.
-Formula to confirm: roi6Year = netSavings6Year / (monthlyPayment * 72)
-This follows the same pattern as roi3Year and roi5Year calculations.
-Once confirmed, update calculate72Month() to return roi6Year instead of roi5Year.
+Version 2.4 - January 19, 2026 (Morning)
+- Fixed roi6Year calculation in Calculations.js for 72-month term (Tier 3)
+- Original spec item AQ had "ROI 5-Year" but 72-month term requires 6-year ROI
+- Added detailed code comments for traceability (lines 221-226)
+- Updated CLAUDE.md and Build plan documentation
+- ROI pattern now consistent across all terms:
+  * 36-month: roi3Year = netSavings3Year / (monthlyPayment * 36)
+  * 60-month: roi5Year = netSavings5Year / (monthlyPayment * 60)
+  * 72-month: roi6Year = netSavings6Year / (monthlyPayment * 72)
+
+Version 2.5 - January 19, 2026 (PDF Generation Complete)
+- PDF GENERATION NOW 100% COMPLETE AND TESTED
+- Fixed Index.html buildTermBlock() for 72-month terms:
+  * Added else if (months === 72) conditions for ROI labels
+  * Now shows "6-Year Return on Rental Payment" for 72-month terms
+  * Footnotes correctly reference 6-Year for 72-month terms
+- Fixed PDF.js for Tier 3 PDFs - added dynamic label cell references:
+  * term1_header (F16), term2_header (F38) - "XX-Month Term Rental Option"
+  * term1_cashFlowDuringHeader (F17), term2_cashFlowDuringHeader (F39)
+  * term1_paymentLabel (F20), term2_paymentLabel (F42) - "XX-Month Rental Payment"
+  * term1_cashFlowAfterHeader (F22), term2_cashFlowAfterHeader (F44)
+  * term1_termYearLabel (F29), term2_termYearLabel (F51) - "X-Year Total Net Savings"
+  * term1_termROILabel (F32), term2_termROILabel (F54) - "X-Year Return on Rental Payment"
+- Added SpreadsheetApp.flush() before PDF export to ensure data writes
+- Added loading spinner overlay (Styles.html + Index.html):
+  * Centered modal with spinning animation
+  * Shows "Generating PDF... Please wait"
+  * Improves UX during PDF generation delay
+- TESTED: Tier 1 (36/60), Tier 2 (36/60), Tier 3 (60/72) - ALL WORKING
+- Ready for GitHub commit before starting Step 13: Email Delivery
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-END OF BUILD PLAN v2.3
-Last Updated: January 16, 2026
-Current Phase: C (PDF Generation & Email Delivery) - IN PROGRESS (90% Complete)
-Next Task: Confirm roi6Year formula and update Calculations.js
+END OF BUILD PLAN v2.5
+Last Updated: January 19, 2026
+Current Phase: C (PDF Generation & Email Delivery)
+Step 12: PDF Generation - ✅ COMPLETE (100%)
+Step 13: Email Delivery - ⏳ NEXT
+Step 14: Post-Send Options - ⏳ PLANNED

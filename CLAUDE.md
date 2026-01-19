@@ -108,45 +108,49 @@ clasp open
 
 **Approach Selected**: Google Sheets Template-Based PDF Generation
 
-**Status as of January 16, 2026 (end of session):**
+**Status as of January 19, 2026:**
+
+### Step 12: PDF Generation ✅ COMPLETE
 - ✅ PDF.js completely rewritten with Google Sheets template approach
-- ✅ Cell mapping completed from 5 zoomed-in screenshots (Zoom in Screenshot #1-5.jpg)
-- ✅ testPDFGeneration() works - PDF generates successfully with test data
+- ✅ Cell mapping completed from 5 zoomed-in screenshots
+- ✅ All tiers tested and working (Tier 1, 2, and 3)
+- ✅ Dynamic labels for term headers (36/60/72-Month) added to PDF.js
+- ✅ Dynamic labels for ROI rows (3/5/6-Year) added to PDF.js
+- ✅ roi6Year calculation added to Calculations.js for 72-month terms
+- ✅ 6-Year labels fixed in Index.html buildTermBlock() for Screen 3
+- ✅ SpreadsheetApp.flush() added to ensure data writes before PDF export
+- ✅ Loading spinner overlay added for better UX during PDF generation
 - ✅ OAuth scopes updated (added script.external_request permission)
-- ⚠️ **BLOCKING ISSUE**: Missing roi6Year calculation in Calculations.js (see below)
 
-**OUTSTANDING ISSUE - MUST RESOLVE NEXT SESSION:**
+### Step 13: Email Delivery ⏳ NEXT
+- Email composition modal with editable message
+- Send to customer (with PDF attachment), CC rep
+- Separate notification email to admin
+- Post-send options (download PDF, generate another, exit)
 
-The 72-month term (Tier 3) is missing a `roi6Year` calculation in Calculations.js.
+**Changes Made on January 19, 2026:**
 
-Current state in `calculate72Month()`:
-```javascript
-// Currently returns roi5Year (INCORRECT for 72-month term)
-return {
-  ...
-  roi5Year: roi5Year,  // <-- This should be roi6Year
-  ...
-};
-```
+1. **Calculations.js** - Added roi6Year for 72-month terms:
+   - Formula: `roi6Year = netSavings6Year / (monthlyPayment * 72)`
+   - Updated return object to return `roi6Year` instead of `roi5Year`
+   - Added traceability comments (lines 221-226)
 
-PDF.js expects `roi6Year` for 72-month terms:
-```javascript
-} else if (months === 72) {
-  termROI = termData.roi6Year;  // <-- Looking for roi6Year
-}
-```
+2. **Index.html** - Fixed 72-month display in buildTermBlock():
+   - Added `else if (months === 72)` conditions for ROI labels
+   - Now shows "6-Year Return on Rental Payment" for 72-month terms
+   - Footnotes correctly reference 6-Year for 72-month terms
 
-**QUESTION TO RESOLVE:** The formula for roi6Year should be:
-```
-roi6Year = netSavings6Year / (monthlyPayment * 72)
-```
-This follows the same pattern as:
-- 36-month: roi3Year = netSavings3Year / (monthlyPayment * 36)
-- 60-month: roi5Year = netSavings5Year / (monthlyPayment * 60)
+3. **PDF.js** - Added dynamic label cell references:
+   - term1_header (F16), term2_header (F38) - Term option headers
+   - term1_paymentLabel (F20), term2_paymentLabel (F42) - Rental payment labels
+   - term1_termYearLabel (F29), term2_termYearLabel (F51) - X-Year savings labels
+   - term1_termROILabel (F32), term2_termROILabel (F54) - X-Year ROI labels
+   - Added SpreadsheetApp.flush() before PDF export
 
-Confirm this formula is correct, then update Calculations.js to:
-1. Replace the roi5Year calculation with roi6Year
-2. Update the return object to return roi6Year instead of roi5Year
+4. **Styles.html & Index.html** - Added loading spinner:
+   - Centered overlay with spinning animation
+   - Shows "Generating PDF... Please wait"
+   - Displays during PDF generation, hides on completion
 
 **PDF Generation Flow (IMPLEMENTED):**
 ```
