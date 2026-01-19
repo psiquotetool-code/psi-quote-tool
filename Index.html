@@ -47,6 +47,87 @@
   </div>
 </div>
 
+<!-- Email Composition Modal -->
+<div id="emailModal" class="email-modal-overlay">
+  <div class="email-modal-box">
+    <div class="email-modal-header">
+      <h2>Send Quote to Customer</h2>
+      <button onclick="closeEmailModal()" class="email-close-btn">&times;</button>
+    </div>
+
+    <div class="email-modal-content">
+      <!-- Email Recipients (Editable) -->
+      <div class="email-field">
+        <label>To:</label>
+        <input type="email" id="emailTo" class="email-input">
+      </div>
+
+      <div class="email-field">
+        <label>CC:</label>
+        <input type="email" id="emailCC" class="email-input">
+      </div>
+
+      <div class="email-field">
+        <label>Subject:</label>
+        <input type="text" id="emailSubject" class="email-input">
+      </div>
+
+      <!-- Email Body (Editable) -->
+      <div class="email-field">
+        <label>Message:</label>
+        <textarea id="emailBody" class="email-textarea" rows="8"></textarea>
+        <button onclick="resetEmailTemplate()" class="btn btn-reset-template">Reset to Default</button>
+      </div>
+
+      <!-- Attachment Indicator -->
+      <div class="email-attachment">
+        <span class="attachment-icon">📎</span>
+        <span class="attachment-name" id="attachmentName">Quote_Customer_QN-00000.pdf</span>
+        <span class="attachment-note">(PDF will be attached automatically)</span>
+      </div>
+
+      <!-- Admin Notification Notice -->
+      <div class="email-admin-notice">
+        <strong>Note:</strong> A separate notification email will also be sent to the administrator.
+      </div>
+    </div>
+
+    <div class="email-modal-footer">
+      <button onclick="closeEmailModal()" class="btn btn-secondary">Cancel</button>
+      <button onclick="sendQuoteEmail()" class="btn btn-primary" id="sendEmailBtn">Send Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- Post-Send Options Modal -->
+<div id="postSendModal" class="email-modal-overlay">
+  <div class="email-modal-box post-send-box">
+    <div class="email-modal-header success-header">
+      <h2>Quote Sent Successfully!</h2>
+    </div>
+
+    <div class="email-modal-content">
+      <div class="success-message">
+        <span class="success-icon">✓</span>
+        <p>Your quote has been emailed to the customer and a notification has been sent to the administrator.</p>
+      </div>
+
+      <div class="post-send-info">
+        <p><strong>Quote Number:</strong> <span id="postSendQuoteNum"></span></p>
+        <p><strong>Customer:</strong> <span id="postSendCustomer"></span></p>
+        <p><strong>Sent To:</strong> <span id="postSendEmail"></span></p>
+      </div>
+    </div>
+
+    <div class="email-modal-footer post-send-footer-vertical">
+      <button onclick="modifyExistingQuote()" class="btn btn-primary btn-full-width">← Modify the quote you just sent</button>
+      <button onclick="downloadPDF()" class="btn btn-secondary btn-full-width">Download Quote PDF</button>
+      <button onclick="confirmGenerateNewQuote()" class="btn btn-add-location btn-full-width">Generate New Quote →</button>
+      <button onclick="confirmExitTool()" class="btn btn-danger btn-full-width">Exit Quote Tool</button>
+    </div>
+  </div>
+</div>
+
 <!-- ========== SCREEN 1: QUOTE SETUP ========== -->
 <div id="screen1" class="screen active">
   <div class="container">
@@ -506,6 +587,7 @@ function generateQuote() {
 
 // Store results globally for other functions
 let quoteResults = null;
+let pdfResult = null;  // Store PDF info for email and download
 
 function showQuoteResults(results) {
   quoteResults = results;
@@ -717,9 +799,14 @@ function handlePDFSuccess(result) {
   resetPDFButtons();
 
   if (result.success) {
-    // Open the PDF in a new tab
+    // Store PDF result globally for email and download
+    pdfResult = result;
+
+    // Open the PDF in a new tab so user can review it
     window.open(result.url, '_blank');
-    showAlert('PDF created successfully! Your download should start automatically.');
+
+    // Show email composition modal
+    showEmailModal();
   } else {
     showAlert('Error creating PDF: ' + result.error);
   }
@@ -874,13 +961,228 @@ function acceptAgreement() {
 window.addEventListener('beforeunload', function(e) {
   const hasLocationData = document.getElementById('locationBody').rows.length > 0;
   const customerCompany = document.getElementById('customerCompany').value.trim();
-  
+
   if (hasLocationData || customerCompany) {
     e.preventDefault();
     e.returnValue = '';
     return '';
   }
 });
+
+// ============================================
+// EMAIL DELIVERY FUNCTIONS - Phase C Step 13
+// ============================================
+
+// Generate default email template
+function getEmailTemplate() {
+  const customerContact = document.getElementById('customerContact').value;
+  const companyName = document.getElementById('companyName').value;
+  const quoteNumber = document.getElementById('quoteNumber').value;
+  const repName = document.getElementById('repName').value;
+  const repEmail = document.getElementById('repEmail').value;
+  const repPhone = document.getElementById('repPhone').value;
+  const locationCount = quoteResults ? quoteResults.locationCount : 1;
+
+  const template = `Dear ${customerContact},
+
+Thank you for your interest in ${companyName} solutions.
+
+Please find attached your customized rental quote ${quoteNumber} for ${locationCount} location(s).
+
+I will follow up with you to discuss the details and answer any questions you may have.
+
+Best regards,
+${repName}
+${companyName}
+${repEmail} | ${repPhone}`;
+
+  return template;
+}
+
+// Show email composition modal
+function showEmailModal() {
+  const customerEmail = document.getElementById('customerEmail').value;
+  const repEmail = document.getElementById('repEmail').value;
+  const companyName = document.getElementById('companyName').value;
+  const customerCompany = document.getElementById('customerCompany').value;
+  const quoteNumber = document.getElementById('quoteNumber').value;
+
+  // Pre-fill email fields
+  document.getElementById('emailTo').value = customerEmail;
+  document.getElementById('emailCC').value = repEmail;
+  document.getElementById('emailSubject').value = `Your ${companyName} Rental Quote - ${customerCompany} - ${quoteNumber}`;
+  document.getElementById('emailBody').value = getEmailTemplate();
+
+  // Update attachment name
+  if (pdfResult && pdfResult.fileName) {
+    document.getElementById('attachmentName').textContent = pdfResult.fileName;
+  }
+
+  // Show the modal
+  document.getElementById('emailModal').classList.add('active');
+}
+
+// Close email modal
+function closeEmailModal() {
+  document.getElementById('emailModal').classList.remove('active');
+}
+
+// Reset email template to default
+function resetEmailTemplate() {
+  document.getElementById('emailBody').value = getEmailTemplate();
+}
+
+// Send quote email
+function sendQuoteEmail() {
+  // Disable send button and show loading state
+  const sendBtn = document.getElementById('sendEmailBtn');
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Sending...';
+
+  // Sync any email address changes back to the form fields
+  // This ensures changes persist if user goes back to edit
+  const editedToEmail = document.getElementById('emailTo').value;
+  const editedCCEmail = document.getElementById('emailCC').value;
+  document.getElementById('customerEmail').value = editedToEmail;
+  document.getElementById('repEmail').value = editedCCEmail;
+
+  // Collect email data
+  const emailData = {
+    to: document.getElementById('emailTo').value,
+    cc: document.getElementById('emailCC').value,
+    subject: document.getElementById('emailSubject').value,
+    body: document.getElementById('emailBody').value,
+    pdfFileId: pdfResult.fileId,
+    pdfFileName: pdfResult.fileName,
+    // Additional data for admin notification
+    customerCompany: document.getElementById('customerCompany').value,
+    customerContact: document.getElementById('customerContact').value,
+    repName: document.getElementById('repName').value,
+    repEmail: document.getElementById('repEmail').value,
+    companyName: document.getElementById('companyName').value,
+    quoteNumber: document.getElementById('quoteNumber').value,
+    quoteDate: document.getElementById('quoteDate').value,
+    totalEquipment: quoteResults.totalEquipment,
+    locationCount: quoteResults.locationCount
+  };
+
+  // Call backend to send emails
+  google.script.run
+    .withSuccessHandler(handleEmailSuccess)
+    .withFailureHandler(handleEmailError)
+    .sendQuoteEmails(emailData);
+}
+
+// Handle successful email send
+function handleEmailSuccess(result) {
+  // Reset send button
+  const sendBtn = document.getElementById('sendEmailBtn');
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Send Email';
+
+  if (result.success) {
+    // Close email modal
+    closeEmailModal();
+
+    // Populate post-send modal
+    document.getElementById('postSendQuoteNum').textContent = document.getElementById('quoteNumber').value;
+    document.getElementById('postSendCustomer').textContent = document.getElementById('customerCompany').value;
+    document.getElementById('postSendEmail').textContent = document.getElementById('emailTo').value;
+
+    // Show post-send modal
+    document.getElementById('postSendModal').classList.add('active');
+  } else {
+    showAlert('Error sending email: ' + result.error);
+  }
+}
+
+// Handle email send error
+function handleEmailError(error) {
+  // Reset send button
+  const sendBtn = document.getElementById('sendEmailBtn');
+  sendBtn.disabled = false;
+  sendBtn.textContent = 'Send Email';
+
+  showAlert('Error sending email: ' + error.message);
+}
+
+// ============================================
+// POST-SEND OPTIONS
+// ============================================
+
+// Download the PDF
+function downloadPDF() {
+  if (pdfResult && pdfResult.url) {
+    window.open(pdfResult.url, '_blank');
+  } else {
+    showAlert('PDF not available for download.');
+  }
+}
+
+// Modify existing quote (go back to Screen 3 to edit)
+function modifyExistingQuote() {
+  // Close post-send modal
+  document.getElementById('postSendModal').classList.remove('active');
+
+  // Clear PDF result since they'll need to regenerate after edits
+  pdfResult = null;
+
+  // Stay on Screen 3 - they can use "Back to Edit Locations" button from there
+  // Screen 3 should already be active
+}
+
+// Confirm before generating new quote
+function confirmGenerateNewQuote() {
+  const message = `<strong>Start a New Quote?</strong><br><br>
+You are about to start a new quote from scratch.<br><br>
+<strong>All information from your current quote will be lost.</strong><br><br>
+Are you sure you want to continue?`;
+
+  showConfirm(message, function() {
+    generateAnotherQuote();
+  });
+}
+
+// Generate another quote (reset to Screen 1)
+function generateAnotherQuote() {
+  // Close post-send modal
+  document.getElementById('postSendModal').classList.remove('active');
+
+  // Clear location data
+  document.getElementById('locationBody').innerHTML = '';
+
+  // Reset global variables
+  quoteResults = null;
+  pdfResult = null;
+
+  // Navigate to Screen 1
+  document.getElementById('screen3').classList.remove('active');
+  document.getElementById('screen2').classList.remove('active');
+  document.getElementById('screen1').classList.add('active');
+
+  // Reload to get new quote number
+  window.location.reload();
+}
+
+// Confirm before exiting tool
+function confirmExitTool() {
+  const message = `<strong>Exit Quote Tool?</strong><br><br>
+If you exit now, <strong>all of your quote data will be lost.</strong><br><br>
+Are you sure you want to exit?`;
+
+  showConfirm(message, function() {
+    exitTool();
+  });
+}
+
+// Exit the tool
+function exitTool() {
+  // Close modal first
+  document.getElementById('postSendModal').classList.remove('active');
+
+  // Show confirmation with "finished" message
+  showAlert('Thank you for using the Quote Tool! You may close this browser tab.');
+}
 
 
 </script>

@@ -30,8 +30,9 @@ Quote Tool Via Claude Code/
 ├── Code.js              # Web app entry point, quote number generation
 ├── Calculations.js      # All lease calculation formulas (Items A-AR)
 ├── Index.html           # Complete UI (3 screens in single-page app)
-├── Styles.html          # CSS stylesheet (900+ lines, 10 sections)
-├── PDF.js               # PDF generation (being rewritten to use Google Sheets)
+├── Styles.html          # CSS stylesheet (1100+ lines, 11 sections)
+├── PDF.js               # PDF generation using Google Sheets template
+├── Email.js             # Email delivery (customer email + admin notification)
 ├── appsscript.json      # Apps Script project config
 ├── .clasp.json          # clasp config (not in Git - contains script ID)
 ├── CLAUDE.md            # This file
@@ -56,8 +57,9 @@ Quote Tool Via Claude Code/
 - **Data Google Sheet**: `1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw`
   - Tabs: Settings (rate factors), QuoteNumbers (tracking), QuoteLog (history)
 - **PDF Template Google Sheet**: `1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw`
-  - Tab to use: `Dec 2 Version`
-  - This is a pre-formatted spreadsheet template for PDF generation
+  - **DO NOT DELETE** - This template is used every time a PDF is generated
+  - Tabs: `Tune Template` (Tune Energy), `Exact Template` (Exact Water)
+  - Code selects correct tab based on brand
 - **GitHub Repo**: https://github.com/maddsdad/psi-quote-tool
 
 ## Common Commands
@@ -99,81 +101,71 @@ clasp open
 |-------|-------------|--------|
 | **A** | Core Functionality (Steps 1-7) | ✅ Complete |
 | **B** | Styling & Polish (Steps 8-11) | ✅ Complete (Steve approved) |
-| **C** | PDF Generation & Email | 🔄 In Progress |
+| **C** | PDF Generation & Email | ✅ Complete |
 | **D** | Admin Panel | ⏳ Not Started |
 
-## Current Focus
-
-**Phase C: PDF Generation & Email Delivery**
-
-**Approach Selected**: Google Sheets Template-Based PDF Generation
-
-**Status as of January 19, 2026:**
+## Phase C Summary (Completed January 19, 2026)
 
 ### Step 12: PDF Generation ✅ COMPLETE
-- ✅ PDF.js completely rewritten with Google Sheets template approach
-- ✅ Cell mapping completed from 5 zoomed-in screenshots
+- ✅ PDF.js using Google Sheets template approach
+- ✅ Two template tabs: "Tune Template" and "Exact Template"
+- ✅ Dynamic brand selection based on URL parameter
 - ✅ All tiers tested and working (Tier 1, 2, and 3)
-- ✅ Dynamic labels for term headers (36/60/72-Month) added to PDF.js
-- ✅ Dynamic labels for ROI rows (3/5/6-Year) added to PDF.js
-- ✅ roi6Year calculation added to Calculations.js for 72-month terms
-- ✅ 6-Year labels fixed in Index.html buildTermBlock() for Screen 3
-- ✅ SpreadsheetApp.flush() added to ensure data writes before PDF export
-- ✅ Loading spinner overlay added for better UX during PDF generation
-- ✅ OAuth scopes updated (added script.external_request permission)
+- ✅ Dynamic labels for term headers (36/60/72-Month)
+- ✅ Loading spinner overlay during PDF generation
+- ✅ OAuth scopes: spreadsheets, drive, script.external_request, mail.google.com
 
-### Step 13: Email Delivery ⏳ NEXT
-- Email composition modal with editable message
-- Send to customer (with PDF attachment), CC rep
-- Separate notification email to admin
-- Post-send options (download PDF, generate another, exit)
+### Step 13: Email Delivery ✅ COMPLETE
+- ✅ Email.js created with GmailApp integration
+- ✅ Email composition modal with editable To, CC, Subject, and Body
+- ✅ Pre-filled email template with customer/rep info
+- ✅ "Reset to Default" button to restore original template
+- ✅ PDF opens in new tab before email modal appears (for review)
+- ✅ Email 1: To customer, CC rep, with PDF attachment
+- ✅ Email 2: Separate admin notification to mboyerchurch@gmail.com (testing)
+- ✅ Post-send modal with 4 options:
+  - "← Modify the quote you just sent" (blue, returns to Screen 3)
+  - "Download Quote PDF" (gray)
+  - "Generate New Quote →" (green, with confirmation warning)
+  - "Exit Quote Tool" (red, with confirmation warning)
+- ✅ Email address changes sync back to form fields
 
-**Changes Made on January 19, 2026:**
-
-1. **Calculations.js** - Added roi6Year for 72-month terms:
-   - Formula: `roi6Year = netSavings6Year / (monthlyPayment * 72)`
-   - Updated return object to return `roi6Year` instead of `roi5Year`
-   - Added traceability comments (lines 221-226)
-
-2. **Index.html** - Fixed 72-month display in buildTermBlock():
-   - Added `else if (months === 72)` conditions for ROI labels
-   - Now shows "6-Year Return on Rental Payment" for 72-month terms
-   - Footnotes correctly reference 6-Year for 72-month terms
-
-3. **PDF.js** - Added dynamic label cell references:
-   - term1_header (F16), term2_header (F38) - Term option headers
-   - term1_paymentLabel (F20), term2_paymentLabel (F42) - Rental payment labels
-   - term1_termYearLabel (F29), term2_termYearLabel (F51) - X-Year savings labels
-   - term1_termROILabel (F32), term2_termROILabel (F54) - X-Year ROI labels
-   - Added SpreadsheetApp.flush() before PDF export
-
-4. **Styles.html & Index.html** - Added loading spinner:
-   - Centered overlay with spinning animation
-   - Shows "Generating PDF... Please wait"
-   - Displays during PDF generation, hides on completion
-
-**PDF Generation Flow (IMPLEMENTED):**
+**PDF Generation Flow:**
 ```
 Frontend: generatePDF()
 → Backend: createPDFQuote(quoteData)
-→ Open PDF Template spreadsheet (ID: 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw)
-→ Copy "Dec 2 Version" tab to temporary sheet
+→ Open PDF Template spreadsheet
+→ Select correct tab based on brand (Tune Template or Exact Template)
+→ Copy tab to temporary sheet
 → Populate cells with quote data (see CELL_MAP in PDF.js)
 → Export via UrlFetchApp with PDF parameters
 → Save to Drive folder "PSI Quote PDFs"
 → Delete temp sheet
-→ Return download URL
+→ Return download URL + fileId
+→ Frontend: Open PDF in new tab, show email modal
 ```
 
-**Cell Mapping (COMPLETED):** All cells mapped in PDF.js CELL_MAP object:
+**Email Flow:**
+```
+Frontend: sendQuoteEmail()
+→ Sync any email address changes back to form
+→ Backend: sendQuoteEmails(emailData)
+→ Get PDF blob from Drive using fileId
+→ Send customer email (To: customer, CC: rep, attach PDF)
+→ Send admin notification (To: admin, attach PDF)
+→ Return success
+→ Frontend: Show post-send modal with options
+```
+
+**Cell Mapping (PDF.js CELL_MAP):**
 - Header: I4 (date), I5 (quote#), I6 (valid until)
-- Customer info: D9-D12
-- Rep info: H9-H11 (merged H:I cells)
-- Quote Highlights: D15-D18
-- Sites table: C22-D58 (37 rows)
-- 36-month term: G18-G30, I19-I30, H31-H33 (ROI values)
-- 60-month term: G40-G52, I41-I52, H53-H55 (ROI values)
-- Dynamic footnotes: F34-F36, F56-F58
+- Brand: C2 (main title), F9 (presented by header)
+- Customer info: D10-D13
+- Rep info: H10-H12 (merged H:I cells)
+- Quote Highlights: D16-D19
+- Sites table: C23+ (37 rows available)
+- Term 1 (rows 17-37): Cash flow, savings analysis, ROI metrics, footnotes
+- Term 2 (rows 39-59): Cash flow, savings analysis, ROI metrics, footnotes
 
 ## Key Decisions & Learnings
 

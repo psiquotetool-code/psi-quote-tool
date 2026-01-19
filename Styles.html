@@ -822,7 +822,7 @@ input::placeholder {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 9999;
+  z-index: 20000;
   justify-content: center;
   align-items: center;
 }
@@ -937,6 +937,264 @@ input::placeholder {
   font-size: 14px;
   color: #666;
   margin-top: 8px;
+}
+
+/* ============================================
+   11. EMAIL MODAL STYLES
+   ============================================ */
+
+/* --- Email Modal Overlay --- */
+.email-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10001;
+  justify-content: center;
+  align-items: center;
+}
+
+.email-modal-overlay.active {
+  display: flex;
+}
+
+/* --- Email Modal Box --- */
+.email-modal-box {
+  background: white;
+  width: 95%;
+  max-width: 750px;
+  max-height: 95vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Email Modal Header --- */
+.email-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #0066CC;
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.email-modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.email-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.8;
+}
+
+.email-close-btn:hover {
+  opacity: 1;
+}
+
+/* --- Email Modal Content --- */
+.email-modal-content {
+  padding: 16px 24px;
+}
+
+/* --- Email Fields --- */
+.email-field {
+  margin-bottom: 12px;
+}
+
+.email-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.email-input,
+.email-input-readonly {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.email-input-readonly {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.email-input:focus {
+  outline: none;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.email-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 180px;
+  height: 180px;
+}
+
+.email-textarea:focus {
+  outline: none;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+/* --- Reset Template Button --- */
+.btn-reset-template {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #f0f0f0;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-reset-template:hover {
+  background: #e0e0e0;
+}
+
+/* --- Email Attachment Indicator --- */
+.email-attachment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.attachment-icon {
+  font-size: 20px;
+}
+
+.attachment-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.attachment-note {
+  color: #666;
+  font-size: 13px;
+}
+
+/* --- Admin Notice --- */
+.email-admin-notice {
+  padding: 8px 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  color: #856404;
+  font-size: 12px;
+}
+
+/* --- Email Modal Footer --- */
+.email-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-radius: 0 0 12px 12px;
+}
+
+/* --- Post-Send Modal Styles --- */
+.post-send-box {
+  max-width: 500px;
+}
+
+.success-header {
+  background: #28a745;
+}
+
+.success-message {
+  text-align: center;
+  padding: 20px;
+}
+
+.success-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background: #28a745;
+  color: white;
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.success-message p {
+  color: #333;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.post-send-info {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.post-send-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.post-send-footer {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.post-send-footer .btn {
+  flex: 1;
+  min-width: 140px;
+}
+
+/* Vertical button layout for post-send modal */
+.post-send-footer-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-radius: 0 0 12px 12px;
+}
+
+.btn-full-width {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 15px;
 }
 
 </style>

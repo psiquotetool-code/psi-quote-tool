@@ -8,143 +8,150 @@
 
 // Template Sheet Configuration
 const PDF_TEMPLATE_ID = '1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw';
-const TEMPLATE_TAB_NAME = 'Dec 2 Version';
+const TUNE_TEMPLATE_TAB = 'Tune Template';
+const EXACT_TEMPLATE_TAB = 'Exact Template';
 
 // Cell Reference Mapping (verified from zoomed-in template screenshots)
 // These are the cells that need to be populated with quote data
 // Note: Many cells are merged. We write to the top-left cell of each merge.
 const CELL_MAP = {
-  // Header/Metadata (upper right corner)
+  // Brand Name locations (need to update for Exact Water quotes)
+  mainTitle: 'C2',                    // Main title: "Tune Energy" or "Exact Water" (merged C2:F6)
+  presentedByHeader: 'F9',            // Box header: "Presented by Tune Energy" or "Presented by Exact Water" (merged F9:I9)
+
+  // Header/Metadata (upper right corner) - UNCHANGED
   date: 'I4',
   quoteNumber: 'I5',
   validUntil: 'I6',
 
   // Customer Info (left column - "Rental Quote Presented To" box)
-  customerCompany: 'D9',
-  customerContact: 'D10',
-  customerEmail: 'D11',
-  customerPhone: 'D12',
+  customerCompany: 'D10',
+  customerContact: 'D11',
+  customerEmail: 'D12',
+  customerPhone: 'D13',
 
-  // Rep Info (right column - "Presented by Tune Energy" box)
+  // Rep Info (right column - "Presented by [Brand]" box)
   // Values are merged H:I, write to H
-  repName: 'H9',
-  repEmail: 'H10',
-  repPhone: 'H11',
+  repName: 'H10',
+  repEmail: 'H11',
+  repPhone: 'H12',
 
   // Quote Highlights (left column)
-  panelsMeters: 'D15',
-  equipmentFinanced: 'D16',
-  grossSavingsMonth: 'D17',
-  grossSavingsPercent: 'D18',
+  panelsMeters: 'D16',
+  equipmentFinanced: 'D17',
+  grossSavingsMonth: 'D18',
+  grossSavingsPercent: 'D19',
 
-  // Sites Table starts at row 22 (header is row 21)
+  // Sites Table starts at row 23 (header is row 22)
   // Location: Column C, Utility: Column D
-  sitesStartRow: 22,
+  sitesStartRow: 23,
   sitesLocationCol: 'C',
   sitesUtilityCol: 'D',
-  sitesMaxRows: 37,  // Rows 22-58
+  sitesMaxRows: 37,  // Number of rows available for sites
 
   // ============================================
   // 36-Month Term Block (Term 1) - or 60-month for Tier 3
+  // Rows 17-37
   // ============================================
 
   // Dynamic Labels (must be updated for Tier 3 quotes)
   // These cells contain text labels that change based on term length
-  term1_header: 'F16',              // "XX-Month Term Rental Option"
-  term1_cashFlowDuringHeader: 'F17', // "Cash Flow During XX-Mo Term"
-  term1_paymentLabel: 'F20',        // "XX-Month Rental Payment"
-  term1_cashFlowAfterHeader: 'F22', // "Cash Flow After XX-Mo Term"
-  term1_termYearLabel: 'F29',       // "X-Year Total Net Savings"
-  term1_termROILabel: 'F32',        // "X-Year Return on Rental Payment **"
+  term1_header: 'F17',              // "XX-Month Term Rental Option"
+  term1_cashFlowDuringHeader: 'F18', // "Cash Flow During XX-Mo Term"
+  term1_paymentLabel: 'F21',        // "XX-Month Rental Payment"
+  term1_cashFlowAfterHeader: 'F23', // "Cash Flow After XX-Mo Term"
+  term1_termYearLabel: 'F30',       // "X-Year Total Net Savings"
+  term1_termROILabel: 'F33',        // "X-Year Return on Rental Payment **"
 
-  // Cash Flow During Term (rows 17-21)
+  // Cash Flow During Term (rows 18-22)
   // $ values are merged G:H, write to G. % values are in I (not merged).
-  term1_currentSpend: 'G18',
-  term1_grossSavings: 'G19',
-  term1_grossSavingsPct: 'I19',
-  term1_payment: 'G20',
-  term1_netSavings: 'G21',
-  term1_netSavingsPct: 'I21',
+  term1_currentSpend: 'G19',
+  term1_grossSavings: 'G20',
+  term1_grossSavingsPct: 'I20',
+  term1_payment: 'G21',
+  term1_netSavings: 'G22',
+  term1_netSavingsPct: 'I22',
 
-  // Cash Flow After Term (rows 22-26)
-  term1_afterCurrentSpend: 'G23',
-  term1_afterGrossSavings: 'G24',
-  term1_afterGrossSavingsPct: 'I24',
-  term1_afterPayment: 'G25',
-  term1_afterNetSavings: 'G26',
-  term1_afterNetSavingsPct: 'I26',
+  // Cash Flow After Term (rows 23-27)
+  term1_afterCurrentSpend: 'G24',
+  term1_afterGrossSavings: 'G25',
+  term1_afterGrossSavingsPct: 'I25',
+  term1_afterPayment: 'G26',
+  term1_afterNetSavings: 'G27',
+  term1_afterNetSavingsPct: 'I27',
 
-  // Annual Savings Analysis (rows 27-30)
-  term1_1yearSavings: 'G28',
-  term1_1yearPct: 'I28',
-  term1_termYearSavings: 'G29',  // 3-year for 36-mo, 5-year for 60-mo
-  term1_termYearPct: 'I29',
-  term1_10yearSavings: 'G30',
-  term1_10yearPct: 'I30',
+  // Annual Savings Analysis (rows 28-31)
+  term1_1yearSavings: 'G29',
+  term1_1yearPct: 'I29',
+  term1_termYearSavings: 'G30',  // 3-year for 36-mo, 5-year for 60-mo
+  term1_termYearPct: 'I30',
+  term1_10yearSavings: 'G31',
+  term1_10yearPct: 'I31',
 
-  // ROI Metrics (rows 31-33)
+  // ROI Metrics (rows 32-34)
   // Labels are merged F:G, values are merged H:I, write to H
-  term1_monthlyROI: 'H31',
-  term1_termROI: 'H32',
-  term1_10yearROI: 'H33',
+  term1_monthlyROI: 'H32',
+  term1_termROI: 'H33',
+  term1_10yearROI: 'H34',
 
-  // Footnotes (rows 34-36)
+  // Footnotes (rows 35-37)
   // Each row is merged F:I, write to F
-  term1_footnote1: 'F34',  // Static: Monthly ROI definition
-  term1_footnote2: 'F35',  // Dynamic: Term-year ROI definition
-  term1_footnote3: 'F36',  // Dynamic: 10-year ROI definition (divisor changes)
+  term1_footnote1: 'F35',  // Static: Monthly ROI definition
+  term1_footnote2: 'F36',  // Dynamic: Term-year ROI definition
+  term1_footnote3: 'F37',  // Dynamic: 10-year ROI definition (divisor changes)
 
   // ============================================
   // 60-Month Term Block (Term 2) - or 72-month for Tier 3
+  // Rows 39-59
   // ============================================
 
   // Dynamic Labels (must be updated for Tier 3 quotes)
   // These cells contain text labels that change based on term length
-  term2_header: 'F38',              // "XX-Month Term Rental Option"
-  term2_cashFlowDuringHeader: 'F39', // "Cash Flow During XX-Mo Term"
-  term2_paymentLabel: 'F42',        // "XX-Month Rental Payment"
-  term2_cashFlowAfterHeader: 'F44', // "Cash Flow After XX-Mo Term"
-  term2_termYearLabel: 'F51',       // "X-Year Total Net Savings"
-  term2_termROILabel: 'F54',        // "X-Year Return on Rental Payment **"
+  term2_header: 'F39',              // "XX-Month Term Rental Option"
+  term2_cashFlowDuringHeader: 'F40', // "Cash Flow During XX-Mo Term"
+  term2_paymentLabel: 'F43',        // "XX-Month Rental Payment"
+  term2_cashFlowAfterHeader: 'F45', // "Cash Flow After XX-Mo Term"
+  term2_termYearLabel: 'F52',       // "X-Year Total Net Savings"
+  term2_termROILabel: 'F55',        // "X-Year Return on Rental Payment **"
 
-  // Cash Flow During Term (rows 39-43)
-  term2_currentSpend: 'G40',
-  term2_grossSavings: 'G41',
-  term2_grossSavingsPct: 'I41',
-  term2_payment: 'G42',
-  term2_netSavings: 'G43',
-  term2_netSavingsPct: 'I43',
+  // Cash Flow During Term (rows 40-44)
+  term2_currentSpend: 'G41',
+  term2_grossSavings: 'G42',
+  term2_grossSavingsPct: 'I42',
+  term2_payment: 'G43',
+  term2_netSavings: 'G44',
+  term2_netSavingsPct: 'I44',
 
-  // Cash Flow After Term (rows 44-48)
-  term2_afterCurrentSpend: 'G45',
-  term2_afterGrossSavings: 'G46',
-  term2_afterGrossSavingsPct: 'I46',
-  term2_afterPayment: 'G47',
-  term2_afterNetSavings: 'G48',
-  term2_afterNetSavingsPct: 'I48',
+  // Cash Flow After Term (rows 45-49)
+  term2_afterCurrentSpend: 'G46',
+  term2_afterGrossSavings: 'G47',
+  term2_afterGrossSavingsPct: 'I47',
+  term2_afterPayment: 'G48',
+  term2_afterNetSavings: 'G49',
+  term2_afterNetSavingsPct: 'I49',
 
-  // Annual Savings Analysis (rows 49-52)
-  term2_1yearSavings: 'G50',
-  term2_1yearPct: 'I50',
-  term2_termYearSavings: 'G51',  // 5-year for 60-mo, 6-year for 72-mo
-  term2_termYearPct: 'I51',
-  term2_10yearSavings: 'G52',
-  term2_10yearPct: 'I52',
+  // Annual Savings Analysis (rows 50-53)
+  term2_1yearSavings: 'G51',
+  term2_1yearPct: 'I51',
+  term2_termYearSavings: 'G52',  // 5-year for 60-mo, 6-year for 72-mo
+  term2_termYearPct: 'I52',
+  term2_10yearSavings: 'G53',
+  term2_10yearPct: 'I53',
 
-  // ROI Metrics (rows 53-55)
+  // ROI Metrics (rows 54-56)
   // Labels are merged F:G, values are merged H:I, write to H
-  term2_monthlyROI: 'H53',
-  term2_termROI: 'H54',
-  term2_10yearROI: 'H55',
+  term2_monthlyROI: 'H54',
+  term2_termROI: 'H55',
+  term2_10yearROI: 'H56',
 
-  // Footnotes (rows 56-58)
+  // Footnotes (rows 57-59)
   // Each row is merged F:I, write to F
-  term2_footnote1: 'F56',  // Static: Monthly ROI definition
-  term2_footnote2: 'F57',  // Dynamic: Term-year ROI definition
-  term2_footnote3: 'F58'   // Dynamic: 10-year ROI definition (divisor changes)
+  term2_footnote1: 'F57',  // Static: Monthly ROI definition
+  term2_footnote2: 'F58',  // Dynamic: Term-year ROI definition
+  term2_footnote3: 'F59'   // Dynamic: 10-year ROI definition (divisor changes)
 
-  // Terms and Conditions (rows 60-61)
-  // Merged C60:I61 - Static text, no update needed
+  // Terms and Conditions (rows 61-62)
+  // Merged C61:I62 - Static text, no update needed
 };
 
 /**
@@ -154,12 +161,13 @@ const CELL_MAP = {
  */
 function createPDFQuote(quoteData) {
   try {
-    // Step 1: Open the template spreadsheet
+    // Step 1: Open the template spreadsheet and select correct tab based on brand
     const templateSS = SpreadsheetApp.openById(PDF_TEMPLATE_ID);
-    const templateSheet = templateSS.getSheetByName(TEMPLATE_TAB_NAME);
+    const templateTabName = quoteData.companyName === 'Exact Water' ? EXACT_TEMPLATE_TAB : TUNE_TEMPLATE_TAB;
+    const templateSheet = templateSS.getSheetByName(templateTabName);
 
     if (!templateSheet) {
-      throw new Error('Template tab "' + TEMPLATE_TAB_NAME + '" not found');
+      throw new Error('Template tab "' + templateTabName + '" not found');
     }
 
     // Step 2: Copy template to a new temporary sheet
@@ -214,6 +222,11 @@ function populateCells(sheet, quoteData) {
   const quoteDateObj = new Date(quoteData.quoteDate);
   quoteDateObj.setDate(quoteDateObj.getDate() + 30);
   const validUntil = formatDate(quoteDateObj);
+
+  // Brand Name (update for Exact Water quotes)
+  const brandName = quoteData.companyName; // "Tune Energy" or "Exact Water"
+  sheet.getRange(CELL_MAP.mainTitle).setValue(brandName + '\nEquipment Rental Quote');
+  sheet.getRange(CELL_MAP.presentedByHeader).setValue('Presented by ' + brandName);
 
   // Header/Metadata
   sheet.getRange(CELL_MAP.date).setValue(quoteData.quoteDate);
@@ -594,7 +607,7 @@ function testPDFGeneration() {
  */
 function testCellMapping() {
   const templateSS = SpreadsheetApp.openById(PDF_TEMPLATE_ID);
-  const templateSheet = templateSS.getSheetByName(TEMPLATE_TAB_NAME);
+  const templateSheet = templateSS.getSheetByName(TUNE_TEMPLATE_TAB); // Use Tune template for testing
 
   if (!templateSheet) {
     Logger.log('ERROR: Template sheet not found');
