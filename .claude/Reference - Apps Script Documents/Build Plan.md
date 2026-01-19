@@ -1,7 +1,7 @@
 PSI Quote Tool - Milestone 2 Build Plan
 Web-Based Data Entry System
 
-Version: 2.2 | Created: December 23, 2025 | Updated: January 16, 2026 | Spec Reference: Quote-Tool-Specification-v3.4
+Version: 2.6 | Created: December 23, 2025 | Updated: January 19, 2026 | Spec Reference: Quote-Tool-Specification-v3.4
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -20,12 +20,17 @@ Single-page app architecture with backend logic in .gs files.
 Files:
 ✓ Code.gs - Backend functions (quote numbers, includes)
 ✓ Calculations.gs - Financial calculation engine
-✓ Index.html - Complete UI (all 3 screens + JavaScript)
-✓ Styles.html - CSS stylesheet (900+ lines, organized into 10 sections)
+✓ Index.html - Complete UI (all 3 screens + JavaScript + email modals)
+✓ Styles.html - CSS stylesheet (1100+ lines, organized into 11 sections)
+✓ PDF.js - PDF generation using Google Sheets template
+✓ Email.js - Email delivery (customer email + admin notification)
 
 Google Sheet Integration:
-✓ Spreadsheet ID: 1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw
+✓ Data Spreadsheet ID: 1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw
 ✓ Tabs: Settings (rate factors), QuoteNumbers (tracking), QuoteLog (history)
+✓ PDF Template Spreadsheet ID: 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw
+✓ PDF Template Tabs: "Tune Template" and "Exact Template"
+✓ **DO NOT DELETE** - PDF Template is used every time a PDF is generated
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -241,7 +246,7 @@ Step 11: Final Polish & Refinement ✓ COMPLETE
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-5. Phase C: PDF Generation & Email Delivery (IN PROGRESS)
+5. Phase C: PDF Generation & Email Delivery ✅ COMPLETE
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -266,12 +271,13 @@ Why this approach:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Step 12: PDF Generation (IN PROGRESS - 90% COMPLETE)
+Step 12: PDF Generation ✅ COMPLETE
 
 Google Sheets Resources:
 - PDF Template Sheet ID: 1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw
-- Tab to use: "Dec 2 Version"
+- Template Tabs: "Tune Template" and "Exact Template" (brand-specific)
 - Template has 37 rows in sites table
+- **DO NOT DELETE** - This template is used every time a PDF is generated
 
 COMPLETED (January 16, 2026):
 ✓ PDF.js completely rewritten with Google Sheets template approach
@@ -317,44 +323,35 @@ PDF.js
 └── testCellMapping()                # Verify cell references
 ```
 
-Cell Mapping (COMPLETED):
+Cell Mapping (COMPLETED - Updated January 19, 2026):
+Note: All references below row 6 shifted down by 1 when row was inserted in template.
 ```
 Header/Metadata:
 - I4: Date, I5: Quote #, I6: Valid Until
 
+Brand-Specific Cells:
+- C2: Main title (merged C2:F6) - "Tune Energy" or "Exact Water"
+- F9: Presented by header (merged F9:I9) - "Presented by [Brand]"
+
 Customer Info:
-- D9: Company, D10: Contact, D11: Email, D12: Phone
+- D10: Company, D11: Contact, D12: Email, D13: Phone
 
 Rep Info (merged H:I cells):
-- H9: Name, H10: Email, H11: Phone
+- H10: Name, H11: Email, H12: Phone
 
 Quote Highlights:
-- D15: # Panels/Meters, D16: Equipment Financed
-- D17: Gross Savings/Month, D18: Gross Savings %
+- D16: # Panels/Meters, D17: Equipment Financed
+- D18: Gross Savings/Month, D19: Gross Savings %
 
 Sites Table (37 rows):
-- C22:C58: Location addresses
-- D22:D58: Utility names
+- C23:C59: Location addresses
+- D23:D59: Utility names
 
-36-Month Term Block:
-- G18-G21: Cash flow during ($ values, merged G:H)
-- I19, I21: Percentage values
-- G23-G26: Cash flow after
-- I24, I26: Percentage values
-- G28-G30: Annual savings analysis
-- I28-I30: Percentage values
-- H31-H33: ROI metrics (merged H:I)
-- F34-F36: Footnotes (merged F:I)
+Term 1 Block (rows 17-37):
+- Cash flow during, savings analysis, ROI metrics, footnotes
 
-60-Month Term Block:
-- G40-G43: Cash flow during
-- I41, I43: Percentage values
-- G45-G48: Cash flow after
-- I46, I48: Percentage values
-- G50-G52: Annual savings analysis
-- I50-I52: Percentage values
-- H53-H55: ROI metrics
-- F56-F58: Footnotes
+Term 2 Block (rows 39-59):
+- Cash flow during, savings analysis, ROI metrics, footnotes
 ```
 
 Reference Files (in .claude/PDF Refinement/):
@@ -362,7 +359,7 @@ Reference Files (in .claude/PDF Refinement/):
 - Google Sheets Exported to PDF.pdf - Target output (colors work!)
 - Screen 3.jpg - Web app layout for comparison
 
-Remaining Tasks:
+Completed Tasks:
 ✓ Fix Calculations.js - Add roi6Year for 72-month term (DONE 1/19/2026)
 ✓ Test with actual quote data (not just test function) (DONE 1/19/2026)
 ✓ Test Tier 3 quote (60/72 month terms) to verify roi6Year works (DONE 1/19/2026)
@@ -371,44 +368,78 @@ Remaining Tasks:
 ✓ Add SpreadsheetApp.flush() before PDF export (DONE 1/19/2026)
 ✓ Add loading spinner overlay for PDF generation (DONE 1/19/2026)
 ✓ Test Tier 1, 2, and 3 - All working (DONE 1/19/2026)
-□ Test both brands (Tune Energy, Exact Water) - FUTURE
+✓ Test both brands (Tune Energy, Exact Water) - Dual template tabs working (DONE 1/19/2026)
+✓ Added mail.google.com OAuth scope for Gmail access (DONE 1/19/2026)
 
 File Naming: Quote_[CustomerName]_[QuoteNumber]_[Date].pdf
 
-Brand Handling: Currently using Tune template - may need Exact Water template tab later
+Brand Handling:
+- PDF.js selects correct template tab based on brand
+- TUNE_TEMPLATE_TAB = 'Tune Template'
+- EXACT_TEMPLATE_TAB = 'Exact Template'
+- Brand name cells (C2, F9) populated dynamically
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Step 13: Email Delivery (PLANNED)
+Step 13: Email Delivery ✅ COMPLETE
 
-□ Email 1 - To Customer (editable template):
-  - From: System account (Tune/Exact branding)
-  - Reply-To: Rep's email
-  - To: Customer email
-  - CC: Rep email
+✓ Email 1 - To Customer (editable template):
+  - To: Customer email (editable in modal)
+  - CC: Rep email (editable in modal)
   - Subject: "Your [Brand] Rental Quote - [Customer] - [Quote #]"
   - Body: Editable by rep before sending
-  - Attachment: PDF quote (locked, cannot be removed)
+  - Attachment: PDF quote (attached automatically)
   - "Reset to Default" button to restore template
-□ Email 2 - To Steve Olsen (separate, not CC):
-  - From: System account
-  - To: Steve's email (admin-configurable)
+  - Email address changes sync back to form fields
+✓ Email 2 - Admin Notification (separate):
+  - To: mboyerchurch@gmail.com (testing - will change to Steve's email)
   - Subject: "New Quote Sent: [Brand], [Rep], [Customer]"
   - Body: System-generated with quote details
   - Attachment: PDF quote
-  - Non-editable template
-□ Email sending using GmailApp or MailApp
-□ Confirmation message after successful send
-□ Error handling for failed sends
+  - Non-editable (sent automatically)
+✓ Email Composition Modal:
+  - Editable To, CC, Subject, and Body fields
+  - PDF opens in new tab before modal appears (for review)
+  - "Reset to Default" restores original template
+✓ GmailApp integration with full OAuth scope (mail.google.com)
+✓ authorizeGmail() function to trigger initial authorization
+
+Email Flow:
+```
+Frontend: sendQuoteEmail()
+→ Sync email address changes back to form
+→ Backend: sendQuoteEmails(emailData)
+→ Get PDF blob from Drive using fileId
+→ Send customer email (To: customer, CC: rep, attach PDF)
+→ Send admin notification (To: admin, attach PDF)
+→ Return success
+→ Frontend: Show post-send modal with options
+```
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Step 14: Post-Send Options (PLANNED)
+Step 14: Post-Send Options ✅ COMPLETE
 
-□ Download PDF button
-□ Generate another quote button
-□ Exit tool option
-□ Save quote record to QuoteLog tab
+✓ Post-Send Modal with 4 options:
+  1. "← Modify the quote you just sent" (blue) - Returns to Screen 3
+  2. "Download Quote PDF" (gray) - Opens PDF in new tab
+  3. "Generate New Quote →" (green) - With confirmation warning, resets form
+  4. "Exit Quote Tool" (red) - With confirmation warning, closes window
+✓ Confirmation modals for destructive actions:
+  - "Generate New Quote" shows warning before resetting
+  - "Exit Tool" shows warning before closing
+  - z-index 20000 ensures modals appear above email modal
+✓ Quote record logging deferred to Phase D (Admin Panel)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Phase C Complete! PDF generation and email delivery fully functional.
+
+OAuth Scopes Required (appsscript.json):
+- https://www.googleapis.com/auth/spreadsheets
+- https://www.googleapis.com/auth/drive
+- https://www.googleapis.com/auth/script.external_request
+- https://mail.google.com/
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -722,24 +753,24 @@ Note: Phase B Step 11 will include comprehensive browser testing.
 
 9. Next Session Priorities
 
-1. **Map Cell References** (HIGH PRIORITY - NEXT TASK)
-   - Review Google Sheets Screenshot Top.jpg and Bottom.jpg
-   - Document exact cell addresses for all quote data fields
-   - Create mapping object in PDF.js
+Phase D: Admin Panel implementation (when ready):
 
-2. **Rewrite PDF.js for Google Sheets Approach**
-   - Complete rewrite using SpreadsheetApp
-   - Copy template tab, populate cells, export PDF
-   - Delete temp sheet after PDF creation
+1. **Admin Authentication**
+   - Create separate admin URL/page
+   - Google account authentication: psiquotetool@gmail.com
+   - Access control (Matt and Steve only)
 
-3. **Test Google Sheets PDF Generation**
-   - Test with various quote scenarios
-   - Sync to Apps Script with clasp push
-   - Verify PDF output matches Google Sheets template
+2. **Rate Factor Management**
+   - Display and edit rate factor table
+   - Save changes to Settings sheet
 
-4. **Update Index.html if Needed**
-   - Adjust generatePDF() if data format changes
-   - Add success/error handlers
+3. **Quote History View**
+   - Read-only table of all generated quotes
+   - Click Quote Number to view/download PDF
+
+4. **Configuration Settings**
+   - Quote valid until period
+   - Steve's email address for notifications
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -860,11 +891,43 @@ Version 2.5 - January 19, 2026 (PDF Generation Complete)
 - TESTED: Tier 1 (36/60), Tier 2 (36/60), Tier 3 (60/72) - ALL WORKING
 - Ready for GitHub commit before starting Step 13: Email Delivery
 
+Version 2.6 - January 19, 2026 (Phase C Complete)
+- PHASE C FULLY COMPLETE - PDF Generation & Email Delivery
+- Created Email.js with GmailApp integration:
+  * sendQuoteEmails() - Main entry point
+  * sendCustomerEmail() - To customer, CC rep, with PDF attachment
+  * sendAdminNotification() - Separate admin email with PDF
+  * authorizeGmail() - Triggers OAuth authorization
+- Added Email Composition Modal to Index.html:
+  * Editable To, CC, Subject, and Body fields
+  * "Reset to Default" button to restore template
+  * PDF opens in new tab before modal appears
+  * Email address changes sync back to form fields
+- Added Post-Send Options Modal:
+  * "← Modify the quote you just sent" (blue)
+  * "Download Quote PDF" (gray)
+  * "Generate New Quote →" (green, with confirmation)
+  * "Exit Quote Tool" (red, with confirmation)
+- Fixed z-index issue: confirmation modals now use z-index 20000
+- Added dual template tabs for brand-specific PDFs:
+  * "Tune Template" and "Exact Template" tabs
+  * PDF.js selects correct tab based on brand
+  * Brand name cells (C2, F9) populated dynamically
+- Updated cell references after template row insertion:
+  * All references below row 6 shifted down by 1
+  * Customer info: D10-D13, Rep info: H10-H12
+  * Quote highlights: D16-D19, Sites start: row 23
+  * Term 1: rows 17-37, Term 2: rows 39-59
+- Added mail.google.com OAuth scope for Gmail access
+- Updated Styles.html (now 1100+ lines, 11 sections)
+- Updated CLAUDE.md with Phase C completion details
+- All changes committed and pushed to GitHub
+
 ═══════════════════════════════════════════════════════════════════════════════
 
-END OF BUILD PLAN v2.5
+END OF BUILD PLAN v2.6
 Last Updated: January 19, 2026
-Current Phase: C (PDF Generation & Email Delivery)
-Step 12: PDF Generation - ✅ COMPLETE (100%)
-Step 13: Email Delivery - ⏳ NEXT
-Step 14: Post-Send Options - ⏳ PLANNED
+Phase A: Core Functionality - ✅ COMPLETE
+Phase B: Styling & Polish - ✅ COMPLETE
+Phase C: PDF Generation & Email Delivery - ✅ COMPLETE
+Phase D: Admin Panel - ⏳ NOT STARTED
