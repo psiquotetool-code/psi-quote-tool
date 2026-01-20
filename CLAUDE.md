@@ -27,18 +27,24 @@ A lease quote generation tool for PSI (equipment financing company). Sales reps 
 
 ```
 Quote Tool Via Claude Code/
-├── Code.js              # Web app entry point, quote number generation
+├── Code.js              # Web app entry point, URL routing (quote tool, admin, history)
 ├── Calculations.js      # All lease calculation formulas (Items A-AR)
-├── Index.html           # Complete UI (3 screens in single-page app)
-├── Styles.html          # CSS stylesheet (1100+ lines, 11 sections)
+├── Index.html           # Quote Tool UI (3 screens in single-page app)
+├── Styles.html          # Quote Tool CSS stylesheet (1100+ lines)
 ├── PDF.js               # PDF generation using Google Sheets template
-├── Email.js             # Email delivery (customer email + admin notification)
+├── Email.js             # Email delivery + quote logging
+├── Admin.js             # Admin panel backend (auth, settings, all quotes)
+├── Admin.html           # Admin panel UI
+├── AdminStyles.html     # Admin panel CSS
+├── History.js           # Quote history backend (read-only, by brand)
+├── History.html         # Public quote history UI
+├── HistoryStyles.html   # Quote history CSS
 ├── appsscript.json      # Apps Script project config
 ├── .clasp.json          # clasp config (not in Git - contains script ID)
 ├── CLAUDE.md            # This file
 └── .claude/
     ├── Reference - Apps Script Documents/
-    │   ├── Build plan v 9.md                    # Detailed build plan & status
+    │   ├── Build Plan.md                        # Detailed build plan & status
     │   ├── Quote Tool Requirements - Dec 2 2025.txt
     │   ├── quote_tool_calculations.csv
     │   ├── PSI_Quote_Tool_Calculator_Complete.csv
@@ -102,7 +108,19 @@ clasp open
 | **A** | Core Functionality (Steps 1-7) | ✅ Complete |
 | **B** | Styling & Polish (Steps 8-11) | ✅ Complete (Steve approved) |
 | **C** | PDF Generation & Email | ✅ Complete |
-| **D** | Admin Panel | ⏳ Not Started |
+| **D** | Admin Panel & Quote History | ✅ Complete |
+
+## URL Structure
+
+| URL Parameter | Access | Description |
+|---------------|--------|-------------|
+| `?brand=tune` | Public | Tune Energy Quote Tool (default) |
+| `?brand=exact` | Public | Exact Water Quote Tool |
+| `?history=tune` | Public | Tune Energy Quote History (read-only) |
+| `?history=exact` | Public | Exact Water Quote History (read-only) |
+| `?admin=true` | Admin Only | Admin Panel (settings, all quotes) |
+
+**Admin Access:** psiquotetool@gmail.com, mboyerchurch@gmail.com
 
 ## Phase C Summary (Completed January 19, 2026)
 
@@ -166,6 +184,62 @@ Frontend: sendQuoteEmail()
 - Sites table: C23+ (37 rows available)
 - Term 1 (rows 17-37): Cash flow, savings analysis, ROI metrics, footnotes
 - Term 2 (rows 39-59): Cash flow, savings analysis, ROI metrics, footnotes
+
+## Phase D Summary (Completed January 20, 2026)
+
+### Step 15: Admin Authentication ✅ COMPLETE
+- ✅ Admin panel at `?admin=true` URL
+- ✅ Google account authentication via Session.getActiveUser()
+- ✅ Access control for authorized admins only
+- ✅ Authorized emails: psiquotetool@gmail.com, mboyerchurch@gmail.com
+
+### Step 16: Rate Factor Management ✅ COMPLETE
+- ✅ Display current rate factors from Settings tab
+- ✅ Edit rate factors for all tiers (Tier 1: 36/60mo, Tier 2: 36/60mo, Tier 3: 60/72mo)
+- ✅ Validation: positive numbers, 7 decimal precision
+- ✅ Save changes to Settings sheet with confirmation
+
+### Step 17: Quote Valid Until Setting ✅ COMPLETE
+- ✅ Display current "Valid Until" period (default: 30 days)
+- ✅ Edit field with validation (1-365 days)
+- ✅ Save to Settings sheet
+- ✅ PDF.js updated to read dynamic value from Settings
+
+### Step 18: Admin Email Configuration ✅ COMPLETE
+- ✅ Display current admin notification email
+- ✅ Edit field with email validation
+- ✅ Save to Settings sheet
+- ✅ "Send Test Email" button
+- ✅ Email.js updated to read dynamic email from Settings
+
+### Step 19: Quote History Views ✅ COMPLETE
+
+**Public History Pages (no auth required):**
+- ✅ Tune history at `?history=tune`
+- ✅ Exact history at `?history=exact`
+- ✅ Filtered by brand, read-only
+- ✅ Sortable table (date, customer, rep, equipment)
+- ✅ Search/filter capability
+- ✅ Click quote number to view/download PDF
+
+**Admin All Quotes View:**
+- ✅ Combined view of ALL quotes (both brands)
+- ✅ Brand filtering dropdown
+- ✅ Full search and sort capabilities
+
+**Quote Logging:**
+- ✅ Email.js logs quotes to QuoteLog tab after successful send
+- ✅ Columns: Brand, Quote#, Date, Expires, Customer, Rep, Equipment, Savings%, Panels/Meters, Savings/Month, PDF FileId
+
+**Settings Tab Structure (after Phase D):**
+```
+Row 1: Header (Tier, 36-Month, 60-Month, 72-Month)
+Row 2: Tier 1 rates (1, 0.0327348, 0.0211993, -)
+Row 3: Tier 2 rates (2, 0.0327439, 0.0213861, -)
+Row 4: Tier 3 rates (3, -, 0.0208989, 0.0180061)
+Row 5: ValidUntilDays, 30
+Row 6: AdminEmail, mboyerchurch@gmail.com
+```
 
 ## Key Decisions & Learnings
 

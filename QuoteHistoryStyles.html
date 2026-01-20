@@ -1,0 +1,361 @@
+<style>
+/* ============================================
+   HISTORY PAGE STYLES
+   PSI Quote Tool - Phase D
+   Public Quote History View
+   ============================================ */
+
+/* ============================================
+   1. CSS VARIABLES
+   ============================================ */
+
+:root {
+  --tune-primary: #0066CC;
+  --tune-dark: #004C99;
+  --exact-primary: #007d7d;
+  --exact-dark: #005959;
+  --border-color: #dee2e6;
+  --light-bg: #f8f9fa;
+  --text-color: #333;
+  --text-muted: #6c757d;
+}
+
+/* ============================================
+   2. GLOBAL RESET & BASE STYLES
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* ============================================
+   3. LOADING OVERLAY
+   ============================================ */
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-box {
+  text-align: center;
+  padding: 40px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--tune-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+/* ============================================
+   4. CONTAINER
+   ============================================ */
+
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ============================================
+   5. HEADER
+   ============================================ */
+
+.history-header {
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.history-header.tune-header {
+  background: linear-gradient(135deg, var(--tune-primary), var(--tune-dark));
+}
+
+.history-header.exact-header {
+  background: linear-gradient(135deg, var(--exact-primary), var(--exact-dark));
+}
+
+.history-header h1 {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.history-header p {
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+/* ============================================
+   6. CONTROLS
+   ============================================ */
+
+.controls-card {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 15px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-group label {
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.control-group input,
+.control-group select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.control-group input:focus,
+.control-group select:focus {
+  outline: none;
+  border-color: var(--tune-primary);
+  box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+}
+
+/* ============================================
+   7. BUTTONS
+   ============================================ */
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+.refresh-icon {
+  font-size: 16px;
+}
+
+/* ============================================
+   8. QUOTE SUMMARY
+   ============================================ */
+
+.quote-summary {
+  padding: 10px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ============================================
+   9. TABLE CARD
+   ============================================ */
+
+.table-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+/* ============================================
+   10. QUOTE TABLE
+   ============================================ */
+
+.quote-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.quote-table th,
+.quote-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.quote-table th {
+  background: var(--light-bg);
+  font-weight: 600;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+.quote-table tr:hover {
+  background: #fafafa;
+}
+
+.quote-table tr:last-child td {
+  border-bottom: none;
+}
+
+.quote-number-cell a {
+  color: var(--tune-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.quote-number-cell a:hover {
+  text-decoration: underline;
+}
+
+.number-cell {
+  text-align: right;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+}
+
+.empty-row,
+.error-row {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 30px !important;
+  font-style: italic;
+}
+
+.error-row {
+  color: #dc3545;
+}
+
+/* ============================================
+   11. NO DATA MESSAGE
+   ============================================ */
+
+.no-data-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.no-data-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.no-data-message p {
+  margin-bottom: 5px;
+}
+
+.no-data-hint {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* ============================================
+   12. FOOTER
+   ============================================ */
+
+.history-footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ============================================
+   13. RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .history-container {
+    padding: 10px;
+  }
+
+  .history-header {
+    padding: 20px;
+  }
+
+  .history-header h1 {
+    font-size: 22px;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .control-group {
+    width: 100%;
+  }
+
+  .control-group input,
+  .control-group select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .quote-table th,
+  .quote-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+</style>

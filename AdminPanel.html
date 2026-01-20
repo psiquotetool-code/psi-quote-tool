@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>PSI Quote Tool - Admin Panel</title>
+  <?!= include('AdminPanelStyles'); ?>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading...</p>
+  </div>
+</div>
+
+<!-- Access Denied Screen -->
+<div id="accessDenied" class="access-denied-screen" style="display: none;">
+  <div class="access-denied-box">
+    <h1>Access Denied</h1>
+    <p>You do not have permission to access the Admin Panel.</p>
+    <p class="user-email">Logged in as: <span id="deniedEmail"></span></p>
+    <p>Please contact the administrator if you believe this is an error.</p>
+  </div>
+</div>
+
+<!-- Main Admin Panel -->
+<div id="adminPanel" class="admin-panel" style="display: none;">
+
+  <!-- Header -->
+  <div class="admin-header">
+    <h1>PSI Quote Tool Admin Panel</h1>
+    <p class="admin-user">Logged in as: <span id="adminEmail"></span></p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button class="tab-btn active" onclick="switchTab('settings')">Settings</button>
+    <button class="tab-btn" onclick="switchTab('rateFactors')">Rate Factors</button>
+    <button class="tab-btn" onclick="switchTab('quoteHistory')">All Quotes</button>
+  </div>
+
+  <!-- Settings Tab -->
+  <div id="settingsTab" class="tab-content active">
+    <div class="card">
+      <div class="card-header">General Settings</div>
+      <div class="card-body">
+
+        <!-- Quote Valid Until Days -->
+        <div class="setting-group">
+          <label>Quote Valid Until (Days)</label>
+          <p class="setting-help">Number of days until a quote expires. Default: 30</p>
+          <div class="input-row">
+            <input type="number" id="validUntilDays" min="1" max="365" value="30">
+            <span class="input-suffix">days</span>
+          </div>
+        </div>
+
+        <!-- Admin Email -->
+        <div class="setting-group">
+          <label>Admin Notification Email</label>
+          <p class="setting-help">Email address that receives notifications when quotes are sent.</p>
+          <div class="input-row">
+            <input type="email" id="adminNotifyEmail" placeholder="admin@example.com">
+            <button onclick="sendTestEmail()" class="btn btn-secondary btn-small">Send Test Email</button>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button onclick="saveSettings()" class="btn btn-primary">Save Settings</button>
+        </div>
+
+        <div id="settingsMessage" class="message-box" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rate Factors Tab -->
+  <div id="rateFactorsTab" class="tab-content">
+    <div class="card">
+      <div class="card-header">Rate Factor Management</div>
+      <div class="card-body">
+        <p class="section-help">Rate factors determine monthly lease payments. Enter values with 7 decimal precision (e.g., 0.0327348).</p>
+
+        <table class="rate-table">
+          <thead>
+            <tr>
+              <th>Tier</th>
+              <th>Equipment Cost Range</th>
+              <th>36-Month</th>
+              <th>60-Month</th>
+              <th>72-Month</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Tier 1</strong></td>
+              <td>$0 - $99,999</td>
+              <td><input type="text" id="tier1_rate36" class="rate-input"></td>
+              <td><input type="text" id="tier1_rate60" class="rate-input"></td>
+              <td><span class="na-cell">N/A</span></td>
+            </tr>
+            <tr>
+              <td><strong>Tier 2</strong></td>
+              <td>$100,000 - $499,999</td>
+              <td><input type="text" id="tier2_rate36" class="rate-input"></td>
+              <td><input type="text" id="tier2_rate60" class="rate-input"></td>
+              <td><span class="na-cell">N/A</span></td>
+            </tr>
+            <tr>
+              <td><strong>Tier 3</strong></td>
+              <td>$500,000+</td>
+              <td><span class="na-cell">N/A</span></td>
+              <td><input type="text" id="tier3_rate60" class="rate-input"></td>
+              <td><input type="text" id="tier3_rate72" class="rate-input"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="button-row">
+          <button onclick="saveRateFactors()" class="btn btn-primary">Save Rate Factors</button>
+          <button onclick="loadRateFactors()" class="btn btn-secondary">Reset to Saved</button>
+        </div>
+
+        <div id="rateMessage" class="message-box" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote History Tab -->
+  <div id="quoteHistoryTab" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        All Quote History
+        <button onclick="loadQuoteHistory()" class="btn btn-secondary btn-small" style="float: right;">Refresh</button>
+      </div>
+      <div class="card-body">
+
+        <!-- Filters -->
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>Brand:</label>
+            <select id="filterBrand" onchange="applyFilters()">
+              <option value="all">All Brands</option>
+              <option value="tune">Tune Energy</option>
+              <option value="exact">Exact Water</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Search:</label>
+            <input type="text" id="filterSearch" placeholder="Quote #, customer, rep..." oninput="applyFilters()">
+          </div>
+          <div class="filter-group">
+            <label>Sort by:</label>
+            <select id="sortBy" onchange="applyFilters()">
+              <option value="date-desc">Date (Newest)</option>
+              <option value="date-asc">Date (Oldest)</option>
+              <option value="customer">Customer Name</option>
+              <option value="rep">Rep Name</option>
+              <option value="equipment-desc">Equipment (Highest)</option>
+              <option value="equipment-asc">Equipment (Lowest)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quote Count -->
+        <div class="quote-count">
+          Showing <span id="visibleCount">0</span> of <span id="totalCount">0</span> quotes
+        </div>
+
+        <!-- Quote Table -->
+        <div class="table-container">
+          <table class="quote-table" id="quoteTable">
+            <thead>
+              <tr>
+                <th>Brand</th>
+                <th>Quote #</th>
+                <th>Date</th>
+                <th>Expires</th>
+                <th>Customer</th>
+                <th>Rep</th>
+                <th>Equipment</th>
+                <th>Savings %</th>
+                <th>Panels/Meters</th>
+                <th>Savings/Mo</th>
+              </tr>
+            </thead>
+            <tbody id="quoteTableBody">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="historyMessage" class="message-box" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// GLOBAL STATE
+// ============================================
+
+let allQuotes = [];
+let filteredQuotes = [];
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  checkAuth();
+});
+
+function checkAuth() {
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.authorized) {
+        document.getElementById('adminEmail').textContent = result.email;
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAllData();
+      } else {
+        document.getElementById('deniedEmail').textContent = result.email || 'Unknown';
+        document.getElementById('accessDenied').style.display = 'flex';
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      document.getElementById('deniedEmail').textContent = 'Error: ' + error;
+      document.getElementById('accessDenied').style.display = 'flex';
+    })
+    .checkAdminAuth();
+}
+
+function loadAllData() {
+  loadSettings();
+  loadRateFactors();
+  loadQuoteHistory();
+}
+
+// ============================================
+// TAB NAVIGATION
+// ============================================
+
+function switchTab(tabName) {
+  // Hide all tabs
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  // Show selected tab
+  document.getElementById(tabName + 'Tab').classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============================================
+// SETTINGS MANAGEMENT
+// ============================================
+
+function loadSettings() {
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result.success) {
+        document.getElementById('validUntilDays').value = result.settings.validUntilDays;
+        document.getElementById('adminNotifyEmail').value = result.settings.adminEmail;
+      }
+    })
+    .withFailureHandler(function(error) {
+      showMessage('settingsMessage', 'Error loading settings: ' + error, 'error');
+    })
+    .getAdminSettings();
+}
+
+function saveSettings() {
+  const newSettings = {
+    validUntilDays: document.getElementById('validUntilDays').value,
+    adminEmail: document.getElementById('adminNotifyEmail').value
+  };
+
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        showMessage('settingsMessage', 'Settings saved successfully!', 'success');
+      } else {
+        showMessage('settingsMessage', 'Error: ' + result.error, 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      showMessage('settingsMessage', 'Error saving settings: ' + error, 'error');
+    })
+    .updateAdminSettings(newSettings);
+}
+
+function sendTestEmail() {
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        showMessage('settingsMessage', 'Test email sent to ' + result.sentTo, 'success');
+      } else {
+        showMessage('settingsMessage', 'Error: ' + result.error, 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      showMessage('settingsMessage', 'Error sending test email: ' + error, 'error');
+    })
+    .sendTestAdminEmail();
+}
+
+// ============================================
+// RATE FACTOR MANAGEMENT
+// ============================================
+
+function loadRateFactors() {
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result.success) {
+        const rf = result.rateFactors;
+        document.getElementById('tier1_rate36').value = rf.tier1.rate36 || '';
+        document.getElementById('tier1_rate60').value = rf.tier1.rate60 || '';
+        document.getElementById('tier2_rate36').value = rf.tier2.rate36 || '';
+        document.getElementById('tier2_rate60').value = rf.tier2.rate60 || '';
+        document.getElementById('tier3_rate60').value = rf.tier3.rate60 || '';
+        document.getElementById('tier3_rate72').value = rf.tier3.rate72 || '';
+      }
+    })
+    .withFailureHandler(function(error) {
+      showMessage('rateMessage', 'Error loading rate factors: ' + error, 'error');
+    })
+    .getRateFactors();
+}
+
+function saveRateFactors() {
+  const newRates = {
+    tier1: {
+      rate36: document.getElementById('tier1_rate36').value,
+      rate60: document.getElementById('tier1_rate60').value,
+      rate72: null
+    },
+    tier2: {
+      rate36: document.getElementById('tier2_rate36').value,
+      rate60: document.getElementById('tier2_rate60').value,
+      rate72: null
+    },
+    tier3: {
+      rate36: null,
+      rate60: document.getElementById('tier3_rate60').value,
+      rate72: document.getElementById('tier3_rate72').value
+    }
+  };
+
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        showMessage('rateMessage', 'Rate factors saved successfully!', 'success');
+      } else {
+        showMessage('rateMessage', 'Error: ' + result.error, 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      showMessage('rateMessage', 'Error saving rate factors: ' + error, 'error');
+    })
+    .updateRateFactors(newRates);
+}
+
+// ============================================
+// QUOTE HISTORY
+// ============================================
+
+function loadQuoteHistory() {
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        allQuotes = result.quotes || [];
+        document.getElementById('totalCount').textContent = allQuotes.length;
+        applyFilters();
+      } else {
+        showMessage('historyMessage', 'Error: ' + (result.error || result.message), 'error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      showMessage('historyMessage', 'Error loading quotes: ' + error, 'error');
+    })
+    .getAllQuoteHistory();
+}
+
+function applyFilters() {
+  const brandFilter = document.getElementById('filterBrand').value;
+  const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
+  const sortBy = document.getElementById('sortBy').value;
+
+  // Filter
+  filteredQuotes = allQuotes.filter(q => {
+    // Brand filter
+    if (brandFilter !== 'all') {
+      const qBrand = q.brand.toLowerCase();
+      if (brandFilter === 'tune' && !qBrand.includes('tune')) return false;
+      if (brandFilter === 'exact' && !qBrand.includes('exact')) return false;
+    }
+
+    // Search filter
+    if (searchFilter) {
+      const searchStr = [
+        q.quoteNumber,
+        q.customerName,
+        q.repName,
+        q.brand
+      ].join(' ').toLowerCase();
+      if (!searchStr.includes(searchFilter)) return false;
+    }
+
+    return true;
+  });
+
+  // Sort
+  filteredQuotes.sort((a, b) => {
+    switch (sortBy) {
+      case 'date-desc':
+        return new Date(b.quoteDate) - new Date(a.quoteDate);
+      case 'date-asc':
+        return new Date(a.quoteDate) - new Date(b.quoteDate);
+      case 'customer':
+        return a.customerName.localeCompare(b.customerName);
+      case 'rep':
+        return a.repName.localeCompare(b.repName);
+      case 'equipment-desc':
+        return (b.equipmentFinanced || 0) - (a.equipmentFinanced || 0);
+      case 'equipment-asc':
+        return (a.equipmentFinanced || 0) - (b.equipmentFinanced || 0);
+      default:
+        return 0;
+    }
+  });
+
+  document.getElementById('visibleCount').textContent = filteredQuotes.length;
+  renderQuoteTable();
+}
+
+function renderQuoteTable() {
+  const tbody = document.getElementById('quoteTableBody');
+
+  if (filteredQuotes.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="no-data">No quotes found</td></tr>';
+    return;
+  }
+
+  let html = '';
+  for (const q of filteredQuotes) {
+    const brandClass = q.brand.toLowerCase().includes('tune') ? 'brand-tune' : 'brand-exact';
+    const equipment = typeof q.equipmentFinanced === 'number'
+      ? '$' + q.equipmentFinanced.toLocaleString()
+      : q.equipmentFinanced;
+    const savingsMo = typeof q.savingsPerMonth === 'number'
+      ? '$' + Math.round(q.savingsPerMonth).toLocaleString()
+      : q.savingsPerMonth;
+    const savingsPct = typeof q.savingsPercent === 'number'
+      ? Math.round(q.savingsPercent) + '%'
+      : q.savingsPercent;
+
+    html += '<tr>';
+    html += '<td><span class="brand-badge ' + brandClass + '">' + escapeHtml(q.brand) + '</span></td>';
+    html += '<td>' + (q.pdfFileId
+      ? '<a href="#" onclick="openPDF(\'' + q.pdfFileId + '\'); return false;">' + escapeHtml(q.quoteNumber) + '</a>'
+      : escapeHtml(q.quoteNumber)) + '</td>';
+    html += '<td>' + escapeHtml(q.quoteDate) + '</td>';
+    html += '<td>' + escapeHtml(q.expiresDate) + '</td>';
+    html += '<td>' + escapeHtml(q.customerName) + '</td>';
+    html += '<td>' + escapeHtml(q.repName) + '</td>';
+    html += '<td>' + equipment + '</td>';
+    html += '<td>' + savingsPct + '</td>';
+    html += '<td>' + q.panelsMeters + '</td>';
+    html += '<td>' + savingsMo + '</td>';
+    html += '</tr>';
+  }
+
+  tbody.innerHTML = html;
+}
+
+function openPDF(fileId) {
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        window.open(result.url, '_blank');
+      } else {
+        alert('Error opening PDF: ' + result.error);
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      alert('Error opening PDF: ' + error);
+    })
+    .getAdminPDFUrl(fileId);
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function showLoading(show) {
+  document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+}
+
+function showMessage(elementId, message, type) {
+  const el = document.getElementById(elementId);
+  el.textContent = message;
+  el.className = 'message-box ' + type;
+  el.style.display = 'block';
+
+  // Auto-hide success messages
+  if (type === 'success') {
+    setTimeout(() => { el.style.display = 'none'; }, 5000);
+  }
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>

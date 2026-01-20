@@ -1,13 +1,39 @@
 // EMAIL.JS - Email Delivery Engine
-// PSI Quote Tool - Phase C Step 13
+// PSI Quote Tool - Phase C Step 13 (Updated Phase D)
 //
 // This file handles sending quote emails:
 // 1. Email to customer with PDF attachment (CC to rep)
 // 2. Separate notification email to admin
+// 3. Logging quote to QuoteLog tab (added in Phase D)
 
-// Admin email for notifications (use this for testing)
-// TODO: Change to production admin email when ready
-const ADMIN_EMAIL = 'mboyerchurch@gmail.com';
+// Configuration - Spreadsheet ID for reading admin email from Settings
+const EMAIL_SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
+
+// Default admin email (fallback if not found in Settings)
+const DEFAULT_ADMIN_EMAIL = 'mboyerchurch@gmail.com';
+
+/**
+ * Get admin email from Settings tab
+ * @returns {string} - Admin email address
+ */
+function getAdminEmailFromSettings() {
+  try {
+    const ss = SpreadsheetApp.openById(EMAIL_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('Settings');
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 0; i < data.length; i++) {
+      const firstCell = String(data[i][0]).toLowerCase().trim();
+      if (firstCell === 'adminemail' || firstCell === 'admin email' || firstCell === 'admin_email') {
+        return data[i][1] || DEFAULT_ADMIN_EMAIL;
+      }
+    }
+    return DEFAULT_ADMIN_EMAIL;
+  } catch (error) {
+    Logger.log('Error reading admin email from Settings: ' + error.toString());
+    return DEFAULT_ADMIN_EMAIL;
+  }
+}
 
 /**
  * Main entry point - sends quote emails
@@ -26,6 +52,9 @@ function sendQuoteEmails(emailData) {
     // Send Email 2: To admin (separate notification)
     sendAdminNotification(emailData, pdfBlob);
 
+    // Log quote to QuoteLog tab (Phase D addition)
+    logQuoteAfterSend(emailData);
+
     return {
       success: true
     };
@@ -36,6 +65,40 @@ function sendQuoteEmails(emailData) {
       success: false,
       error: error.toString()
     };
+  }
+}
+
+/**
+ * Log quote to QuoteLog tab after successful email send
+ * @param {Object} emailData - Email data containing quote info
+ */
+function logQuoteAfterSend(emailData) {
+  try {
+    // Prepare quote data for logging
+    const quoteData = {
+      companyName: emailData.companyName,
+      quoteNumber: emailData.quoteNumber,
+      quoteDate: emailData.quoteDate,
+      customerCompany: emailData.customerCompany,
+      repName: emailData.repName,
+      totalEquipment: emailData.totalEquipment,
+      avgSavingsPercent: emailData.avgSavingsPercent || 0,
+      totalPanelsMeters: emailData.totalPanelsMeters || 0,
+      grossMonthlySavings: emailData.grossMonthlySavings || 0,
+      pdfFileId: emailData.pdfFileId
+    };
+
+    // Call the logging function from History.js
+    const result = logQuoteToHistory(quoteData);
+
+    if (result.success) {
+      Logger.log('Quote logged to history: ' + emailData.quoteNumber);
+    } else {
+      Logger.log('Failed to log quote: ' + result.error);
+    }
+  } catch (error) {
+    // Don't fail the email send if logging fails
+    Logger.log('Error logging quote (non-fatal): ' + error.toString());
   }
 }
 
@@ -71,6 +134,9 @@ function sendCustomerEmail(emailData, pdfBlob) {
  * @param {Blob} pdfBlob - PDF file blob
  */
 function sendAdminNotification(emailData, pdfBlob) {
+  // Get admin email from Settings (dynamic, configurable via Admin Panel)
+  const adminEmail = getAdminEmailFromSettings();
+
   // Build admin notification subject
   const adminSubject = 'New Quote Sent: ' + emailData.companyName + ', ' + emailData.repName + ', ' + emailData.customerCompany;
 
@@ -146,7 +212,7 @@ This is an automated notification from the PSI Quote Tool.
 
   // Send admin notification
   GmailApp.sendEmail(
-    ADMIN_EMAIL,
+    adminEmail,
     adminSubject,
     adminBody,
     {
@@ -156,7 +222,7 @@ This is an automated notification from the PSI Quote Tool.
     }
   );
 
-  Logger.log('Admin notification sent to: ' + ADMIN_EMAIL);
+  Logger.log('Admin notification sent to: ' + adminEmail);
 }
 
 /**

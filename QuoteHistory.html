@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title><?= brandName ?> - Quote History</title>
+  <?!= include('QuoteHistoryStyles'); ?>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Loading quotes...</p>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="history-container">
+
+  <!-- Header -->
+  <div class="history-header <?= brand === 'EXACT' ? 'exact-header' : 'tune-header' ?>">
+    <h1><?= brandName ?> Quote History</h1>
+    <p>View all quotes generated for <?= brandName ?></p>
+  </div>
+
+  <!-- Hidden brand value for JavaScript -->
+  <input type="hidden" id="brandValue" value="<?= brand ?>">
+
+  <!-- Controls -->
+  <div class="controls-card">
+    <div class="controls-row">
+      <div class="control-group">
+        <label>Search:</label>
+        <input type="text" id="searchInput" placeholder="Quote #, customer, rep..." oninput="applyFilters()">
+      </div>
+      <div class="control-group">
+        <label>Sort by:</label>
+        <select id="sortBy" onchange="applyFilters()">
+          <option value="date-desc">Date (Newest First)</option>
+          <option value="date-asc">Date (Oldest First)</option>
+          <option value="customer">Customer Name</option>
+          <option value="rep">Rep Name</option>
+          <option value="equipment-desc">Equipment (Highest)</option>
+          <option value="equipment-asc">Equipment (Lowest)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <button onclick="loadQuotes()" class="btn btn-secondary">
+          <span class="refresh-icon">&#8635;</span> Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote Count -->
+  <div class="quote-summary">
+    <span>Showing <strong id="visibleCount">0</strong> of <strong id="totalCount">0</strong> quotes</span>
+  </div>
+
+  <!-- Quote Table -->
+  <div class="table-card">
+    <div class="table-container">
+      <table class="quote-table" id="quoteTable">
+        <thead>
+          <tr>
+            <th>Quote #</th>
+            <th>Date</th>
+            <th>Expires</th>
+            <th>Customer</th>
+            <th>Rep</th>
+            <th>Equipment</th>
+            <th>Savings %</th>
+            <th id="panelsHeader"><?= brand === 'EXACT' ? 'Meters' : 'Panels' ?></th>
+            <th>Savings/Mo</th>
+          </tr>
+        </thead>
+        <tbody id="quoteTableBody">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div id="noDataMessage" class="no-data-message" style="display: none;">
+      <div class="no-data-icon">&#128196;</div>
+      <p>No quotes found</p>
+      <p class="no-data-hint">Quotes will appear here after they are sent to customers.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="history-footer">
+    <p>PSI Quote Tool &bull; <?= brandName ?> Quote History</p>
+  </div>
+
+</div>
+
+<script>
+// ============================================
+// GLOBAL STATE
+// ============================================
+
+let allQuotes = [];
+let filteredQuotes = [];
+const brand = document.getElementById('brandValue').value;
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadQuotes();
+});
+
+// ============================================
+// DATA LOADING
+// ============================================
+
+function loadQuotes() {
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        allQuotes = result.quotes || [];
+        document.getElementById('totalCount').textContent = allQuotes.length;
+
+        if (allQuotes.length === 0) {
+          document.getElementById('noDataMessage').style.display = 'block';
+          document.getElementById('quoteTable').style.display = 'none';
+        } else {
+          document.getElementById('noDataMessage').style.display = 'none';
+          document.getElementById('quoteTable').style.display = 'table';
+          applyFilters();
+        }
+      } else {
+        showError(result.error || result.message || 'Unknown error');
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      showError('Error loading quotes: ' + error);
+    })
+    .getQuoteHistoryByBrand(brand);
+}
+
+// ============================================
+// FILTERING & SORTING
+// ============================================
+
+function applyFilters() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  const sortBy = document.getElementById('sortBy').value;
+
+  // Filter
+  filteredQuotes = allQuotes.filter(q => {
+    if (!searchTerm) return true;
+
+    const searchStr = [
+      q.quoteNumber,
+      q.customerName,
+      q.repName
+    ].join(' ').toLowerCase();
+
+    return searchStr.includes(searchTerm);
+  });
+
+  // Sort
+  filteredQuotes.sort((a, b) => {
+    switch (sortBy) {
+      case 'date-desc':
+        return new Date(b.quoteDate) - new Date(a.quoteDate);
+      case 'date-asc':
+        return new Date(a.quoteDate) - new Date(b.quoteDate);
+      case 'customer':
+        return (a.customerName || '').localeCompare(b.customerName || '');
+      case 'rep':
+        return (a.repName || '').localeCompare(b.repName || '');
+      case 'equipment-desc':
+        return (b.equipmentFinanced || 0) - (a.equipmentFinanced || 0);
+      case 'equipment-asc':
+        return (a.equipmentFinanced || 0) - (b.equipmentFinanced || 0);
+      default:
+        return 0;
+    }
+  });
+
+  document.getElementById('visibleCount').textContent = filteredQuotes.length;
+  renderTable();
+}
+
+// ============================================
+// TABLE RENDERING
+// ============================================
+
+function renderTable() {
+  const tbody = document.getElementById('quoteTableBody');
+
+  if (filteredQuotes.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" class="empty-row">No matching quotes found</td></tr>';
+    return;
+  }
+
+  let html = '';
+  for (const q of filteredQuotes) {
+    const equipment = typeof q.equipmentFinanced === 'number'
+      ? '$' + q.equipmentFinanced.toLocaleString()
+      : q.equipmentFinanced;
+    const savingsMo = typeof q.savingsPerMonth === 'number'
+      ? '$' + Math.round(q.savingsPerMonth).toLocaleString()
+      : q.savingsPerMonth;
+    const savingsPct = typeof q.savingsPercent === 'number'
+      ? Math.round(q.savingsPercent) + '%'
+      : q.savingsPercent;
+
+    html += '<tr>';
+    html += '<td class="quote-number-cell">' + (q.pdfFileId
+      ? '<a href="#" onclick="openPDF(\'' + q.pdfFileId + '\'); return false;">' + escapeHtml(q.quoteNumber) + '</a>'
+      : escapeHtml(q.quoteNumber)) + '</td>';
+    html += '<td>' + escapeHtml(q.quoteDate) + '</td>';
+    html += '<td>' + escapeHtml(q.expiresDate) + '</td>';
+    html += '<td>' + escapeHtml(q.customerName) + '</td>';
+    html += '<td>' + escapeHtml(q.repName) + '</td>';
+    html += '<td class="number-cell">' + equipment + '</td>';
+    html += '<td class="number-cell">' + savingsPct + '</td>';
+    html += '<td class="number-cell">' + q.panelsMeters + '</td>';
+    html += '<td class="number-cell">' + savingsMo + '</td>';
+    html += '</tr>';
+  }
+
+  tbody.innerHTML = html;
+}
+
+// ============================================
+// PDF VIEWING
+// ============================================
+
+function openPDF(fileId) {
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(result) {
+      showLoading(false);
+      if (result.success) {
+        window.open(result.url, '_blank');
+      } else {
+        alert('Error opening PDF: ' + result.error);
+      }
+    })
+    .withFailureHandler(function(error) {
+      showLoading(false);
+      alert('Error opening PDF: ' + error);
+    })
+    .getHistoryPDFUrl(fileId);
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function showLoading(show) {
+  document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+}
+
+function showError(message) {
+  const tbody = document.getElementById('quoteTableBody');
+  tbody.innerHTML = '<tr><td colspan="9" class="error-row">' + escapeHtml(message) + '</td></tr>';
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 // PDF.JS - PDF Generation Engine (Google Sheets Template Approach)
-// PSI Quote Tool - Phase C
+// PSI Quote Tool - Phase C (Updated Phase D)
 //
 // This approach copies a pre-formatted Google Sheets template, populates cells
 // with quote data, exports to PDF, and cleans up. Background colors and formatting
@@ -10,6 +10,32 @@
 const PDF_TEMPLATE_ID = '1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw';
 const TUNE_TEMPLATE_TAB = 'Tune Template';
 const EXACT_TEMPLATE_TAB = 'Exact Template';
+
+// Data Spreadsheet for Settings
+const PDF_DATA_SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
+
+/**
+ * Get valid until days from Settings tab
+ * @returns {number} - Number of days quote is valid
+ */
+function getValidUntilDays() {
+  try {
+    const ss = SpreadsheetApp.openById(PDF_DATA_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('Settings');
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 0; i < data.length; i++) {
+      const firstCell = String(data[i][0]).toLowerCase().trim();
+      if (firstCell === 'validuntildays' || firstCell === 'valid until days' || firstCell === 'valid_until_days') {
+        return parseInt(data[i][1]) || 30;
+      }
+    }
+    return 30; // Default
+  } catch (error) {
+    Logger.log('Error reading validUntilDays from Settings: ' + error.toString());
+    return 30; // Default
+  }
+}
 
 // Cell Reference Mapping (verified from zoomed-in template screenshots)
 // These are the cells that need to be populated with quote data
@@ -218,9 +244,10 @@ function createPDFQuote(quoteData) {
 function populateCells(sheet, quoteData) {
   const results = quoteData.results;
 
-  // Calculate valid until date (30 days from quote date)
+  // Calculate valid until date (configurable via Admin Panel)
+  const validUntilDays = getValidUntilDays();
   const quoteDateObj = new Date(quoteData.quoteDate);
-  quoteDateObj.setDate(quoteDateObj.getDate() + 30);
+  quoteDateObj.setDate(quoteDateObj.getDate() + validUntilDays);
   const validUntil = formatDate(quoteDateObj);
 
   // Brand Name (update for Exact Water quotes)
