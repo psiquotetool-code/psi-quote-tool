@@ -81,46 +81,94 @@
     <div class="card">
       <div class="card-header">Rate Factor Management</div>
       <div class="card-body">
-        <p class="section-help">Rate factors determine monthly lease payments. Enter values with 7 decimal precision (e.g., 0.0327348).</p>
 
-        <table class="rate-table">
-          <thead>
-            <tr>
-              <th>Tier</th>
-              <th>Equipment Cost Range</th>
-              <th>36-Month</th>
-              <th>60-Month</th>
-              <th>72-Month</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Tier 1</strong></td>
-              <td>$0 - $99,999</td>
-              <td><input type="text" id="tier1_rate36" class="rate-input"></td>
-              <td><input type="text" id="tier1_rate60" class="rate-input"></td>
-              <td><span class="na-cell">N/A</span></td>
-            </tr>
-            <tr>
-              <td><strong>Tier 2</strong></td>
-              <td>$100,000 - $499,999</td>
-              <td><input type="text" id="tier2_rate36" class="rate-input"></td>
-              <td><input type="text" id="tier2_rate60" class="rate-input"></td>
-              <td><span class="na-cell">N/A</span></td>
-            </tr>
-            <tr>
-              <td><strong>Tier 3</strong></td>
-              <td>$500,000+</td>
-              <td><span class="na-cell">N/A</span></td>
-              <td><input type="text" id="tier3_rate60" class="rate-input"></td>
-              <td><input type="text" id="tier3_rate72" class="rate-input"></td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- VIEW MODE (default) -->
+        <div id="rateFactorsViewMode">
+          <p class="section-help">These rate factors are currently being used to calculate lease payments.</p>
 
-        <div class="button-row">
-          <button onclick="saveRateFactors()" class="btn btn-primary">Save Rate Factors</button>
-          <button onclick="loadRateFactors()" class="btn btn-secondary">Reset to Saved</button>
+          <table class="rate-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Equipment Cost Range</th>
+                <th>36-Month</th>
+                <th>60-Month</th>
+                <th>72-Month</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tier 1</strong></td>
+                <td>$0 - $99,999</td>
+                <td><span id="view_tier1_rate36" class="rate-value">--</span></td>
+                <td><span id="view_tier1_rate60" class="rate-value">--</span></td>
+                <td><span class="na-cell">N/A</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tier 2</strong></td>
+                <td>$100,000 - $499,999</td>
+                <td><span id="view_tier2_rate36" class="rate-value">--</span></td>
+                <td><span id="view_tier2_rate60" class="rate-value">--</span></td>
+                <td><span class="na-cell">N/A</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tier 3</strong></td>
+                <td>$500,000+</td>
+                <td><span class="na-cell">N/A</span></td>
+                <td><span id="view_tier3_rate60" class="rate-value">--</span></td>
+                <td><span id="view_tier3_rate72" class="rate-value">--</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="button-row">
+            <button onclick="enterRateEditMode()" class="btn btn-primary">Edit Rate Factors</button>
+          </div>
+        </div>
+
+        <!-- EDIT MODE (hidden by default) -->
+        <div id="rateFactorsEditMode" style="display: none;">
+          <p class="section-help">Edit rate factors below. Enter values with 7 decimal precision (e.g., 0.0327348). Click Save when done.</p>
+
+          <table class="rate-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Equipment Cost Range</th>
+                <th>36-Month</th>
+                <th>60-Month</th>
+                <th>72-Month</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tier 1</strong></td>
+                <td>$0 - $99,999</td>
+                <td><input type="text" id="tier1_rate36" class="rate-input" placeholder="0.0000000"></td>
+                <td><input type="text" id="tier1_rate60" class="rate-input" placeholder="0.0000000"></td>
+                <td><span class="na-cell">N/A</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tier 2</strong></td>
+                <td>$100,000 - $499,999</td>
+                <td><input type="text" id="tier2_rate36" class="rate-input" placeholder="0.0000000"></td>
+                <td><input type="text" id="tier2_rate60" class="rate-input" placeholder="0.0000000"></td>
+                <td><span class="na-cell">N/A</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tier 3</strong></td>
+                <td>$500,000+</td>
+                <td><span class="na-cell">N/A</span></td>
+                <td><input type="text" id="tier3_rate60" class="rate-input" placeholder="0.0000000"></td>
+                <td><input type="text" id="tier3_rate72" class="rate-input" placeholder="0.0000000"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="button-row">
+            <button onclick="saveRateFactors()" class="btn btn-primary">Save Rate Factors</button>
+            <button onclick="cancelRateEdit()" class="btn btn-secondary">Cancel</button>
+          </div>
         </div>
 
         <div id="rateMessage" class="message-box" style="display: none;"></div>
@@ -324,23 +372,72 @@ function sendTestEmail() {
 // RATE FACTOR MANAGEMENT
 // ============================================
 
+// Store current rate factors for view mode
+let currentRateFactors = null;
+
 function loadRateFactors() {
   google.script.run
     .withSuccessHandler(function(result) {
       if (result.success) {
-        const rf = result.rateFactors;
-        document.getElementById('tier1_rate36').value = rf.tier1.rate36 || '';
-        document.getElementById('tier1_rate60').value = rf.tier1.rate60 || '';
-        document.getElementById('tier2_rate36').value = rf.tier2.rate36 || '';
-        document.getElementById('tier2_rate60').value = rf.tier2.rate60 || '';
-        document.getElementById('tier3_rate60').value = rf.tier3.rate60 || '';
-        document.getElementById('tier3_rate72').value = rf.tier3.rate72 || '';
+        currentRateFactors = result.rateFactors;
+        updateRateFactorViews();
+        populateRateFactorInputs();
       }
     })
     .withFailureHandler(function(error) {
       showMessage('rateMessage', 'Error loading rate factors: ' + error, 'error');
     })
     .getRateFactors();
+}
+
+function updateRateFactorViews() {
+  if (!currentRateFactors) return;
+  const rf = currentRateFactors;
+
+  // Update view mode display
+  document.getElementById('view_tier1_rate36').textContent = rf.tier1.rate36 || '--';
+  document.getElementById('view_tier1_rate60').textContent = rf.tier1.rate60 || '--';
+  document.getElementById('view_tier2_rate36').textContent = rf.tier2.rate36 || '--';
+  document.getElementById('view_tier2_rate60').textContent = rf.tier2.rate60 || '--';
+  document.getElementById('view_tier3_rate60').textContent = rf.tier3.rate60 || '--';
+  document.getElementById('view_tier3_rate72').textContent = rf.tier3.rate72 || '--';
+}
+
+function populateRateFactorInputs() {
+  if (!currentRateFactors) return;
+  const rf = currentRateFactors;
+
+  // Populate edit inputs with current values
+  document.getElementById('tier1_rate36').value = rf.tier1.rate36 || '';
+  document.getElementById('tier1_rate60').value = rf.tier1.rate60 || '';
+  document.getElementById('tier2_rate36').value = rf.tier2.rate36 || '';
+  document.getElementById('tier2_rate60').value = rf.tier2.rate60 || '';
+  document.getElementById('tier3_rate60').value = rf.tier3.rate60 || '';
+  document.getElementById('tier3_rate72').value = rf.tier3.rate72 || '';
+}
+
+function enterRateEditMode() {
+  // Make sure inputs have current values
+  populateRateFactorInputs();
+
+  // Switch to edit mode
+  document.getElementById('rateFactorsViewMode').style.display = 'none';
+  document.getElementById('rateFactorsEditMode').style.display = 'block';
+
+  // Hide any previous messages
+  document.getElementById('rateMessage').style.display = 'none';
+}
+
+function exitRateEditMode() {
+  // Switch back to view mode
+  document.getElementById('rateFactorsEditMode').style.display = 'none';
+  document.getElementById('rateFactorsViewMode').style.display = 'block';
+}
+
+function cancelRateEdit() {
+  // Reset inputs to current saved values and exit edit mode
+  populateRateFactorInputs();
+  exitRateEditMode();
 }
 
 function saveRateFactors() {
@@ -368,6 +465,10 @@ function saveRateFactors() {
       showLoading(false);
       if (result.success) {
         showMessage('rateMessage', 'Rate factors saved successfully!', 'success');
+        // Reload to get fresh data and update views
+        loadRateFactors();
+        // Return to view mode
+        exitRateEditMode();
       } else {
         showMessage('rateMessage', 'Error: ' + result.error, 'error');
       }
