@@ -568,7 +568,9 @@ function generateQuote() {
     const panelsValue = inputs[5].value.replace(/,/g, ''); // Remove commas
     const panels = parseInt(panelsValue);
     if (!panels || panels < 1 || panels > 2000) {
-      showAlert('Row ' + rowNum + ': Panels/Meters must be between 1 and 2,000');
+      const companyName = document.getElementById('companyName').value;
+      const unitLabel = companyName === 'Tune Energy' ? 'Panels' : 'Meters';
+      showAlert('Row ' + rowNum + ': ' + unitLabel + ' must be between 1 and 2,000');
       return;
     }
     
