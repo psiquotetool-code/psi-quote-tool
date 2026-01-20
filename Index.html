@@ -371,14 +371,19 @@ function goToScreen2() {
     }
   }
   
-  // Validate emails
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(document.getElementById('repEmail').value)) {
-    showAlert('Please enter a valid Rep Email');
+  // Validate emails (with common TLD check)
+  const repEmailValue = document.getElementById('repEmail').value;
+  const customerEmailValue = document.getElementById('customerEmail').value;
+
+  const repEmailValidation = isValidEmail(repEmailValue);
+  if (!repEmailValidation.valid) {
+    showAlert('Rep Email: ' + repEmailValidation.error);
     return;
   }
-  if (!emailRegex.test(document.getElementById('customerEmail').value)) {
-    showAlert('Please enter a valid Customer Email');
+
+  const customerEmailValidation = isValidEmail(customerEmailValue);
+  if (!customerEmailValidation.valid) {
+    showAlert('Customer Email: ' + customerEmailValidation.error);
     return;
   }
   
@@ -920,6 +925,43 @@ html += '</div>';
   
   html += '</div>';
   return html;
+}
+
+// Email Validation with Common TLD Check
+function isValidEmail(email) {
+  // Basic format check
+  const basicRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!basicRegex.test(email)) {
+    return { valid: false, error: 'Please enter a valid email format' };
+  }
+
+  // Extract the TLD (everything after the last dot)
+  const parts = email.toLowerCase().split('.');
+  const tld = parts[parts.length - 1];
+
+  // Common valid TLDs (add more as needed)
+  const validTLDs = [
+    // Generic TLDs
+    'com', 'org', 'net', 'edu', 'gov', 'mil', 'int',
+    // Popular TLDs
+    'io', 'co', 'me', 'us', 'uk', 'ca', 'de', 'fr', 'au', 'in', 'jp',
+    'ru', 'br', 'mx', 'es', 'it', 'nl', 'be', 'ch', 'at', 'pl', 'se',
+    'no', 'dk', 'fi', 'nz', 'za', 'sg', 'hk', 'kr', 'cn', 'tw',
+    // Newer generic TLDs
+    'info', 'biz', 'xyz', 'app', 'dev', 'tech', 'online', 'site',
+    'store', 'shop', 'blog', 'club', 'pro', 'agency', 'solutions',
+    'email', 'cloud', 'digital', 'media', 'group', 'company',
+    'global', 'world', 'network', 'systems', 'services', 'consulting',
+    // Other common ones
+    'ai', 'cc', 'tv', 'ws', 'mobi', 'name', 'jobs', 'travel', 'museum',
+    'coop', 'aero', 'asia', 'cat', 'tel', 'xxx', 'post'
+  ];
+
+  if (!validTLDs.includes(tld)) {
+    return { valid: false, error: 'Please use a valid email domain (e.g., .com, .org, .net)' };
+  }
+
+  return { valid: true };
 }
 
 // Custom Alert Functions
