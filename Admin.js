@@ -373,17 +373,20 @@ function getAllQuoteHistory() {
       const row = data[i];
       if (!row[0] && !row[1]) continue;
 
+      // Columns: Brand, QuoteNumber, QuoteDate, QuoteExpires, CustomerName,
+      //          CustomerContact, CustomerEmail, RepName, EquipmentFinanced,
+      //          GrossSavingsPercent, PDFFileID
       quotes.push({
         brand: row[0] || '',
         quoteNumber: row[1] || '',
         quoteDate: row[2] ? formatAdminDate(row[2]) : '',
         expiresDate: row[3] ? formatAdminDate(row[3]) : '',
         customerName: row[4] || '',
-        repName: row[5] || '',
-        equipmentFinanced: row[6] || 0,
-        savingsPercent: row[7] || 0,
-        panelsMeters: row[8] || 0,
-        savingsPerMonth: row[9] || 0,
+        customerContact: row[5] || '',
+        customerEmail: row[6] || '',
+        repName: row[7] || '',
+        equipmentFinanced: row[8] || 0,
+        savingsPercent: row[9] || 0,
         pdfFileId: row[10] || ''
       });
     }

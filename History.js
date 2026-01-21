@@ -58,17 +58,20 @@ function getQuoteHistoryByBrand(brand) {
       const isMatch = matchBrands.some(b => quoteBrand.includes(b));
 
       if (isMatch) {
+        // Columns: Brand, QuoteNumber, QuoteDate, QuoteExpires, CustomerName,
+        //          CustomerContact, CustomerEmail, RepName, EquipmentFinanced,
+        //          GrossSavingsPercent, PDFFileID
         quotes.push({
           brand: row[0] || '',
           quoteNumber: row[1] || '',
           quoteDate: row[2] ? formatHistoryDate(row[2]) : '',
           expiresDate: row[3] ? formatHistoryDate(row[3]) : '',
           customerName: row[4] || '',
-          repName: row[5] || '',
-          equipmentFinanced: row[6] || 0,
-          savingsPercent: row[7] || 0,
-          panelsMeters: row[8] || 0,
-          savingsPerMonth: row[9] || 0,
+          customerContact: row[5] || '',
+          customerEmail: row[6] || '',
+          repName: row[7] || '',
+          equipmentFinanced: row[8] || 0,
+          savingsPercent: row[9] || 0,
           pdfFileId: row[10] || ''
         });
       }
@@ -136,16 +139,16 @@ function logQuoteToHistory(quoteData) {
       // Add headers
       sheet.getRange(1, 1, 1, 11).setValues([[
         'Brand',
-        'Quote #',
-        'Date',
-        'Expires',
-        'Customer',
-        'Rep',
-        'Equipment',
-        'Savings %',
-        'Panels/Meters',
-        'Savings/Month',
-        'PDF FileId'
+        'QuoteNumber',
+        'QuoteDate',
+        'QuoteExpires',
+        'CustomerName',
+        'CustomerContact',
+        'CustomerEmail',
+        'RepName',
+        'EquipmentFinanced',
+        'GrossSavingsPercent',
+        'PDFFileID'
       ]]);
       // Format header row
       sheet.getRange(1, 1, 1, 11).setFontWeight('bold');
@@ -176,17 +179,20 @@ function logQuoteToHistory(quoteData) {
     expiresDate.setDate(expiresDate.getDate() + validUntilDays);
 
     // Append new row
+    // Columns: Brand, QuoteNumber, QuoteDate, QuoteExpires, CustomerName,
+    //          CustomerContact, CustomerEmail, RepName, EquipmentFinanced,
+    //          GrossSavingsPercent, PDFFileID
     const newRow = [
       quoteData.companyName || quoteData.brand || '',
       quoteData.quoteNumber || '',
       quoteData.quoteDate || '',
       formatHistoryDate(expiresDate),
       quoteData.customerCompany || '',
+      quoteData.customerContact || '',
+      quoteData.customerEmail || '',
       quoteData.repName || '',
       quoteData.totalEquipment || 0,
       quoteData.avgSavingsPercent || 0,
-      quoteData.totalPanelsMeters || 0,
-      quoteData.grossMonthlySavings || 0,
       quoteData.pdfFileId || ''
     ];
 
@@ -220,11 +226,11 @@ function testLogQuote() {
     quoteNumber: 'TUNE-99999',
     quoteDate: '1/20/2026',
     customerCompany: 'Test Company',
+    customerContact: 'John Doe',
+    customerEmail: 'john@testcompany.com',
     repName: 'Test Rep',
     totalEquipment: 50000,
     avgSavingsPercent: 15,
-    totalPanelsMeters: 10,
-    grossMonthlySavings: 1500,
     pdfFileId: 'test-file-id'
   };
 

@@ -75,16 +75,19 @@ function sendQuoteEmails(emailData) {
 function logQuoteAfterSend(emailData) {
   try {
     // Prepare quote data for logging
+    // Columns: Brand, QuoteNumber, QuoteDate, QuoteExpires, CustomerName,
+    //          CustomerContact, CustomerEmail, RepName, EquipmentFinanced,
+    //          GrossSavingsPercent, PDFFileID
     const quoteData = {
       companyName: emailData.companyName,
       quoteNumber: emailData.quoteNumber,
       quoteDate: emailData.quoteDate,
       customerCompany: emailData.customerCompany,
+      customerContact: emailData.customerContact,
+      customerEmail: emailData.to,  // The "To" field contains customer email
       repName: emailData.repName,
       totalEquipment: emailData.totalEquipment,
       avgSavingsPercent: emailData.avgSavingsPercent || 0,
-      totalPanelsMeters: emailData.totalPanelsMeters || 0,
-      grossMonthlySavings: emailData.grossMonthlySavings || 0,
       pdfFileId: emailData.pdfFileId
     };
 

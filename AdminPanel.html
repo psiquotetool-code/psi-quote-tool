@@ -227,11 +227,11 @@
                 <th>Date</th>
                 <th>Expires</th>
                 <th>Customer</th>
+                <th>Contact</th>
+                <th>Email</th>
                 <th>Rep</th>
                 <th>Equipment</th>
                 <th>Savings %</th>
-                <th>Panels/Meters</th>
-                <th>Savings/Mo</th>
               </tr>
             </thead>
             <tbody id="quoteTableBody">
@@ -570,9 +570,6 @@ function renderQuoteTable() {
     const equipment = typeof q.equipmentFinanced === 'number'
       ? '$' + q.equipmentFinanced.toLocaleString()
       : q.equipmentFinanced;
-    const savingsMo = typeof q.savingsPerMonth === 'number'
-      ? '$' + Math.round(q.savingsPerMonth).toLocaleString()
-      : q.savingsPerMonth;
     const savingsPct = typeof q.savingsPercent === 'number'
       ? Math.round(q.savingsPercent) + '%'
       : q.savingsPercent;
@@ -585,11 +582,11 @@ function renderQuoteTable() {
     html += '<td>' + escapeHtml(q.quoteDate) + '</td>';
     html += '<td>' + escapeHtml(q.expiresDate) + '</td>';
     html += '<td>' + escapeHtml(q.customerName) + '</td>';
+    html += '<td>' + escapeHtml(q.customerContact) + '</td>';
+    html += '<td>' + escapeHtml(q.customerEmail) + '</td>';
     html += '<td>' + escapeHtml(q.repName) + '</td>';
     html += '<td>' + equipment + '</td>';
     html += '<td>' + savingsPct + '</td>';
-    html += '<td>' + q.panelsMeters + '</td>';
-    html += '<td>' + savingsMo + '</td>';
     html += '</tr>';
   }
 
