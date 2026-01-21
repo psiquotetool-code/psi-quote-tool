@@ -63,6 +63,7 @@ const CELL_MAP = {
   repPhone: 'H12',
 
   // Quote Highlights (left column)
+  panelsMetersLabel: 'C16',   // Dynamic: "# of Panels" or "# of Meters"
   panelsMeters: 'D16',
   equipmentFinanced: 'D17',
   grossSavingsMonth: 'D18',
@@ -174,10 +175,11 @@ const CELL_MAP = {
   // Each row is merged F:I, write to F
   term2_footnote1: 'F57',  // Static: Monthly ROI definition
   term2_footnote2: 'F58',  // Dynamic: Term-year ROI definition
-  term2_footnote3: 'F59'   // Dynamic: 10-year ROI definition (divisor changes)
+  term2_footnote3: 'F59',  // Dynamic: 10-year ROI definition (divisor changes)
 
   // Terms and Conditions (rows 61-62)
-  // Merged C61:I62 - Static text, no update needed
+  // Merged C61:I62 - Dynamic text based on brand
+  termsConditions: 'C61'   // Dynamic: "Energy cost..." or "Water cost..."
 };
 
 /**
@@ -272,6 +274,9 @@ function populateCells(sheet, quoteData) {
   sheet.getRange(CELL_MAP.repPhone).setValue(quoteData.repPhone);
 
   // Quote Highlights
+  // Dynamic label based on brand: "# of Panels" for Tune, "# of Meters" for Exact
+  const panelsMetersLabel = quoteData.companyName === 'Exact Water' ? '# of Meters' : '# of Panels';
+  sheet.getRange(CELL_MAP.panelsMetersLabel).setValue(panelsMetersLabel);
   sheet.getRange(CELL_MAP.panelsMeters).setValue(results.totalPanelsMeters);
   sheet.getRange(CELL_MAP.equipmentFinanced).setValue('$' + formatNumber(results.totalEquipment));
   sheet.getRange(CELL_MAP.grossSavingsMonth).setValue('$' + formatNumber(results.grossMonthlySavings));
@@ -290,6 +295,11 @@ function populateCells(sheet, quoteData) {
     populateTermBlock(sheet, 1, results.term60, results, 60);
     populateTermBlock(sheet, 2, results.term72, results, 72);
   }
+
+  // Terms and Conditions - Dynamic based on brand
+  const costType = quoteData.companyName === 'Exact Water' ? 'Water' : 'Energy';
+  const termsText = 'TERMS, CONDITIONS, NOTICES: ' + costType + ' cost is assumed to remain constant. Equipment financing is subject to credit approval by PSI. Quote amount may change if equipment list is modified. Customer is responsible for all installation and ongoing operations. This quote is for informational purposes only and does not constitute an offer or contract.';
+  sheet.getRange(CELL_MAP.termsConditions).setValue(termsText);
 }
 
 /**
