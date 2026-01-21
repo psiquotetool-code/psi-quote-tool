@@ -1198,22 +1198,7 @@ Are you sure you want to continue?`;
 
 // Generate another quote (reset to Screen 1)
 function generateAnotherQuote() {
-  // Close post-send modal
-  document.getElementById('postSendModal').classList.remove('active');
-
-  // Clear location data
-  document.getElementById('locationBody').innerHTML = '';
-
-  // Reset global variables
-  quoteResults = null;
-  pdfResult = null;
-
-  // Navigate to Screen 1
-  document.getElementById('screen3').classList.remove('active');
-  document.getElementById('screen2').classList.remove('active');
-  document.getElementById('screen1').classList.add('active');
-
-  // Reload to get new quote number
+  // Simply reload the page - this gets a fresh quote number and resets everything
   window.location.reload();
 }
 
