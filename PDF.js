@@ -500,7 +500,7 @@ function generateFileName(quoteData) {
  * @returns {Folder} - Google Drive Folder object
  */
 function getOrCreateQuoteFolder() {
-  const folderName = 'PSI Quote PDFs';
+  const folderName = "GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!";
   const folders = DriveApp.getFoldersByName(folderName);
 
   if (folders.hasNext()) {
@@ -537,9 +537,9 @@ function formatDate(date) {
  */
 function authorizeDrive() {
   // Authorize Drive access
-  var folders = DriveApp.getFoldersByName('PSI Quote PDFs');
+  var folders = DriveApp.getFoldersByName("GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!");
   if (!folders.hasNext()) {
-    var folder = DriveApp.createFolder('PSI Quote PDFs');
+    var folder = DriveApp.createFolder("GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!");
     Logger.log('Created folder: ' + folder.getName());
   } else {
     Logger.log('Folder already exists');
