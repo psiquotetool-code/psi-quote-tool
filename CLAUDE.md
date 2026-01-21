@@ -20,6 +20,7 @@ A lease quote generation tool for PSI (equipment financing company). Sales reps 
 - **Frontend**: HTML, CSS, JavaScript (single-page app)
 - **Backend**: Google Apps Script (.gs files)
 - **Data Storage**: Google Sheets
+- **PDF Storage**: Google Drive folder
 - **Version Control**: Git + GitHub
 - **Sync Tool**: clasp (Google's CLI for Apps Script)
 
@@ -27,88 +28,53 @@ A lease quote generation tool for PSI (equipment financing company). Sales reps 
 
 ```
 Quote Tool Via Claude Code/
-├── Code.js              # Web app entry point, URL routing (quote tool, admin, history)
-├── Calculations.js      # All lease calculation formulas (Items A-AR)
-├── Index.html           # Quote Tool UI (3 screens in single-page app)
-├── Styles.html          # Quote Tool CSS stylesheet (1100+ lines)
-├── PDF.js               # PDF generation using Google Sheets template
-├── Email.js             # Email delivery + quote logging
-├── Admin.js             # Admin panel backend (auth, settings, all quotes)
-├── Admin.html           # Admin panel UI
-├── AdminStyles.html     # Admin panel CSS
-├── History.js           # Quote history backend (read-only, by brand)
-├── History.html         # Public quote history UI
-├── HistoryStyles.html   # Quote history CSS
-├── appsscript.json      # Apps Script project config
-├── .clasp.json          # clasp config (not in Git - contains script ID)
-├── CLAUDE.md            # This file
+├── Code.js                  # Web app entry point, URL routing
+├── Calculations.js          # All lease calculation formulas (Items A-AR)
+├── Index.html               # Quote Tool UI (3 screens in single-page app)
+├── Styles.html              # Quote Tool CSS stylesheet (1100+ lines)
+├── PDF.js                   # PDF generation using Google Sheets template
+├── Email.js                 # Email delivery + quote logging
+├── Admin.js                 # Admin panel backend (auth, settings, all quotes)
+├── AdminPanel.html          # Admin panel UI
+├── AdminPanelStyles.html    # Admin panel CSS
+├── History.js               # Quote history backend (read-only, by brand)
+├── QuoteHistory.html        # Public quote history UI
+├── QuoteHistoryStyles.html  # Quote history CSS
+├── appsscript.json          # Apps Script project config
+├── .clasp.json              # clasp config (not in Git - contains script ID)
+├── CLAUDE.md                # This file
+├── READ ME FIRST - How To Use This Tool.md  # Handoff document for Steve
+├── TESTING CHECKLIST.md     # Comprehensive testing checklist (150+ tests)
 └── .claude/
-    ├── Reference - Apps Script Documents/
-    │   ├── Build Plan.md                        # Detailed build plan & status
-    │   ├── Quote Tool Requirements - Dec 2 2025.txt
-    │   ├── quote_tool_calculations.csv
-    │   ├── PSI_Quote_Tool_Calculator_Complete.csv
-    │   └── Steve Proposal - Nov 14.txt
-    └── PDF Refinement/
-        ├── Screen 3.jpg                         # Target layout from web app
-        ├── PDF Output V1-V4.pdf                 # Test iterations (HTML approach - failed)
-        ├── Google Sheets Screenshot Top.jpg     # Template layout reference
-        ├── Google Sheets Screenshot Bottom.jpg  # Template layout reference
-        └── Google Sheets Exported to PDF.pdf    # Working PDF from Sheets (target)
+    └── Reference - Apps Script Documents/
+        ├── Build Plan.md
+        └── [other reference docs]
 ```
 
 ## Google Resources
 
 - **Apps Script Project ID**: `1-47VWwAe7cf4ZXVXlmMJhqHPWEdLG3el6e-JrBZ0wrWT1qhi9v2WG0Dc`
 - **Data Google Sheet**: `1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw`
-  - Tabs: Settings (rate factors), QuoteNumbers (tracking), QuoteLog (history)
+  - Tabs: Settings (rate factors + config), QuoteNumbers (tracking), QuoteLog (history)
 - **PDF Template Google Sheet**: `1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw`
   - **DO NOT DELETE** - This template is used every time a PDF is generated
   - Tabs: `Tune Template` (Tune Energy), `Exact Template` (Exact Water)
-  - Code selects correct tab based on brand
+- **PDF Storage Folder**: `GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!`
+  - Located in psiquotetool@gmail.com Google Drive
+  - All generated quote PDFs are stored here
 - **GitHub Repo**: https://github.com/maddsdad/psi-quote-tool
-
-## Common Commands
-
-```bash
-# Pull latest code from Apps Script to local files
-clasp pull
-
-# Push local changes to Apps Script
-clasp push
-
-# Sync and commit (after making changes in Apps Script browser)
-clasp pull && git add . && git commit -m "description" && git push
-
-# View Apps Script project in browser
-clasp open
-```
-
-## Architecture
-
-**Single-Page App** with 3 screens using show/hide divs:
-- **Screen 1**: Quote setup (rep info, customer info)
-- **Screen 2**: Location entry (dynamic table, add/remove rows)
-- **Screen 3**: Quote preview (two-column layout, financial tables)
-
-**Why SPA?** Apps Script template processing doesn't work for passing data between separate HTML files. Data persists via JavaScript variables.
-
-## Rate Factor Tiers
-
-| Tier | Equipment Cost | Available Terms |
-|------|---------------|-----------------|
-| 1 | $0 - $99,999.99 | 36-month & 60-month |
-| 2 | $100,000 - $499,999.99 | 36-month & 60-month |
-| 3 | $500,000+ | 60-month & 72-month |
 
 ## Current Status
 
 | Phase | Description | Status |
 |-------|-------------|--------|
 | **A** | Core Functionality (Steps 1-7) | ✅ Complete |
-| **B** | Styling & Polish (Steps 8-11) | ✅ Complete (Steve approved) |
+| **B** | Styling & Polish (Steps 8-11) | ✅ Complete |
 | **C** | PDF Generation & Email | ✅ Complete |
 | **D** | Admin Panel & Quote History | ✅ Complete |
+| **Testing** | Comprehensive testing & bug fixes | ✅ Complete |
+
+**Project Status: READY FOR FINAL DEPLOYMENT**
 
 ## URL Structure
 
@@ -122,136 +88,29 @@ clasp open
 
 **Admin Access:** psiquotetool@gmail.com, mboyerchurch@gmail.com
 
-## Phase C Summary (Completed January 19, 2026)
+## Rate Factor Tiers
 
-### Step 12: PDF Generation ✅ COMPLETE
-- ✅ PDF.js using Google Sheets template approach
-- ✅ Two template tabs: "Tune Template" and "Exact Template"
-- ✅ Dynamic brand selection based on URL parameter
-- ✅ All tiers tested and working (Tier 1, 2, and 3)
-- ✅ Dynamic labels for term headers (36/60/72-Month)
-- ✅ Loading spinner overlay during PDF generation
-- ✅ OAuth scopes: spreadsheets, drive, script.external_request, mail.google.com
+| Tier | Equipment Cost | Available Terms |
+|------|---------------|-----------------|
+| 1 | $0 - $99,999.99 | 36-month & 60-month |
+| 2 | $100,000 - $499,999.99 | 36-month & 60-month |
+| 3 | $500,000+ | 60-month & 72-month |
 
-### Step 13: Email Delivery ✅ COMPLETE
-- ✅ Email.js created with GmailApp integration
-- ✅ Email composition modal with editable To, CC, Subject, and Body
-- ✅ Pre-filled email template with customer/rep info
-- ✅ "Reset to Default" button to restore original template
-- ✅ PDF opens in new tab before email modal appears (for review)
-- ✅ Email 1: To customer, CC rep, with PDF attachment
-- ✅ Email 2: Separate admin notification to mboyerchurch@gmail.com (testing)
-- ✅ Post-send modal with 4 options:
-  - "← Modify the quote you just sent" (blue, returns to Screen 3)
-  - "Download Quote PDF" (gray)
-  - "Generate New Quote →" (green, with confirmation warning)
-  - "Exit Quote Tool" (red, with confirmation warning)
-- ✅ Email address changes sync back to form fields
+## QuoteLog Column Structure
 
-**PDF Generation Flow:**
-```
-Frontend: generatePDF()
-→ Backend: createPDFQuote(quoteData)
-→ Open PDF Template spreadsheet
-→ Select correct tab based on brand (Tune Template or Exact Template)
-→ Copy tab to temporary sheet
-→ Populate cells with quote data (see CELL_MAP in PDF.js)
-→ Export via UrlFetchApp with PDF parameters
-→ Save to Drive folder "PSI Quote PDFs"
-→ Delete temp sheet
-→ Return download URL + fileId
-→ Frontend: Open PDF in new tab, show email modal
-```
-
-**Email Flow:**
-```
-Frontend: sendQuoteEmail()
-→ Sync any email address changes back to form
-→ Backend: sendQuoteEmails(emailData)
-→ Get PDF blob from Drive using fileId
-→ Send customer email (To: customer, CC: rep, attach PDF)
-→ Send admin notification (To: admin, attach PDF)
-→ Return success
-→ Frontend: Show post-send modal with options
-```
-
-**Cell Mapping (PDF.js CELL_MAP):**
-- Header: I4 (date), I5 (quote#), I6 (valid until)
-- Brand: C2 (main title), F9 (presented by header)
-- Customer info: D10-D13
-- Rep info: H10-H12 (merged H:I cells)
-- Quote Highlights: D16-D19
-- Sites table: C23+ (37 rows available)
-- Term 1 (rows 17-37): Cash flow, savings analysis, ROI metrics, footnotes
-- Term 2 (rows 39-59): Cash flow, savings analysis, ROI metrics, footnotes
-
-## Phase D Summary (Completed January 20, 2026)
-
-### Step 15: Admin Authentication ✅ COMPLETE
-- ✅ Admin panel at `?admin=true` URL
-- ✅ Google account authentication via Session.getActiveUser()
-- ✅ Access control for authorized admins only
-- ✅ Authorized emails: psiquotetool@gmail.com, mboyerchurch@gmail.com
-
-### Step 16: Rate Factor Management ✅ COMPLETE
-- ✅ Display current rate factors from Settings tab
-- ✅ Edit rate factors for all tiers (Tier 1: 36/60mo, Tier 2: 36/60mo, Tier 3: 60/72mo)
-- ✅ Validation: positive numbers, 7 decimal precision
-- ✅ Save changes to Settings sheet with confirmation
-
-### Step 17: Quote Valid Until Setting ✅ COMPLETE
-- ✅ Display current "Valid Until" period (default: 30 days)
-- ✅ Edit field with validation (1-365 days)
-- ✅ Save to Settings sheet
-- ✅ PDF.js updated to read dynamic value from Settings
-
-### Step 18: Admin Email Configuration ✅ COMPLETE
-- ✅ Display current admin notification email
-- ✅ Edit field with email validation
-- ✅ Save to Settings sheet
-- ✅ "Send Test Email" button
-- ✅ Email.js updated to read dynamic email from Settings
-
-### Step 19: Quote History Views ✅ COMPLETE
-
-**Public History Pages (no auth required):**
-- ✅ Tune history at `?history=tune`
-- ✅ Exact history at `?history=exact`
-- ✅ Filtered by brand, read-only
-- ✅ Sortable table (date, customer, rep, equipment)
-- ✅ Search/filter capability
-- ✅ Click quote number to view/download PDF
-
-**Admin All Quotes View:**
-- ✅ Combined view of ALL quotes (both brands)
-- ✅ Brand filtering dropdown
-- ✅ Full search and sort capabilities
-
-**Quote Logging:**
-- ✅ Email.js logs quotes to QuoteLog tab after successful send
-- ✅ Columns: Brand, Quote#, Date, Expires, Customer, Rep, Equipment, Savings%, Panels/Meters, Savings/Month, PDF FileId
-
-**Settings Tab Structure (after Phase D):**
-```
-Row 1: Header (Tier, 36-Month, 60-Month, 72-Month)
-Row 2: Tier 1 rates (1, 0.0327348, 0.0211993, -)
-Row 3: Tier 2 rates (2, 0.0327439, 0.0213861, -)
-Row 4: Tier 3 rates (3, -, 0.0208989, 0.0180061)
-Row 5: ValidUntilDays, 30
-Row 6: AdminEmail, mboyerchurch@gmail.com
-```
-
-## Key Decisions & Learnings
-
-1. **Single-page app architecture required** - Apps Script template processing with document.write() doesn't work for multi-page data passing
-
-2. **Base64 logos** - Google Drive URLs fail due to CORS; embed logos as base64 strings
-
-3. **Fixed 33-row sites table** - Creates balanced appearance regardless of location count
-
-4. **Rate factors use 7 decimal precision** - Matches Steve's Excel calculations exactly
-
-5. **Dummy test data** - Implemented but disabled for production; toggle via `addLocationRow(true)` parameter
+| Column | Field |
+|--------|-------|
+| A | Brand |
+| B | QuoteNumber |
+| C | QuoteDate |
+| D | QuoteExpires |
+| E | CustomerName |
+| F | CustomerContact |
+| G | CustomerEmail |
+| H | RepName |
+| I | EquipmentFinanced |
+| J | GrossSavingsPercent |
+| K | PDFFileID |
 
 ## Validation Rules
 
@@ -262,25 +121,88 @@ Row 6: AdminEmail, mboyerchurch@gmail.com
 | Savings % | 0% - 50% |
 | Panels/Meters | 1 - 2,000 |
 | Phone | 10 digits |
-| Email | Valid format |
+| Email | Valid format + common TLD (.com, .org, .net, .io, etc.) |
 
-## Development Workflow
+## Key Features
 
-1. **Option A** (Recommended): Edit in Apps Script browser, then run `clasp pull` to sync locally
-2. **Option B**: Edit local files with Claude Code, then run `clasp push` to deploy
+### Quote Tool (Index.html)
+- 3-screen single-page app
+- Brand-specific theming (Tune = blue, Exact = teal)
+- Dynamic Panels/Meters labels based on brand
+- Real-time validation with clear error messages
+- Loading overlay during PDF generation and email sending
 
-After changes:
+### PDF Generation (PDF.js)
+- Uses Google Sheets template approach (preserves formatting)
+- Dynamic content based on brand:
+  - "# of Panels" vs "# of Meters" in Quote Highlights
+  - "Energy cost is assumed..." vs "Water cost is assumed..." in Terms
+- PDFs stored in Drive folder with warning name
+- Valid Until days configurable via Admin Panel
+
+### Email Delivery (Email.js)
+- Customer email with PDF attachment (CC: rep)
+- Admin notification to Steve Olsen
+- Reply-To set to rep's email address
+- Quote logged to history after successful send
+- Loading overlay during send
+
+### Admin Panel (AdminPanel.html)
+- Google account authentication
+- **Settings Tab**: ValidUntilDays, AdminEmail, Test Email button
+- **Rate Factors Tab**: View mode (read-only) → Edit mode → Save → View mode
+- **All Quotes Tab**: Combined view of both brands with filtering
+
+### Quote History (QuoteHistory.html)
+- Public access (no login required)
+- Filtered by brand
+- Columns: Quote#, Date, Expires, Customer, Contact, Email, Rep, Equipment, Savings%
+- Click quote number to open PDF
+
+## Common Commands
+
 ```bash
-clasp pull                    # Get latest from Apps Script
-git add .                     # Stage changes
-git commit -m "description"   # Create snapshot
-git push                      # Backup to GitHub
+# Pull latest code from Apps Script to local files
+clasp pull
+
+# Push local changes to Apps Script
+clasp push --force
+
+# Sync and commit
+clasp pull && git add . && git commit -m "description" && git push
 ```
 
-## Reference Documents
+## Deployment
 
-See `.claude/Reference - Apps Script Documents/` for:
-- Detailed build plan with step-by-step progress
-- Business requirements and specifications
-- Calculation formulas and test cases
-- Original project proposal
+To create a new deployment after code changes:
+1. Open Apps Script editor
+2. Click **Deploy** → **New deployment**
+3. Select **Web app**
+4. Set description, Execute as: Me, Who has access: Anyone
+5. Click **Deploy**
+6. Copy the new URL
+
+## Files in psiquotetool@gmail.com Google Drive
+
+```
+⚠️ PSI QUOTE TOOL - DO NOT DELETE OR EDIT ⚠️/
+├── Quote Tool Code (Apps Script project)
+├── Quote Tool Data (Google Sheet - Settings, QuoteNumbers, QuoteLog)
+├── PDF Template (Google Sheet - Tune Template, Exact Template)
+├── GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!/
+│   └── [All generated quote PDFs]
+└── 📋 READ ME FIRST - How To Use This Tool (Google Doc)
+```
+
+## Development History
+
+- **Phase A** (Complete): Core functionality - calculations, 3-screen flow
+- **Phase B** (Complete): Styling and polish - Steve approved
+- **Phase C** (Complete): PDF generation (Sheets template approach) + Email delivery
+- **Phase D** (Complete): Admin Panel + Quote History + Documentation
+- **Testing** (Complete): Bug fixes, validation improvements, UI polish
+
+## Contact
+
+**Developer:** Matt Boyer (mboyerchurch@gmail.com)
+**GitHub:** https://github.com/maddsdad/psi-quote-tool
