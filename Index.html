@@ -1078,6 +1078,9 @@ function resetEmailTemplate() {
 
 // Send quote email
 function sendQuoteEmail() {
+  // Show loading overlay
+  showLoading();
+
   // Disable send button and show loading state
   const sendBtn = document.getElementById('sendEmailBtn');
   sendBtn.disabled = true;
@@ -1119,6 +1122,9 @@ function sendQuoteEmail() {
 
 // Handle successful email send
 function handleEmailSuccess(result) {
+  // Hide loading overlay
+  hideLoading();
+
   // Reset send button
   const sendBtn = document.getElementById('sendEmailBtn');
   sendBtn.disabled = false;
@@ -1142,6 +1148,9 @@ function handleEmailSuccess(result) {
 
 // Handle email send error
 function handleEmailError(error) {
+  // Hide loading overlay
+  hideLoading();
+
   // Reset send button
   const sendBtn = document.getElementById('sendEmailBtn');
   sendBtn.disabled = false;
