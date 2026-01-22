@@ -16,21 +16,21 @@ Bookmark these! These are the only links you need:
 
 | Brand | Link |
 |-------|------|
-| **Tune Energy** | https://script.google.com/macros/s/AKfycbzJejHwJVamAbbgg7khoDlrgAKPeDJ9bw68Xut7MC2rw2xDwBMsMyWXSBD3rM2oVZMRmg/exec?brand=tune |
-| **Exact Water** | https://script.google.com/macros/s/AKfycbzJejHwJVamAbbgg7khoDlrgAKPeDJ9bw68Xut7MC2rw2xDwBMsMyWXSBD3rM2oVZMRmg/exec?brand=exact |
+| **Tune Energy** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?brand=tune |
+| **Exact Water** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?brand=exact |
 
 ### Quote History (View past quotes)
 
 | Brand | Link |
 |-------|------|
-| **Tune Energy History** | https://script.google.com/macros/s/AKfycbzJejHwJVamAbbgg7khoDlrgAKPeDJ9bw68Xut7MC2rw2xDwBMsMyWXSBD3rM2oVZMRmg/exec?history=tune |
-| **Exact Water History** | https://script.google.com/macros/s/AKfycbzJejHwJVamAbbgg7khoDlrgAKPeDJ9bw68Xut7MC2rw2xDwBMsMyWXSBD3rM2oVZMRmg/exec?history=exact |
+| **Tune Energy History** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?history=tune |
+| **Exact Water History** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?history=exact |
 
 ### Admin Panel (For you only - manage settings)
 
 | Page | Link |
 |------|------|
-| **Admin Panel** | https://script.google.com/macros/s/AKfycbzJejHwJVamAbbgg7khoDlrgAKPeDJ9bw68Xut7MC2rw2xDwBMsMyWXSBD3rM2oVZMRmg/exec?admin=true |
+| **Admin Panel** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?admin=true |
 
 **Admin Panel Login:** You must be logged into Google as `psiquotetool@gmail.com` to access the Admin Panel.
 
@@ -182,4 +182,4 @@ This account owns:
 
 ---
 
-*Last Updated: January 20, 2026*
+*Last Updated: January 22, 2026*

@@ -459,6 +459,76 @@ function initializeAdminSettings() {
 }
 
 /**
+ * One-time setup: Initialize Rate Factors in Settings tab
+ * Run this function once from Apps Script editor: Run > initializeRateFactors
+ */
+function initializeRateFactors() {
+  try {
+    const ss = SpreadsheetApp.openById(ADMIN_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('Settings');
+    const data = sheet.getDataRange().getValues();
+
+    // Check if rate factors already exist
+    let hasTier1 = false, hasTier2 = false, hasTier3 = false;
+    for (let i = 0; i < data.length; i++) {
+      const firstCell = String(data[i][0]).toLowerCase().trim();
+      if (firstCell === '1' || firstCell === 'tier 1' || firstCell === 'tier1') hasTier1 = true;
+      if (firstCell === '2' || firstCell === 'tier 2' || firstCell === 'tier2') hasTier2 = true;
+      if (firstCell === '3' || firstCell === 'tier 3' || firstCell === 'tier3') hasTier3 = true;
+    }
+
+    // Default rate factors
+    const defaults = {
+      tier1: { rate36: 0.0327348, rate60: 0.0211993 },
+      tier2: { rate36: 0.0327439, rate60: 0.0213861 },
+      tier3: { rate60: 0.0208989, rate72: 0.0180061 }
+    };
+
+    let lastRow = sheet.getLastRow();
+
+    // Add header if needed (check if row 1 has headers)
+    const firstRowFirstCell = String(data[0][0]).toLowerCase().trim();
+    if (firstRowFirstCell !== 'tier' && !hasTier1 && !hasTier2 && !hasTier3) {
+      // Need to add header row for rate factors section
+      lastRow++;
+      sheet.getRange(lastRow, 1, 1, 4).setValues([['Tier', '36-Month', '60-Month', '72-Month']]);
+      sheet.getRange(lastRow, 1, 1, 4).setFontWeight('bold');
+    }
+
+    // Add missing tiers
+    if (!hasTier1) {
+      lastRow++;
+      sheet.getRange(lastRow, 1, 1, 4).setValues([['1', defaults.tier1.rate36, defaults.tier1.rate60, '']]);
+      Logger.log('Added Tier 1 rate factors');
+    }
+
+    if (!hasTier2) {
+      lastRow++;
+      sheet.getRange(lastRow, 1, 1, 4).setValues([['2', defaults.tier2.rate36, defaults.tier2.rate60, '']]);
+      Logger.log('Added Tier 2 rate factors');
+    }
+
+    if (!hasTier3) {
+      lastRow++;
+      sheet.getRange(lastRow, 1, 1, 4).setValues([['3', '', defaults.tier3.rate60, defaults.tier3.rate72]]);
+      Logger.log('Added Tier 3 rate factors');
+    }
+
+    if (hasTier1 && hasTier2 && hasTier3) {
+      Logger.log('All rate factors already exist in Settings tab');
+    } else {
+      Logger.log('Rate factors initialized successfully!');
+    }
+
+    return { success: true };
+
+  } catch (error) {
+    Logger.log('Error initializing rate factors: ' + error.toString());
+    return { success: false, error: error.toString() };
+  }
+}
+
+/**
  * One-time setup: Create QuoteLog tab if it doesn't exist
  * Run this function once from Apps Script editor: Run > initializeQuoteLog
  */
@@ -506,7 +576,11 @@ function runFullSetup() {
   initializeAdminSettings();
   Logger.log('');
 
-  Logger.log('Step 2: Creating QuoteLog tab...');
+  Logger.log('Step 2: Initializing Rate Factors...');
+  initializeRateFactors();
+  Logger.log('');
+
+  Logger.log('Step 3: Creating QuoteLog tab...');
   initializeQuoteLog();
   Logger.log('');
 

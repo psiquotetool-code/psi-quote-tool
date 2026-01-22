@@ -86,7 +86,7 @@ Quote Tool Via Claude Code/
 | `?history=exact` | Public | Exact Water Quote History (read-only) |
 | `?admin=true` | Admin Only | Admin Panel (settings, all quotes) |
 
-**Admin Access:** psiquotetool@gmail.com, mboyerchurch@gmail.com
+**Admin Access:** psiquotetool@gmail.com only (Session.getActiveUser() limitation)
 
 ## Rate Factor Tiers
 
@@ -118,7 +118,7 @@ Quote Tool Via Claude Code/
 |-------|------|
 | Monthly Spend | $1 - $250,000 |
 | Equipment Cost | $1 - $1,000,000 |
-| Savings % | 0% - 50% |
+| Savings % | 1% - 50% |
 | Panels/Meters | 1 - 2,000 |
 | Phone | 10 digits |
 | Email | Valid format + common TLD (.com, .org, .net, .io, etc.) |
@@ -130,7 +130,9 @@ Quote Tool Via Claude Code/
 - Brand-specific theming (Tune = blue, Exact = teal)
 - Dynamic Panels/Meters labels based on brand
 - Real-time validation with clear error messages
-- Loading overlay during PDF generation and email sending
+- Loading overlays during quote generation, PDF generation, and email sending
+- Modified quotes automatically get new quote numbers (prevents duplicate quote numbers)
+- Maximum 33 locations per quote
 
 ### PDF Generation (PDF.js)
 - Uses Google Sheets template approach (preserves formatting)

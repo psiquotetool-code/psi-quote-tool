@@ -61,9 +61,33 @@ function serveQuoteTool(e) {
   template.brand = brand;
   template.quoteNumber = quoteNumber;
   template.quoteDate = new Date().toLocaleDateString('en-US');
+  template.validUntilDays = getValidUntilDaysSetting();
   return template.evaluate()
     .setTitle('PSI Quote Tool')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/**
+ * Get ValidUntilDays from Settings tab
+ * @returns {number} - Number of days quote is valid (default 30)
+ */
+function getValidUntilDaysSetting() {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('Settings');
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 0; i < data.length; i++) {
+      const firstCell = String(data[i][0]).toLowerCase().trim();
+      if (firstCell === 'validuntildays' || firstCell === 'valid until days' || firstCell === 'valid_until_days') {
+        return parseInt(data[i][1]) || 30;
+      }
+    }
+    return 30;
+  } catch (error) {
+    Logger.log('Error reading ValidUntilDays: ' + error.toString());
+    return 30;
+  }
 }
 
 // QUOTE NUMBER GENERATION
@@ -88,6 +112,17 @@ function getNextQuoteNumber(brand) {
  */
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+/**
+ * Get the web app URL for redirecting to a new quote
+ * @param {string} brand - 'TUNE' or 'EXACT'
+ * @returns {string} - Full web app URL with brand parameter
+ */
+function getWebAppUrl(brand) {
+  const baseUrl = ScriptApp.getService().getUrl();
+  const brandParam = brand === 'EXACT' ? 'exact' : 'tune';
+  return baseUrl + '?brand=' + brandParam;
 }
 
 // TEST FUNCTION

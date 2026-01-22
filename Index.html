@@ -38,11 +38,11 @@
   </div>
 </div>
 
-<!-- Loading Overlay (PDF Generation) -->
+<!-- Loading Overlay (PDF Generation / Email Sending) -->
 <div id="loadingOverlay" class="loading-overlay">
   <div class="loading-box">
     <div class="loading-spinner"></div>
-    <p class="loading-text">Generating PDF...</p>
+    <p class="loading-text" id="loadingText">Generating PDF...</p>
     <p class="loading-subtext">Please wait, this may take a few seconds.</p>
   </div>
 </div>
@@ -137,7 +137,7 @@
     </div>
     
     <div class="quote-meta">
-      <div><strong>Quote Date:</strong> <?= quoteDate ?></div>
+      <div><strong>Quote Date:</strong> <span id="quoteDateDisplay"><?= quoteDate ?></span></div>
       <div><strong>Quote Number:</strong> <span id="quoteNumberDisplay"><?= quoteNumber ?></span></div>
     </div>
     
@@ -145,30 +145,31 @@
       <div class="card-header">Quote Created For</div>
       <div class="form-group-wide-label">
         <label>Company Name</label>
-        <input type="text" id="customerCompany" placeholder="Enter Company Name Here" value="Test Company Inc.">
+        <input type="text" id="customerCompany" placeholder="Enter Company Name Here" value="">
       </div>
     </div>
 
     <input type="hidden" id="companyName" value="<?= brand === 'EXACT' ? 'Exact Water' : 'Tune Energy' ?>">
     <input type="hidden" id="quoteDate" value="<?= quoteDate ?>">
     <input type="hidden" id="quoteNumber" value="<?= quoteNumber ?>">
+    <input type="hidden" id="validUntilDays" value="<?= validUntilDays ?>">
 
     <div class="two-card-row">
       <div class="card bg-light">
         <div class="card-header">Customer Contact</div>
         <div class="form-group-horizontal">
           <label>Name</label>
-          <input type="text" id="customerContact" value="John Smith">
+          <input type="text" id="customerContact" value="">
         </div>
 
         <div class="form-group-horizontal">
           <label>Phone</label>
-          <input type="text" id="customerPhone" onblur="formatPhone(this)" value="(555) 123-4567">
+          <input type="text" id="customerPhone" onblur="formatPhone(this)" value="">
         </div>
 
         <div class="form-group-horizontal">
           <label>Email</label>
-          <input type="email" id="customerEmail" value="john@testcompany.com">
+          <input type="email" id="customerEmail" value="">
         </div>
       </div>
 
@@ -176,17 +177,17 @@
         <div class="card-header">Rep Contact</div>
         <div class="form-group-horizontal">
           <label>Name</label>
-          <input type="text" id="repName" value="Jane Doe">
+          <input type="text" id="repName" value="">
         </div>
 
         <div class="form-group-horizontal">
           <label>Phone</label>
-          <input type="text" id="repPhone" onblur="formatPhone(this)" value="(555) 987-6543">
+          <input type="text" id="repPhone" onblur="formatPhone(this)" value="">
         </div>
 
         <div class="form-group-horizontal">
           <label>Email</label>
-          <input type="email" id="repEmail" value="jane@tuneenergy.com">
+          <input type="email" id="repEmail" value="">
         </div>
       </div>
     </div>
@@ -411,7 +412,7 @@ function goToScreen2() {
   
   // Add one location row if none exist
   if (document.getElementById('locationBody').rows.length === 0) {
-  addLocationRow(true);  // Pass true to use dummy data for first row
+  addLocationRow();  // Start with one empty row
   }
   
   // Switch screens
@@ -440,8 +441,15 @@ function buildLocationRows(count) {
 // ADD SINGLE LOCATION ROW
 function addLocationRow(useDummyData = false) {
   const tbody = document.getElementById('locationBody');
-  const rowNum = tbody.rows.length + 1;
+  const currentRowCount = tbody.rows.length;
 
+  // Limit to 33 locations (matches PDF capacity)
+  if (currentRowCount >= 33) {
+    showAlert('You may add up to 33 locations per quote');
+    return;
+  }
+
+  const rowNum = currentRowCount + 1;
 
   // Set values - use dummy data for first row if requested
   const address = (useDummyData && rowNum === 1) ? '123 Main Street, Irvine CA' : '';
@@ -560,8 +568,8 @@ function generateQuote() {
     
     const savingsValue = inputs[4].value.replace(/%/g, ''); // Remove % symbol
     const savings = parseFloat(savingsValue);
-    if (isNaN(savings) || savings < 0 || savings > 50) {
-      showAlert('Row ' + rowNum + ': Savings % must be between 0 and 50');
+    if (isNaN(savings) || savings < 1 || savings > 50) {
+      showAlert('Row ' + rowNum + ': Savings % must be between 1 and 50');
       return;
     }
     
@@ -585,10 +593,16 @@ function generateQuote() {
     });
   }
   
+  // Show loading overlay
+  showLoading('Generating Quote...');
+
   // Call backend calculation
   google.script.run
     .withSuccessHandler(showQuoteResults)
-    .withFailureHandler(showError)
+    .withFailureHandler(function(error) {
+      hideLoading();
+      showError(error);
+    })
     .calculateQuote(locations);
 }
 
@@ -597,8 +611,11 @@ let quoteResults = null;
 let pdfResult = null;  // Store PDF info for email and download
 
 function showQuoteResults(results) {
+  // Hide loading overlay
+  hideLoading();
+
   quoteResults = results;
-  
+
   // Get ALL form data ONCE at the top
   const customerCompany = document.getElementById('customerCompany').value;
   const customerContact = document.getElementById('customerContact').value;
@@ -638,9 +655,10 @@ if (companyName === 'Exact Water' && quoteHeader) {
   document.getElementById('quoteMetaDate').textContent = quoteDate;
   document.getElementById('quoteMetaNumber').textContent = quoteNumber;
   
-  // Calculate Valid Until date (30 days from quote date)
+  // Calculate Valid Until date (uses ValidUntilDays from Settings)
+  const validUntilDays = parseInt(document.getElementById('validUntilDays').value) || 30;
   const quoteDateObj = new Date(quoteDate);
-  quoteDateObj.setDate(quoteDateObj.getDate() + 30);
+  quoteDateObj.setDate(quoteDateObj.getDate() + validUntilDays);
   const validUntil = quoteDateObj.toLocaleDateString('en-US');
   document.getElementById('quoteMetaValid').textContent = validUntil;
   
@@ -751,6 +769,10 @@ function showError(error) {
 
 // NAVIGATION: Screen 3 back to Screen 2
 function goToScreen2FromPreview() {
+  // Update Screen 2 display values (in case quote number/date changed)
+  document.getElementById('displayQuoteNum').textContent = document.getElementById('quoteNumber').value;
+  document.getElementById('displayQuoteDate').textContent = document.getElementById('quoteDate').value;
+
   document.getElementById('screen3').classList.remove('active');
   document.getElementById('screen2').classList.add('active');
 }
@@ -839,14 +861,16 @@ function resetPDFButtons() {
   });
 }
 
-// Show loading overlay
-function showLoading() {
+// Show loading overlay with optional custom message
+function showLoading(message) {
+  document.getElementById('loadingText').textContent = message || 'Generating PDF...';
   document.getElementById('loadingOverlay').classList.add('active');
 }
 
-// Hide loading overlay
+// Hide loading overlay and reset message
 function hideLoading() {
   document.getElementById('loadingOverlay').classList.remove('active');
+  document.getElementById('loadingText').textContent = 'Generating PDF...';
 }
 
 // HELPER: Build HTML for one term option block
@@ -1078,8 +1102,8 @@ function resetEmailTemplate() {
 
 // Send quote email
 function sendQuoteEmail() {
-  // Show loading overlay
-  showLoading();
+  // Show loading overlay with email-specific message
+  showLoading('Sending Email...');
 
   // Disable send button and show loading state
   const sendBtn = document.getElementById('sendEmailBtn');
@@ -1110,6 +1134,7 @@ function sendQuoteEmail() {
     quoteNumber: document.getElementById('quoteNumber').value,
     quoteDate: document.getElementById('quoteDate').value,
     totalEquipment: quoteResults.totalEquipment,
+    avgSavingsPercent: quoteResults.avgSavingsPercent,
     locationCount: quoteResults.locationCount
   };
 
@@ -1174,14 +1199,39 @@ function downloadPDF() {
 
 // Modify existing quote (go back to Screen 3 to edit)
 function modifyExistingQuote() {
-  // Close post-send modal
-  document.getElementById('postSendModal').classList.remove('active');
+  // Get a new quote number since this will be a different quote
+  const brand = document.getElementById('companyName').value === 'Exact Water' ? 'EXACT' : 'TUNE';
 
-  // Clear PDF result since they'll need to regenerate after edits
-  pdfResult = null;
+  showLoading('Getting new quote number...');
 
-  // Stay on Screen 3 - they can use "Back to Edit Locations" button from there
-  // Screen 3 should already be active
+  google.script.run
+    .withSuccessHandler(function(newQuoteNumber) {
+      hideLoading();
+
+      // Update the quote number in the hidden form field
+      document.getElementById('quoteNumber').value = newQuoteNumber;
+
+      // Update the visible quote number display on Screen 1
+      document.getElementById('quoteNumberDisplay').textContent = newQuoteNumber;
+
+      // Update the quote date to today
+      const today = new Date().toLocaleDateString('en-US');
+      document.getElementById('quoteDate').value = today;
+      document.getElementById('quoteDateDisplay').textContent = today;
+
+      // Close post-send modal
+      document.getElementById('postSendModal').classList.remove('active');
+
+      // Clear PDF result since they'll need to regenerate after edits
+      pdfResult = null;
+
+      // Stay on Screen 3 - they can use "Back to Edit Locations" button from there
+    })
+    .withFailureHandler(function(error) {
+      hideLoading();
+      showAlert('Error getting new quote number. Please try again.');
+    })
+    .getNextQuoteNumber(brand);
 }
 
 // Confirm before generating new quote
@@ -1198,8 +1248,19 @@ Are you sure you want to continue?`;
 
 // Generate another quote (reset to Screen 1)
 function generateAnotherQuote() {
-  // Simply reload the page - this gets a fresh quote number and resets everything
-  window.location.reload();
+  // Get brand for URL
+  const brand = document.getElementById('companyName').value === 'Exact Water' ? 'EXACT' : 'TUNE';
+
+  // Get the correct web app URL from the server and navigate to it
+  google.script.run
+    .withSuccessHandler(function(url) {
+      // Open the URL in the same window (replaces current page)
+      window.open(url, '_top');
+    })
+    .withFailureHandler(function(error) {
+      alert('Error: Could not start new quote. Please close this tab and reopen the Quote Tool link.');
+    })
+    .getWebAppUrl(brand);
 }
 
 // Confirm before exiting tool

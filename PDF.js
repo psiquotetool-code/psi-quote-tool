@@ -219,6 +219,9 @@ function createPDFQuote(quoteData) {
     const folder = getOrCreateQuoteFolder();
     const file = folder.createFile(pdfBlob);
 
+    // Make PDF publicly viewable (anyone with link can view/download)
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
     // Step 6: Delete temporary sheet
     templateSS.deleteSheet(tempSheet);
 
@@ -298,7 +301,7 @@ function populateCells(sheet, quoteData) {
 
   // Terms and Conditions - Dynamic based on brand
   const costType = quoteData.companyName === 'Exact Water' ? 'Water' : 'Energy';
-  const termsText = 'TERMS, CONDITIONS, NOTICES: ' + costType + ' cost is assumed to remain constant. Equipment financing is subject to credit approval by PSI. Quote amount may change if equipment list is modified. Customer is responsible for all installation and ongoing operations. This quote is for informational purposes only and does not constitute an offer or contract.';
+  const termsText = 'TERMS, CONDITIONS, NOTICES: Rental approval based on creditworthiness. Equipment cost and rental payments do not include taxes or fees. Any taxes and fees will be shown on official rental documents. ' + costType + ' cost is assumed constant for 10 years. Equipment cost includes install, permits, equipment and labor. Utility savings calculation shown is average of all locations on quote.';
   sheet.getRange(CELL_MAP.termsConditions).setValue(termsText);
 }
 

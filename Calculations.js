@@ -1,6 +1,9 @@
 // CALCULATIONS.GS - Lease Calculation Engine
 // PSI Quote Tool - Step 6
 
+// Data Spreadsheet ID (same as used in Code.js and Admin.js)
+const CALC_SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
+
 /**
  * Main calculation function - receives location data, returns all calculated values
  * @param {Array} locations - Array of location objects from the form
@@ -31,7 +34,7 @@ function calculateQuote(locations) {
   let tier = determineTier(totalEquipment);
   
   // STEP 5: Get Rate Factors
-  let rateFactors = getRateFactors(tier);
+  let rateFactors = getRateFactorsForTier(tier);
   
   // STEP 6: Calculate for each applicable term
   let results = {
@@ -76,18 +79,62 @@ function determineTier(totalEquipment) {
 }
 
 /**
- * Get rate factors for the given tier
+ * Get rate factors for the given tier from the Settings spreadsheet
  * Returns object with applicable rates (rate36, rate60, rate72)
  */
-function getRateFactors(tier) {
-  // Rate factors with 7 decimal precision
-  const rateTable = {
-    1: { rate36: 0.0327348, rate60: 0.0211993, rate72: null },
-    2: { rate36: 0.0327439, rate60: 0.0213861, rate72: null },
-    3: { rate36: null, rate60: 0.0208989, rate72: 0.0180061 }
-  };
-  
-  return rateTable[tier];
+function getRateFactorsForTier(tier) {
+  try {
+    const ss = SpreadsheetApp.openById(CALC_SPREADSHEET_ID);
+    const sheet = ss.getSheetByName('Settings');
+    const data = sheet.getDataRange().getValues();
+
+    // Default rate factors (fallback if not found in spreadsheet)
+    const defaultRates = {
+      1: { rate36: 0.0327348, rate60: 0.0211993, rate72: null },
+      2: { rate36: 0.0327439, rate60: 0.0213861, rate72: null },
+      3: { rate36: null, rate60: 0.0208989, rate72: 0.0180061 }
+    };
+
+    // Look for rate factor rows in Settings tab
+    // Expected format: Row label in column A (e.g., "1", "Tier 1"), rates in columns B, C, D
+    for (let i = 0; i < data.length; i++) {
+      const firstCell = String(data[i][0]).toLowerCase().trim();
+
+      if (tier === 1 && (firstCell === '1' || firstCell === 'tier 1' || firstCell === 'tier1')) {
+        return {
+          rate36: parseFloat(data[i][1]) || defaultRates[1].rate36,
+          rate60: parseFloat(data[i][2]) || defaultRates[1].rate60,
+          rate72: null
+        };
+      } else if (tier === 2 && (firstCell === '2' || firstCell === 'tier 2' || firstCell === 'tier2')) {
+        return {
+          rate36: parseFloat(data[i][1]) || defaultRates[2].rate36,
+          rate60: parseFloat(data[i][2]) || defaultRates[2].rate60,
+          rate72: null
+        };
+      } else if (tier === 3 && (firstCell === '3' || firstCell === 'tier 3' || firstCell === 'tier3')) {
+        return {
+          rate36: null,
+          rate60: parseFloat(data[i][2]) || defaultRates[3].rate60,
+          rate72: parseFloat(data[i][3]) || defaultRates[3].rate72
+        };
+      }
+    }
+
+    // If tier not found in spreadsheet, use defaults
+    Logger.log('Tier ' + tier + ' not found in Settings, using defaults');
+    return defaultRates[tier];
+
+  } catch (error) {
+    Logger.log('Error reading rate factors: ' + error.toString());
+    // Return hardcoded defaults on error
+    const defaultRates = {
+      1: { rate36: 0.0327348, rate60: 0.0211993, rate72: null },
+      2: { rate36: 0.0327439, rate60: 0.0213861, rate72: null },
+      3: { rate36: null, rate60: 0.0208989, rate72: 0.0180061 }
+    };
+    return defaultRates[tier];
+  }
 }
 
 /**
