@@ -9,7 +9,10 @@
 // Template Sheet Configuration
 const PDF_TEMPLATE_ID = '1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw';
 const TUNE_TEMPLATE_TAB = 'Tune Template';
-const EXACT_TEMPLATE_TAB = 'Exact Template';
+const OTTS_TEMPLATE_TAB = 'OTTS Template';
+// NOTE: The original 'Exact Template' tab is preserved in the PDF Template Sheet
+// as a rollback safety net. 'OTTS Template' is a duplicate created during the
+// Exact Water → On Track Technology Solutions vendor swap (April 2026).
 
 // Data Spreadsheet for Settings
 const PDF_DATA_SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
@@ -191,7 +194,7 @@ function createPDFQuote(quoteData) {
   try {
     // Step 1: Open the template spreadsheet and select correct tab based on brand
     const templateSS = SpreadsheetApp.openById(PDF_TEMPLATE_ID);
-    const templateTabName = quoteData.companyName === 'Exact Water' ? EXACT_TEMPLATE_TAB : TUNE_TEMPLATE_TAB;
+    const templateTabName = quoteData.companyName === 'Exact Water' ? OTTS_TEMPLATE_TAB : TUNE_TEMPLATE_TAB;
     const templateSheet = templateSS.getSheetByName(templateTabName);
 
     if (!templateSheet) {

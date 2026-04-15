@@ -5,10 +5,23 @@ const SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
 // Routes requests based on URL parameters:
 //   ?admin=true       → Admin Panel (requires authentication)
 //   ?history=tune     → Tune Energy Quote History (public)
-//   ?history=exact    → Exact Water Quote History (public)
+//   ?history=otts     → On Track Technology Solutions Quote History (public)
+//                       (legacy ?history=exact also accepted via backward-compat alias)
 //   ?brand=tune       → Tune Energy Quote Tool (default)
-//   ?brand=exact      → Exact Water Quote Tool
+//   ?brand=otts       → On Track Technology Solutions Quote Tool
+//                       (legacy ?brand=exact also accepted via backward-compat alias)
+//
+// NOTE: The internal brand identifier 'otts' replaced the legacy 'exact' identifier
+// in April 2026 when Exact Water was replaced by On Track Technology Solutions as a
+// vendor partner. Historical QuoteLog rows retain their original 'Exact Water' /
+// 'EXACT-NNNNN' values for audit. The 'Exact Template' tab in the PDF Template Sheet
+// is preserved as a rollback safety net.
 function doGet(e) {
+  // Backward-compat alias: silently route legacy 'exact' URL params to 'otts'.
+  // Protects any reps/bookmarks still using the pre-April-2026 URLs.
+  if (e.parameter.brand === 'exact') e.parameter.brand = 'otts';
+  if (e.parameter.history === 'exact') e.parameter.history = 'otts';
+
   // Check for Admin Panel request
   if (e.parameter.admin === 'true') {
     return serveAdminPanel();
@@ -35,11 +48,12 @@ function serveAdminPanel() {
 
 /**
  * Serve the Quote History page (public, filtered by brand)
- * @param {string} brand - 'tune' or 'exact'
+ * @param {string} brand - 'tune' or 'otts' (legacy 'exact' normalized to 'otts' upstream)
  */
 function serveHistoryPage(brand) {
   const brandUpper = brand.toUpperCase();
-  const brandName = brandUpper === 'EXACT' ? 'Exact Water' : 'Tune Energy';
+  // Display text stays "Exact Water" at this step; changes to "On Track Technology Solutions" in step 3
+  const brandName = brandUpper === 'OTTS' ? 'Exact Water' : 'Tune Energy';
 
   const template = HtmlService.createTemplateFromFile('QuoteHistory');
   template.brand = brandUpper;
@@ -116,12 +130,12 @@ function include(filename) {
 
 /**
  * Get the web app URL for redirecting to a new quote
- * @param {string} brand - 'TUNE' or 'EXACT'
+ * @param {string} brand - 'TUNE' or 'OTTS'
  * @returns {string} - Full web app URL with brand parameter
  */
 function getWebAppUrl(brand) {
   const baseUrl = ScriptApp.getService().getUrl();
-  const brandParam = brand === 'EXACT' ? 'exact' : 'tune';
+  const brandParam = brand === 'OTTS' ? 'otts' : 'tune';
   return baseUrl + '?brand=' + brandParam;
 }
 
