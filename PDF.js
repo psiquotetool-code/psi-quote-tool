@@ -9,7 +9,10 @@
 // Template Sheet Configuration
 const PDF_TEMPLATE_ID = '1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw';
 const TUNE_TEMPLATE_TAB = 'Tune Template';
-const EXACT_TEMPLATE_TAB = 'Exact Template';
+const OTTS_TEMPLATE_TAB = 'OTTS Template';
+// NOTE: The original 'Exact Template' tab is preserved in the PDF Template Sheet
+// as a rollback safety net. 'OTTS Template' is a duplicate created during the
+// Exact Water → On Track Technology Solutions vendor swap (April 2026).
 
 // Data Spreadsheet for Settings
 const PDF_DATA_SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
@@ -41,9 +44,9 @@ function getValidUntilDays() {
 // These are the cells that need to be populated with quote data
 // Note: Many cells are merged. We write to the top-left cell of each merge.
 const CELL_MAP = {
-  // Brand Name locations (need to update for Exact Water quotes)
-  mainTitle: 'C2',                    // Main title: "Tune Energy" or "Exact Water" (merged C2:F6)
-  presentedByHeader: 'F9',            // Box header: "Presented by Tune Energy" or "Presented by Exact Water" (merged F9:I9)
+  // Brand Name locations (populated dynamically for each brand)
+  mainTitle: 'C2',                    // Main title: "Tune Energy" or "On Track Technology Solutions" (merged C2:F6)
+  presentedByHeader: 'F9',            // Box header: "Presented by Tune Energy" or "Presented by On Track Technology Solutions" (merged F9:I9)
 
   // Header/Metadata (upper right corner) - UNCHANGED
   date: 'I4',
@@ -191,7 +194,7 @@ function createPDFQuote(quoteData) {
   try {
     // Step 1: Open the template spreadsheet and select correct tab based on brand
     const templateSS = SpreadsheetApp.openById(PDF_TEMPLATE_ID);
-    const templateTabName = quoteData.companyName === 'Exact Water' ? EXACT_TEMPLATE_TAB : TUNE_TEMPLATE_TAB;
+    const templateTabName = quoteData.companyName === 'On Track Technology Solutions' ? OTTS_TEMPLATE_TAB : TUNE_TEMPLATE_TAB;
     const templateSheet = templateSS.getSheetByName(templateTabName);
 
     if (!templateSheet) {
@@ -255,8 +258,8 @@ function populateCells(sheet, quoteData) {
   quoteDateObj.setDate(quoteDateObj.getDate() + validUntilDays);
   const validUntil = formatDate(quoteDateObj);
 
-  // Brand Name (update for Exact Water quotes)
-  const brandName = quoteData.companyName; // "Tune Energy" or "Exact Water"
+  // Brand Name (set dynamically from quoteData.companyName)
+  const brandName = quoteData.companyName; // "Tune Energy" or "On Track Technology Solutions"
   sheet.getRange(CELL_MAP.mainTitle).setValue(brandName + '\nEquipment Rental Quote');
   sheet.getRange(CELL_MAP.presentedByHeader).setValue('Presented by ' + brandName);
 
@@ -278,7 +281,7 @@ function populateCells(sheet, quoteData) {
 
   // Quote Highlights
   // Dynamic label based on brand: "# of Panels" for Tune, "# of Meters" for Exact
-  const panelsMetersLabel = quoteData.companyName === 'Exact Water' ? '# of Meters' : '# of Panels';
+  const panelsMetersLabel = quoteData.companyName === 'On Track Technology Solutions' ? '# of Meters' : '# of Panels';
   sheet.getRange(CELL_MAP.panelsMetersLabel).setValue(panelsMetersLabel);
   sheet.getRange(CELL_MAP.panelsMeters).setValue(results.totalPanelsMeters);
   sheet.getRange(CELL_MAP.equipmentFinanced).setValue('$' + formatNumber(results.totalEquipment));
@@ -300,7 +303,7 @@ function populateCells(sheet, quoteData) {
   }
 
   // Terms and Conditions - Dynamic based on brand
-  const costType = quoteData.companyName === 'Exact Water' ? 'Water' : 'Energy';
+  const costType = quoteData.companyName === 'On Track Technology Solutions' ? 'Water' : 'Energy';
   const termsText = 'TERMS, CONDITIONS, NOTICES: Rental approval based on creditworthiness. Equipment cost and rental payments do not include taxes or fees. Any taxes and fees will be shown on official rental documents. ' + costType + ' cost is assumed constant for 10 years. Equipment cost includes install, permits, equipment and labor. Utility savings calculation shown is average of all locations on quote.';
   sheet.getRange(CELL_MAP.termsConditions).setValue(termsText);
 }

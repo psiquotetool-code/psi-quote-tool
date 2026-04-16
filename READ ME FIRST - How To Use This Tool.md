@@ -2,7 +2,7 @@
 
 ## What Is This?
 
-This is the PSI Quote Tool - a web application that generates professional lease quotes for **Tune Energy** and **Exact Water** sales reps.
+This is the PSI Quote Tool - a web application that generates professional lease quotes for **Tune Energy** and **On Track Technology Solutions** sales reps.
 
 **You don't need to understand the technical stuff.** Just use the links below.
 
@@ -17,14 +17,14 @@ Bookmark these! These are the only links you need:
 | Brand | Link |
 |-------|------|
 | **Tune Energy** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?brand=tune |
-| **Exact Water** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?brand=exact |
+| **On Track Technology Solutions** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?brand=otts |
 
 ### Quote History (View past quotes)
 
 | Brand | Link |
 |-------|------|
 | **Tune Energy History** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?history=tune |
-| **Exact Water History** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?history=exact |
+| **On Track Technology Solutions History** | https://script.google.com/macros/s/AKfycbws15vYTrS75gzv9Fk2rXCJGcYDmm8IGaRFpwaNAvuvB6vqA30SwWt99D_Ae22k7_g2YQ/exec?history=otts |
 
 ### Admin Panel (For you only - manage settings)
 
@@ -58,7 +58,7 @@ The Admin Panel lets you change settings without touching any code. Here's what 
 
 ### 4. View All Quotes
 - Click the "All Quotes" tab
-- See every quote from both Tune Energy and Exact Water
+- See every quote from both Tune Energy and On Track Technology Solutions
 - Click any quote number to view/download the PDF
 
 ---
@@ -150,7 +150,7 @@ This account owns:
 | I want to... | Go here |
 |--------------|---------|
 | Generate a Tune Energy quote | Tune Energy link (above) |
-| Generate an Exact Water quote | Exact Water link (above) |
+| Generate an On Track Technology Solutions quote | On Track Technology Solutions link (above) |
 | See past Tune quotes | Tune History link (above) |
 | See past Exact quotes | Exact History link (above) |
 | Change rate factors | Admin Panel → Rate Factors |
@@ -182,4 +182,4 @@ This account owns:
 
 ---
 
-*Last Updated: January 22, 2026*
+*Last Updated: April 15, 2026*

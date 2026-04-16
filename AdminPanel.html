@@ -192,7 +192,7 @@
             <select id="filterBrand" onchange="applyFilters()">
               <option value="all">All Brands</option>
               <option value="tune">Tune Energy</option>
-              <option value="exact">Exact Water</option>
+              <option value="otts">On Track Technology Solutions</option>
             </select>
           </div>
           <div class="filter-group">
@@ -524,7 +524,9 @@ function applyFilters() {
     if (brandFilter !== 'all') {
       const qBrand = q.brand.toLowerCase();
       if (brandFilter === 'tune' && !qBrand.includes('tune')) return false;
-      if (brandFilter === 'exact' && !qBrand.includes('exact')) return false;
+      // 'otts' filter matches new On Track Technology Solutions quotes.
+      // Legacy "Exact Water" rows are excluded from this filter (visible under All Brands).
+      if (brandFilter === 'otts' && !qBrand.includes('on track')) return false;
     }
 
     // Search filter
@@ -575,7 +577,7 @@ function renderQuoteTable() {
 
   let html = '';
   for (const q of filteredQuotes) {
-    const brandClass = q.brand.toLowerCase().includes('tune') ? 'brand-tune' : 'brand-exact';
+    const brandClass = q.brand.toLowerCase().includes('tune') ? 'brand-tune' : 'brand-otts';
     const equipment = typeof q.equipmentFinanced === 'number'
       ? '$' + q.equipmentFinanced.toLocaleString()
       : q.equipmentFinanced;

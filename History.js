@@ -3,7 +3,8 @@
 //
 // This file handles public (no auth required) quote history views:
 // - Tune quote history (filtered by brand)
-// - Exact quote history (filtered by brand)
+// - OTTS (On Track Technology Solutions) quote history (filtered by brand)
+//   Note: legacy "Exact Water" QuoteLog rows are visible only under All Brands view.
 // - PDF download URL retrieval
 //
 // NOTE: This is READ-ONLY. No editing capability.
@@ -17,7 +18,7 @@ const HISTORY_SPREADSHEET_ID = '1dHGcFftseIx_IKV8ULetIfPI5sE35JWQfEOIW05KhSw';
 
 /**
  * Get quote history filtered by brand
- * @param {string} brand - 'TUNE' or 'EXACT'
+ * @param {string} brand - 'TUNE' or 'OTTS'
  * @returns {Object} - {success: boolean, quotes: Array}
  */
 function getQuoteHistoryByBrand(brand) {
@@ -39,11 +40,14 @@ function getQuoteHistoryByBrand(brand) {
       return { success: true, quotes: [], message: 'No quotes logged yet' };
     }
 
-    // Normalize brand for comparison
+    // Normalize brand for comparison.
+    // 'OTTS' matches new On Track Technology Solutions quotes only.
+    // Legacy "Exact Water" QuoteLog rows are excluded from the OTTS filter
+    // (per plan: historical rows viewable under All Brands in admin panel).
     const brandUpper = brand.toUpperCase();
     const brandNames = {
       'TUNE': ['TUNE', 'TUNE ENERGY'],
-      'EXACT': ['EXACT', 'EXACT WATER']
+      'OTTS': ['OTTS', 'ON TRACK TECHNOLOGY SOLUTIONS']
     };
     const matchBrands = brandNames[brandUpper] || [brandUpper];
 
@@ -215,9 +219,9 @@ function testGetTuneHistory() {
   Logger.log('Tune quotes: ' + JSON.stringify(result));
 }
 
-function testGetExactHistory() {
-  const result = getQuoteHistoryByBrand('EXACT');
-  Logger.log('Exact quotes: ' + JSON.stringify(result));
+function testGetOTTSHistory() {
+  const result = getQuoteHistoryByBrand('OTTS');
+  Logger.log('OTTS quotes: ' + JSON.stringify(result));
 }
 
 function testLogQuote() {
