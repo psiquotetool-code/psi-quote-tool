@@ -52,8 +52,7 @@ function serveAdminPanel() {
  */
 function serveHistoryPage(brand) {
   const brandUpper = brand.toUpperCase();
-  // Display text stays "Exact Water" at this step; changes to "On Track Technology Solutions" in step 3
-  const brandName = brandUpper === 'OTTS' ? 'Exact Water' : 'Tune Energy';
+  const brandName = brandUpper === 'OTTS' ? 'On Track Technology Solutions' : 'Tune Energy';
 
   const template = HtmlService.createTemplateFromFile('QuoteHistory');
   template.brand = brandUpper;

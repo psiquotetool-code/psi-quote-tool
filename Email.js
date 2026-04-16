@@ -123,7 +123,7 @@ function sendCustomerEmail(emailData, pdfBlob) {
       cc: emailData.cc,      // CC: Rep email
       htmlBody: htmlBody,    // HTML body with proper line breaks
       attachments: [pdfBlob],
-      name: emailData.companyName,  // From name (Tune Energy or Exact Water)
+      name: emailData.companyName,  // From name (Tune Energy or On Track Technology Solutions)
       replyTo: emailData.repEmail   // Reply-To: Rep's email
     }
   );
