@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A lease quote generation tool for PSI (equipment financing company). Sales reps from partner companies (Tune Energy or Exact Water) use this tool to:
+A lease quote generation tool for PSI (equipment financing company). Sales reps from partner companies (Tune Energy or On Track Technology Solutions) use this tool to:
 
 1. Enter customer and location data
 2. Calculate lease payments based on equipment cost tiers
@@ -12,7 +12,7 @@ A lease quote generation tool for PSI (equipment financing company). Sales reps 
 
 **Two Brands (same codebase, different URLs):**
 - **Tune Energy** - Electrical panels
-- **Exact Water** - Water meters
+- **On Track Technology Solutions** - Water meters (formerly "Exact Water"; internal code identifier: `otts`)
 
 ## Tech Stack
 
@@ -58,7 +58,7 @@ Quote Tool Via Claude Code/
   - Tabs: Settings (rate factors + config), QuoteNumbers (tracking), QuoteLog (history)
 - **PDF Template Google Sheet**: `1leM4TF00VjJ9Y9DBv_KqOJeJJAwy6ONp21Rvh-m6PGw`
   - **DO NOT DELETE** - This template is used every time a PDF is generated
-  - Tabs: `Tune Template` (Tune Energy), `Exact Template` (Exact Water)
+  - Tabs: `Tune Template` (Tune Energy), `OTTS Template` (On Track Technology Solutions), `Exact Template` (legacy backup — do not delete)
 - **PDF Storage Folder**: `GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!`
   - Located in psiquotetool@gmail.com Google Drive
   - All generated quote PDFs are stored here
@@ -81,9 +81,11 @@ Quote Tool Via Claude Code/
 | URL Parameter | Access | Description |
 |---------------|--------|-------------|
 | `?brand=tune` | Public | Tune Energy Quote Tool (default) |
-| `?brand=exact` | Public | Exact Water Quote Tool |
+| `?brand=otts` | Public | On Track Technology Solutions Quote Tool |
+| `?brand=exact` | Public | Legacy alias — redirects internally to `otts` |
 | `?history=tune` | Public | Tune Energy Quote History (read-only) |
-| `?history=exact` | Public | Exact Water Quote History (read-only) |
+| `?history=otts` | Public | On Track Technology Solutions Quote History (read-only) |
+| `?history=exact` | Public | Legacy alias — redirects internally to `otts` |
 | `?admin=true` | Admin Only | Admin Panel (settings, all quotes) |
 
 **Admin Access:** psiquotetool@gmail.com only (Session.getActiveUser() limitation)
@@ -127,7 +129,7 @@ Quote Tool Via Claude Code/
 
 ### Quote Tool (Index.html)
 - 3-screen single-page app
-- Brand-specific theming (Tune = blue, Exact = teal)
+- Brand-specific theming (Tune = blue, OTTS = teal)
 - Dynamic Panels/Meters labels based on brand
 - Real-time validation with clear error messages
 - Loading overlays during quote generation, PDF generation, and email sending
@@ -190,7 +192,7 @@ To create a new deployment after code changes:
 ⚠️ PSI QUOTE TOOL - DO NOT DELETE OR EDIT ⚠️/
 ├── Quote Tool Code (Apps Script project)
 ├── Quote Tool Data (Google Sheet - Settings, QuoteNumbers, QuoteLog)
-├── PDF Template (Google Sheet - Tune Template, Exact Template)
+├── PDF Template (Google Sheet - Tune Template, OTTS Template, Exact Template backup)
 ├── GENERATED PDF QUOTES - DON'T DELETE OR MODIFY!!/
 │   └── [All generated quote PDFs]
 └── 📋 READ ME FIRST - How To Use This Tool (Google Doc)
@@ -203,6 +205,7 @@ To create a new deployment after code changes:
 - **Phase C** (Complete): PDF generation (Sheets template approach) + Email delivery
 - **Phase D** (Complete): Admin Panel + Quote History + Documentation
 - **Testing** (Complete): Bug fixes, validation improvements, UI polish
+- **Vendor Swap** (Complete): Exact Water → On Track Technology Solutions (April 2026)
 
 ## Contact
 
